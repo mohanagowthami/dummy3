@@ -6,6 +6,7 @@ interface ICustomButtonProps {
   buttonType?: string;
   title?: string;
   onPressButton: () => void;
+  style?:any
 }
 class CustomButton extends Component<ICustomButtonProps, {}> {
   handlePress = () => {

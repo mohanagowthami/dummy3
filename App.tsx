@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
 import * as Font from 'expo-font';
+import SignUpScreen from './src/screens/SignUpScreen';
+import BottomTab from './src/components/BottomTab';
 
 const Stack = createStackNavigator();
 
@@ -21,8 +23,12 @@ export default function App() {
  
   return (
     <NavigationContainer>
-    <Stack.Navigator>
+      <Stack.Navigator>
+         <Stack.Screen name="bottomTab" component={BottomTab} options={{ headerShown: false }} />
         <Stack.Screen name="login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="signUp" component={SignUpScreen} options={{ headerShown: false }} />
+       
+
       </Stack.Navigator>
       </NavigationContainer>
   );
