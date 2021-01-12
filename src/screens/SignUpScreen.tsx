@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import FacebookSvg from "../../assets/svgs/FacebookSvg";
+import GoogleSvg from "../../assets/svgs/GoogleSvg";
+import TwitterSvg from "../../assets/svgs/TwitterSvg";
 
 import WelcomeSvg from "../../assets/svgs/WelcomeSvg";
 import SignUpForm from "../forms/SignUpForm";
@@ -69,6 +72,20 @@ class SignUpScreen extends Component<ISignUpScreen, State> {
             ]}
           >
             <Text style={styles.loginWith}>Or Login with...</Text>
+            <View style={styles.socialIconsContainer}>
+                  <FacebookSvg
+                width={55}
+                height={55}
+                  />
+                   <TwitterSvg
+                 width={55}
+                height={55}
+                  />
+                   <GoogleSvg
+                 width={55}
+                height={55}
+              />
+                </View>
             <Text>
               <Text style={styles.haveAnAccount}>Already have an account?</Text>
               <Text
@@ -131,4 +148,12 @@ const styles = StyleSheet.create({
     fontFamily: "AirbnbCerealBook",
     color: colors.orange,
   },
+  socialIconsContainer: {
+
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width:"60%"
+  }
 });

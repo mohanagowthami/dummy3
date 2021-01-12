@@ -23,19 +23,20 @@ export default function App() {
   }
 
   return (
-    // Outer NavigationContainer
+   
     <NavigationContainer>
-      {/* Stack Navigator */}
+     
       <Stack.Navigator>
-        {/* Stack Screens */}
-        {/* <Stack.Screen
-          name="login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        /> */}
+       
+       
         <Stack.Screen
           name="signUp"
           component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="login"
+          component={LoginScreen}
           options={{ headerShown: false }}
         />
 

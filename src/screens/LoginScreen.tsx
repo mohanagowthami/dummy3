@@ -6,6 +6,9 @@ import { colors } from "../lib/colors";
 import Svg, { SvgCssUri } from "react-native-svg";
 import WelcomeSvg from "../../assets/svgs/WelcomeSvg";
 import GetDimensions from "../components/common/GetDimensions";
+import FacebookSvg from "../../assets/svgs/FacebookSvg";
+import TwitterSvg from "../../assets/svgs/TwitterSvg";
+import GoogleSvg from "../../assets/svgs/GoogleSvg";
 
 // props for login screen
 interface ILoginScreen {
@@ -57,6 +60,20 @@ class LoginScreen extends Component<ILoginScreen, {}> {
 
               <View style={styles.loginBottom}>
                 <Text style={styles.loginWith}>Or Login with...</Text>
+                <View style={styles.socialIconsContainer}>
+                  <FacebookSvg
+                width={55}
+                height={55}
+                  />
+                   <TwitterSvg
+                width={55}
+                height={55}
+                  />
+                   <GoogleSvg
+                width={55}
+                height={55}
+              />
+                </View>
                 <Text>
                   <Text style={styles.newToFrappy}>New to Frappy? </Text>
                   <Text style={styles.signUp} onPress={this.handleNavigation}>
@@ -76,14 +93,16 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
+    display: "flex",
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     padding: "10%",
-    paddingBottom: 0,
-    position: "relative",
+    backgroundColor: colors.white,
+   height:"100vh"
+  
+    
   },
-  tinyLogo: {
+   tinyLogo: {
     width: "90%",
     height: "30%",
   },
@@ -97,15 +116,10 @@ const styles = StyleSheet.create({
     marginTop: "7%",
   },
   loginBottom: {
-    width: "100%",
-    height: "25%",
+        height: "25%",
     display: "flex",
-    padding: "10%",
-    paddingVertical: 0,
-    position: "absolute",
-    bottom: "6%",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent:"space-between"
   },
   loginButtonBox: {
     marginTop: "7%",
@@ -125,4 +139,12 @@ const styles = StyleSheet.create({
     fontFamily: "AirbnbCerealBook",
     color: colors.orange,
   },
+  socialIconsContainer: {
+
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width:"60%"
+  }
 });
