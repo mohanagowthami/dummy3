@@ -1,11 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { Pressable, View, StyleSheet, Text } from "react-native";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-  listenOrientationChange as loc,
-  removeOrientationListener as rol,
-} from "react-native-responsive-screen";
+
 interface ICustomButtonProps {
   children?: ReactNode;
   buttonType?: string;
@@ -42,24 +37,25 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   basicButton: {
-    backgroundColor: "#FF6C65",
-
+    // backgroundColor: "#FF6C65",
+    backgroundColor: "black",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: wp("85.33%"),
+    width: "100%",
+
     margin: "5%",
-    marginLeft: wp("0%"),
-    marginRight: wp("0%"),
-    borderRadius: wp("2.66%"),
+    marginLeft: 0,
+    marginRight: 0,
+    borderRadius: 10,
     padding: "5%",
   },
   pressButton: {
-    width: wp("85.33%"),
+    width: "100%",
   },
   buttonTitle: {
     color: "white",
     fontWeight: "bold",
-    fontSize: hp("1.576%"),
+    fontSize: 14,
   },
 });

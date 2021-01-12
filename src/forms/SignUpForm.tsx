@@ -56,6 +56,11 @@ const styles = StyleSheet.create({
     width: wp("80.33%"),
   },
   inputBox: {
+    width: wp("85.33%"),
+    marginLeft: wp("0%"),
+    fontSize: hp("1.576%"),
+    marginRight: wp("0%"),
+    borderRadius: wp("2.66%"),
     margin: "7%",
     marginHorizontal: 0,
   },

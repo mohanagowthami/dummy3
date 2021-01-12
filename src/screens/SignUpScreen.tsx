@@ -30,7 +30,7 @@ class SignUpScreen extends Component<ISignUpScreen, {}> {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <WelcomeSvg width={wp("66.35%")} height={hp("23.25%")} />
+          <WelcomeSvg width={wp("66.35%")} height={hp("19.90%")} />
           <Text style={styles.loginText}>SignUp</Text>
           <SignUpForm />
 

@@ -1,14 +1,8 @@
 import React, { Component } from "react";
 import { TextInput, StyleSheet } from "react-native";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-  listenOrientationChange as loc,
-  removeOrientationListener as rol,
-} from "react-native-responsive-screen";
 
 interface ICustomTextFieldProps {
-  onCallBack?: (value: any) => void;
+  onCallBack: (value: any) => void;
   autoFocus?: boolean;
   placeholder?: string;
   style?: any;
@@ -37,13 +31,8 @@ class CustomTextField extends Component<
   };
 
   handleBlur = () => {
-    console.log(
-      this.state.text,
-      this.props.value,
-      this.props.handleChange,
-      "text123"
-    );
-    // this.props.onCallBack(this.state.text);
+    console.log(this.state.text, "text123");
+    this.props.onCallBack(this.state.text);
   };
   render() {
     const { style, value, handleChange } = this.props;
@@ -72,7 +61,7 @@ const styles = StyleSheet.create({
   textInput: {
     width: "100%",
     padding: "2%",
-    borderBottomWidth: hp("0.12%"),
+    borderBottomWidth: 2,
     borderBottomColor: "#DFE1E6",
     fontFamily: "AirbnbCerealBook",
   },

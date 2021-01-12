@@ -36,49 +36,38 @@ class LoginScreen extends Component<ILoginScreen, {}> {
   render() {
     // navigation as prop
     const { navigation } = this.props;
-    return (
-      <GetDimensions
-        //rendering the dimensions from getDimensions
-        render={(dimensions) => {
-          const { window, screen } = dimensions;
-          return (
-            <View style={styles.container}>
-              <WelcomeSvg width={wp("66.35%")} height={hp("23.25%")} />
-              <Text
-                style={[styles.loginText, { fontSize: window.width * 0.096 }]}
-              >
-                Login
-              </Text>
-              <CustomTextField
-                onCallBack={this.callBack}
-                placeholder="Mobile Number"
-                style={styles.inputBox}
-              />
-              <CustomButton
-                title="Get OTP"
-                buttonType="basic"
-                onPressButton={this.onPressOTPButton}
-                style={styles.loginButtonBox}
-              />
 
-              <View style={styles.loginBottom}>
-                <Text style={styles.loginWith}>Or Login with...</Text>
-                <View style={styles.socialIconsContainer}>
-                  <FacebookSvg width={wp("14.66%")} height={hp("7.23%")} />
-                  <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
-                  <GoogleSvg width={wp("14.66%")} height={hp("7.23%")} />
-                </View>
-                <Text>
-                  <Text style={styles.newToFrappy}>New to Frappy? </Text>
-                  <Text style={styles.signUp} onPress={this.handleNavigation}>
-                    Sign up
-                  </Text>
-                </Text>
-              </View>
-            </View>
-          );
-        }}
-      />
+    return (
+      <View style={styles.container}>
+        <WelcomeSvg width={wp("66.35%")} height={hp("23.25%")} />
+        <Text style={styles.loginText}>Login</Text>
+        <CustomTextField
+          onCallBack={this.callBack}
+          placeholder="Mobile Number"
+          style={styles.inputBox}
+        />
+        <CustomButton
+          title="Get OTP"
+          buttonType="basic"
+          onPressButton={this.onPressOTPButton}
+          style={styles.loginButtonBox}
+        />
+
+        <View style={styles.loginBottom}>
+          <Text style={styles.loginWith}>Or Login with...</Text>
+          <View style={styles.socialIconsContainer}>
+            <FacebookSvg width={wp("14.66%")} height={hp("7.23%")} />
+            <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
+            <GoogleSvg width={wp("14.66%")} height={hp("7.23%")} />
+          </View>
+          <Text style={{ marginTop: hp("4.73%") }}>
+            <Text style={styles.newToFrappy}>New to Frappy? </Text>
+            <Text style={styles.signUp} onPress={this.handleNavigation}>
+              Sign up
+            </Text>
+          </Text>
+        </View>
+      </View>
     );
   }
 }
@@ -90,6 +79,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     padding: "10%",
+    flex: 1,
     backgroundColor: colors.white,
   },
   tinyLogo: {
@@ -99,33 +89,40 @@ const styles = StyleSheet.create({
   loginText: {
     color: colors.darkBlack,
     margin: "1%",
-    fontSize: 10,
+    marginTop: hp("2.56%"),
+    fontSize: hp("4.069%"),
     fontFamily: "AirbnbCerealBold",
   },
   inputBox: {
     marginTop: "7%",
   },
   loginBottom: {
-    height: "25%",
+    // height: "25%",
     display: "flex",
+    width: wp("54.66%"),
+    height: hp("24.41%"),
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: "7%",
   },
   loginButtonBox: {
     marginTop: "7%",
     marginBottom: "7%",
   },
   loginWith: {
+    fontSize: hp("2.36%"),
+    marginTop: hp("8.28%"),
+    marginBottom: hp("5.92%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.lightBlack,
   },
   newToFrappy: {
-    fontSize: 14,
+    fontSize: hp("1.842%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.lightBlack,
   },
   signUp: {
-    fontSize: 14,
+    fontSize: hp("1.842%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.orange,
   },
@@ -134,6 +131,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "60%",
+    width: wp("54.66%"),
   },
 });
