@@ -1,7 +1,7 @@
-import * as React from "react"
-import Svg, { SvgProps, Rect, G, Path, Defs, ClipPath } from "react-native-svg"
+import * as React from "react";
+import Svg, { SvgProps, Rect, G, Path, Defs, ClipPath } from "react-native-svg";
 
-function GoogleSvg(props: SvgProps|any) {
+function GoogleSvg(props: SvgProps | any) {
   return (
     <Svg
       width={55}
@@ -25,7 +25,7 @@ function GoogleSvg(props: SvgProps|any) {
         </ClipPath>
       </Defs>
     </Svg>
-  )
+  );
 }
 
-export default GoogleSvg
+export default GoogleSvg;

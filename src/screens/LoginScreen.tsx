@@ -6,6 +6,12 @@ import { colors } from "../lib/colors";
 import Svg, { SvgCssUri } from "react-native-svg";
 import WelcomeSvg from "../../assets/svgs/WelcomeSvg";
 import GetDimensions from "../components/common/GetDimensions";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  listenOrientationChange as loc,
+  removeOrientationListener as rol,
+} from "react-native-responsive-screen";
 import FacebookSvg from "../../assets/svgs/FacebookSvg";
 import TwitterSvg from "../../assets/svgs/TwitterSvg";
 import GoogleSvg from "../../assets/svgs/GoogleSvg";
@@ -37,10 +43,7 @@ class LoginScreen extends Component<ILoginScreen, {}> {
           const { window, screen } = dimensions;
           return (
             <View style={styles.container}>
-              <WelcomeSvg
-                width={window.width * 0.66}
-                height={window.width * 0.47}
-              />
+              <WelcomeSvg width={wp("66.35%")} height={hp("23.25%")} />
               <Text
                 style={[styles.loginText, { fontSize: window.width * 0.096 }]}
               >
@@ -61,18 +64,9 @@ class LoginScreen extends Component<ILoginScreen, {}> {
               <View style={styles.loginBottom}>
                 <Text style={styles.loginWith}>Or Login with...</Text>
                 <View style={styles.socialIconsContainer}>
-                  <FacebookSvg
-                width={55}
-                height={55}
-                  />
-                   <TwitterSvg
-                width={55}
-                height={55}
-                  />
-                   <GoogleSvg
-                width={55}
-                height={55}
-              />
+                  <FacebookSvg width={wp("14.66%")} height={hp("7.23%")} />
+                  <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
+                  <GoogleSvg width={wp("14.66%")} height={hp("7.23%")} />
                 </View>
                 <Text>
                   <Text style={styles.newToFrappy}>New to Frappy? </Text>
@@ -94,15 +88,11 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    flex: 1,
     alignItems: "center",
     padding: "10%",
     backgroundColor: colors.white,
-   height:"100vh"
-  
-    
   },
-   tinyLogo: {
+  tinyLogo: {
     width: "90%",
     height: "30%",
   },
@@ -116,10 +106,10 @@ const styles = StyleSheet.create({
     marginTop: "7%",
   },
   loginBottom: {
-        height: "25%",
+    height: "25%",
     display: "flex",
     alignItems: "center",
-    justifyContent:"space-between"
+    justifyContent: "space-between",
   },
   loginButtonBox: {
     marginTop: "7%",
@@ -140,11 +130,10 @@ const styles = StyleSheet.create({
     color: colors.orange,
   },
   socialIconsContainer: {
-
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width:"60%"
-  }
+    width: "60%",
+  },
 });

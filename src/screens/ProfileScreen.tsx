@@ -1,13 +1,9 @@
-import React, { Component } from "react"
-import { Text } from "react-native"
+import React, { Component } from "react";
+import { Text } from "react-native";
 
-class ProfileScreen extends Component<{},{}>
-{
-    render()
-    {
-        return (
-            <Text>ProfileScreen</Text>
-        )
-    }
+class ProfileScreen extends Component<{}, {}> {
+  render() {
+    return <Text>ProfileScreen</Text>;
+  }
 }
-export default ProfileScreen
+export default ProfileScreen;

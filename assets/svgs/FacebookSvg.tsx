@@ -1,7 +1,7 @@
-import * as React from "react"
-import Svg, { SvgProps, Rect, G, Path, Defs, ClipPath } from "react-native-svg"
+import * as React from "react";
+import Svg, { SvgProps, Rect, G, Path, Defs, ClipPath } from "react-native-svg";
 
-function FacebookSvg(props: SvgProps|any) {
+function FacebookSvg(props: SvgProps | any) {
   return (
     <Svg
       width={55}
@@ -28,7 +28,7 @@ function FacebookSvg(props: SvgProps|any) {
         </ClipPath>
       </Defs>
     </Svg>
-  )
+  );
 }
 
-export default FacebookSvg
+export default FacebookSvg;

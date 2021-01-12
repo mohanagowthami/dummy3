@@ -1,13 +1,9 @@
-import React, { Component } from "react"
-import { Text } from "react-native"
+import React, { Component } from "react";
+import { Text } from "react-native";
 
-class LuckyCardsScreen extends Component<{},{}>
-{
-    render()
-    {
-        return (
-            <Text>LuckyCardsScreen</Text>
-        )
-    }
+class LuckyCardsScreen extends Component<{}, {}> {
+  render() {
+    return <Text>LuckyCardsScreen</Text>;
+  }
 }
-export default LuckyCardsScreen
+export default LuckyCardsScreen;

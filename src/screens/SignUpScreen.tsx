@@ -1,6 +1,12 @@
+import { ScrollView } from "react-native-gesture-handler";
 import React, { Component } from "react";
 import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  listenOrientationChange as loc,
+  removeOrientationListener as rol,
+} from "react-native-responsive-screen";
 import FacebookSvg from "../../assets/svgs/FacebookSvg";
 import GoogleSvg from "../../assets/svgs/GoogleSvg";
 import TwitterSvg from "../../assets/svgs/TwitterSvg";
@@ -13,79 +19,28 @@ interface ISignUpScreen {
   navigation: any;
 }
 
-interface State {
-  windowDimensions: any;
-}
-const window = Dimensions.get("window");
-
-class SignUpScreen extends Component<ISignUpScreen, State> {
+class SignUpScreen extends Component<ISignUpScreen, {}> {
   constructor(props: ISignUpScreen) {
     super(props);
-    this.state = {
-      windowDimensions: window,
-    };
   }
-  onChange = ({ window }: any) => {
-    this.setState({ windowDimensions: window });
-  };
-
-  componentDidMount() {
-    Dimensions.addEventListener("change", this.onChange);
-  }
-
-  componentWillUnmount() {
-    Dimensions.removeEventListener("change", this.onChange);
-  }
-
-  callBack = (value: string) => {
-    console.log(value, "on call back value");
-  };
 
   onPressOTPButton = () => {};
   render() {
     const { navigation } = this.props;
-    const { windowDimensions } = this.state;
     return (
       <ScrollView>
-        <View style={[{ width: windowDimensions.width }, styles.container]}>
-          <WelcomeSvg
-            width={windowDimensions.width * 0.8}
-            height={windowDimensions.width * 0.3}
-          />
-          <Text
-            style={[
-              styles.loginText,
-              { fontSize: windowDimensions.width * 0.096 },
-            ]}
-          >
-            SignUp
-          </Text>
+        <View style={styles.container}>
+          <WelcomeSvg width={wp("66.35%")} height={hp("23.25%")} />
+          <Text style={styles.loginText}>SignUp</Text>
           <SignUpForm />
 
-          <View
-            style={[
-              styles.loginBottom,
-              {
-                width: windowDimensions.width,
-                height: windowDimensions.height * 0.25,
-              },
-            ]}
-          >
+          <View style={styles.loginBottom}>
             <Text style={styles.loginWith}>Or Login with...</Text>
             <View style={styles.socialIconsContainer}>
-                  <FacebookSvg
-                width={55}
-                height={55}
-                  />
-                   <TwitterSvg
-                 width={55}
-                height={55}
-                  />
-                   <GoogleSvg
-                 width={55}
-                height={55}
-              />
-                </View>
+              <FacebookSvg width={wp("14.66%")} height={hp("6.19")} />
+              <TwitterSvg width={wp("14.66%")} height={hp("6.19")} />
+              <GoogleSvg width={wp("14.66%")} height={hp("6.19")} />
+            </View>
             <Text>
               <Text style={styles.haveAnAccount}>Already have an account?</Text>
               <Text
@@ -109,20 +64,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     padding: "10%",
-    paddingBottom: 0,
+    paddingBottom: wp("0%"),
   },
 
   loginText: {
     color: colors.darkBlack,
     margin: "1%",
-
-    fontSize: 36,
+    fontSize: hp("4.069%"),
     fontFamily: "AirbnbCerealBold",
   },
 
   loginBottom: {
     display: "flex",
-
+    width: wp("100%"),
+    height: hp("25%"),
     backgroundColor: "#fff",
     marginBottom: "7%",
 
@@ -134,26 +89,25 @@ const styles = StyleSheet.create({
     marginBottom: "7%",
   },
   loginWith: {
-    fontSize: 18,
+    fontSize: hp("2.02%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.lightBlack,
   },
   haveAnAccount: {
-    fontSize: 14,
+    fontSize: hp("1.576%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.lightBlack,
   },
   signIn: {
-    fontSize: 14,
+    fontSize: hp("1.576%"),
     fontFamily: "AirbnbCerealBook",
     color: colors.orange,
   },
   socialIconsContainer: {
-
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width:"60%"
-  }
+    width: wp("54.66%"),
+  },
 });
