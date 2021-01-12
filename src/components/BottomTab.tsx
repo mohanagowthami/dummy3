@@ -9,10 +9,10 @@ import ProfileScreen from "../screens/ProfileScreen";
 import { colors } from "../lib/colors";
 import * as Svg from "react-native-svg";
 import ProfileSvg from "../../assets/svgs/ProfileSvg";
-import CalenderSvg from "../../assets/svgs/calendarSvg";
+import CalenderSvg from "../../assets/svgs/CalendarSvg";
 import HappySvg from "../../assets/svgs/HappySvg";
 import HomeSvg from "../../assets/svgs/HomeSvg";
-import DirectionSvg from "../../assets/svgs/directionSvg";
+import DirectionSvg from "../../assets/svgs/DirectionSvg";
 
 const Tab = createBottomTabNavigator();
 class BottomTab extends Component<{}, {}> {
@@ -39,7 +39,12 @@ class BottomTab extends Component<{}, {}> {
           options={{
             tabBarLabel: "Explore",
             tabBarIcon: ({ color }) => (
-              <DirectionSvg name="explore" fill={color} width={20} height={20} />
+              <DirectionSvg
+                name="explore"
+                fill={color}
+                width={20}
+                height={20}
+              />
             ),
           }}
         />

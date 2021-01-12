@@ -1,7 +1,7 @@
-import * as React from "react"
-import Svg, { Path } from "react-native-svg"
+import * as React from "react";
+import Svg, { Path } from "react-native-svg";
 
-function WelcomeSvg(props:any) {
+function WelcomeSvg(props: any) {
   return (
     <Svg
       width={251}
@@ -1130,7 +1130,7 @@ function WelcomeSvg(props:any) {
         strokeLinejoin="round"
       />
     </Svg>
-  )
+  );
 }
 
-export default WelcomeSvg
+export default WelcomeSvg;

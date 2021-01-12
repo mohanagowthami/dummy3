@@ -1,13 +1,8 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-Dimensions,
-} from "react-native";
+import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import WelcomeSvg from "../../assets/svgs/WelcomeSvg";
 import SignUpForm from "../forms/SignUpForm";
 import { colors } from "../lib/colors";
 
@@ -50,15 +45,18 @@ class SignUpScreen extends Component<ISignUpScreen, State> {
     return (
       <ScrollView>
         <View style={[{ width: windowDimensions.width }, styles.container]}>
-          <Image
-            style={{
-              width: windowDimensions.width * 0.8,
-              height: windowDimensions.height * 0.3,
-            }}
-            source={require("../../assets/welcome.png")}
-            resizeMode={"contain"}
+          <WelcomeSvg
+            width={windowDimensions.width * 0.8}
+            height={windowDimensions.width * 0.3}
           />
-          <Text style={styles.loginText}>SignUp</Text>
+          <Text
+            style={[
+              styles.loginText,
+              { fontSize: windowDimensions.width * 0.096 },
+            ]}
+          >
+            SignUp
+          </Text>
           <SignUpForm />
 
           <View
