@@ -1,7 +1,7 @@
 import * as React from "react";
-import Svg, { Path } from "react-native-svg";
+import Svg, { SvgProps, Path } from "react-native-svg";
 
-function WelcomeSvg(props: any) {
+function WelcomeSvg(props: SvgProps | any) {
   return (
     <Svg
       width={251}

@@ -5,6 +5,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel'
 import NextSvg from '../../assets/svgs/NextSvg'
 import OnBoardOneSvg from '../../assets/svgs/OnBoardOneSvg'
 import OnBoardTwoSvg from '../../assets/svgs/OnBoardTwoSvg'
+import OnBoardThreeSvg from '../../assets/svgs/OnBoardThreeSvg'
 import { colors } from '../lib/colors'
 import {
     widthPercentageToDP as wp,
@@ -46,7 +47,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                     backgroundColor: colors.orange,
                 },
                 {
-                    SVG: OnBoardOneSvg,
+                    SVG: OnBoardThreeSvg,
                     title: 'Localize',
                     subHeading: 'Explore, experience and enjoy.',
                     backgroundColor: colors.yellow,
@@ -66,8 +67,8 @@ class OnboardingScreens extends React.Component<Props, State> {
                     { backgroundColor: backgroundColor, paddingTop: '25%' },
                 ]}
             >
-                <View style={{ height: '50%', paddingBottom: '5%' }}>
-                    <OnBoardOneSvg width={200} height={200} />
+                <View style={{ /*  height: '50%', */ paddingBottom: '5%' }}>
+                    <SVG width={wp('99.51%')} height={hp('36.18%')} />
                 </View>
 
                 <View style={styles.bottomWrapper}>
@@ -81,12 +82,17 @@ class OnboardingScreens extends React.Component<Props, State> {
                     </View>
 
                     <View style={styles.ItemBottomContainer}>
-                        <NextSvg />
+                        <NextSvg
+                            onPress={() => console.log('Next')}
+                            left={wp('42.66%')}
+                        />
                         <Text
                             style={styles.skipText}
-                            // onPress={() => this.props.navigation('signUp')}
+                            onPress={() =>
+                                this.props.navigation.navigate('signUp')
+                            }
                         >
-                            skip
+                            Skip
                         </Text>
                     </View>
                 </View>
@@ -103,29 +109,21 @@ class OnboardingScreens extends React.Component<Props, State> {
                     dotsLength={carouselItems.length}
                     activeDotIndex={activeIndex}
                     dotStyle={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 5,
+                        width: wp('4.16%'),
+                        height: hp('1.18%'),
+                        borderRadius: hp('7.23%'),
                         marginHorizontal: 0,
-                        backgroundColor: 'blue',
+                        backgroundColor: 'white',
                     }}
                     inactiveDotOpacity={0.4}
                     inactiveDotScale={0.8}
-                />
-                <View
-                    style={{
-                        backgroundColor: 'white',
-                        alignSelf: 'center',
-                        borderRadius: 15,
-                        borderColor: 'black',
-                        borderWidth: 1,
-                        padding: 5,
+                    inactiveDotStyle={{
+                        width: wp('2.4%'),
+                        height: hp('1.18%'),
+                        borderRadius: hp('0.59%'),
+                        marginHorizontal: 0,
                     }}
-                >
-                    <Text>
-                        {activeIndex + 1}/{carouselItems.length}
-                    </Text>
-                </View>
+                />
             </View>
         )
     }
@@ -143,7 +141,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                         itemWidth={wp('100%')}
                         renderItem={this._renderItem}
                         onSnapToItem={(index: number) => {
-                            console.log(index, 'onSnapToItem')
+                            console.log(index + 1)
                             currentObject.setState({
                                 ...currentObject.state,
                                 activeIndex: index,
@@ -151,7 +149,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                         }}
                     />
                 </View>
-                {/* {this.pagination} */}
+                {this.pagination}
             </SafeAreaView>
         )
     }
@@ -161,10 +159,10 @@ export default OnboardingScreens
 
 const styles = StyleSheet.create({
     ItemContainer: {
+        display: 'flex',
         padding: '5%',
         width: '100%',
         height: '100%',
-        display: 'flex',
     },
     ItemBottomContainer: {
         display: 'flex',
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
 
-        marginTop: '40%',
+        marginTop: '30%',
     },
     skipText: {
         fontFamily: 'AirbnbCerealBold',

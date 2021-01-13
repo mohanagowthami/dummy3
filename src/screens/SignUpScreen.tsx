@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
         fontSize: hp('2.02%'),
         fontFamily: 'AirbnbCerealBook',
         color: colors.lightBlack,
+        //marginTop: hp("4.61%"),
     },
     haveAnAccount: {
         fontSize: hp('1.576%'),

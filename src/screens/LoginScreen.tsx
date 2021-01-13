@@ -84,6 +84,10 @@ const styles = StyleSheet.create({
     container: {
         display: 'flex',
         alignItems: 'center',
+        paddingTop: hp('3.68%'),
+        paddingRight: wp('7.4%'),
+        paddingLeft: wp('7.2%'),
+        paddingBottom: hp('5.52%'),
         padding: '10%',
         flex: 1,
         backgroundColor: colors.white,
@@ -101,6 +105,7 @@ const styles = StyleSheet.create({
     },
     inputBox: {
         marginTop: '7%',
+        //marginBottom: hp("5%"),
     },
     loginBottom: {
         // height: "25%",
