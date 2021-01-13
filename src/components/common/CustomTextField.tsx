@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import { TextInput, StyleSheet } from "react-native";
 
 interface ICustomTextFieldProps {
-  onCallBack: (value: any) => void;
+  onCallBack?: (value: any) => void;
   autoFocus?: boolean;
   placeholder?: string;
   style?: any;
   value?: string;
   handleChange?: () => void;
+  maxLength?:number
 }
 
 interface ICustomTextFieldState {
@@ -32,7 +33,7 @@ class CustomTextField extends Component<
 
   handleBlur = () => {
     console.log(this.state.text, "text123");
-    this.props.onCallBack(this.state.text);
+    this.props.onCallBack&&this.props.onCallBack(this.state.text);
   };
   render() {
     const { style, value, handleChange } = this.props;
@@ -50,6 +51,7 @@ class CustomTextField extends Component<
           onChangeText={handleChange ? handleChange : this.handleChange}
           value={value ? value : this.state.text}
           onBlur={this.handleBlur}
+          
         />
       </>
     );

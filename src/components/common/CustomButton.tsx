@@ -1,6 +1,11 @@
 import React, { Component, ReactNode } from "react";
 import { Pressable, View, StyleSheet, Text } from "react-native";
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  listenOrientationChange as loc,
+  removeOrientationListener as rol,
+} from "react-native-responsive-screen";
 interface ICustomButtonProps {
   children?: ReactNode;
   buttonType?: string;
@@ -15,7 +20,7 @@ class CustomButton extends Component<ICustomButtonProps, {}> {
 
   renderBasicButton = () => {
     return (
-      <View style={styles.basicButton}>
+      <View style={[styles.basicButton,this.props.style]}>
         <Text style={styles.buttonTitle}>{this.props.title}</Text>
       </View>
     );
@@ -26,7 +31,7 @@ class CustomButton extends Component<ICustomButtonProps, {}> {
     return (
       <Pressable
         onPress={this.handlePress}
-        style={this.props.buttonType === "basic" ? styles.pressButton : null}
+        style={buttonType === "basic" && { width: "100%" }}
       >
         {buttonType === "basic" ? this.renderBasicButton() : children}
       </Pressable>
@@ -37,25 +42,22 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   basicButton: {
-    // backgroundColor: "#FF6C65",
-    backgroundColor: "black",
+    backgroundColor: "#FF6C65",
+
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
-
+    width: wp("85.33%"),
     margin: "5%",
-    marginLeft: 0,
-    marginRight: 0,
-    borderRadius: 10,
+    marginLeft: wp("0%"),
+    marginRight: wp("0%"),
+    borderRadius: wp("2.66%"),
     padding: "5%",
   },
-  pressButton: {
-    width: "100%",
-  },
+ 
   buttonTitle: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: hp("1.576%"),
   },
 });

@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Text } from "react-native";
+import React, { Component } from 'react'
+import { Text } from 'react-native'
 
 class ExploreScreen extends Component<{}, {}> {
-  render() {
-    return <Text>ExploreScreen</Text>;
-  }
+    render() {
+        return <Text>ExploreScreen</Text>
+    }
 }
-export default ExploreScreen;
+export default ExploreScreen
