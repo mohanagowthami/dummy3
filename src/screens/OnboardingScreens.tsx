@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Text, View, SafeAreaView, StyleSheet } from 'react-native'
+import { Text, View, SafeAreaView, StyleSheet, ScrollView } from 'react-native'
 
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import NextSvg from '../../assets/svgs/NextSvg'
@@ -10,8 +10,11 @@ import { colors } from '../lib/colors'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
 
+// inteface of carousel layout
 interface CarouselItem {
     SVG: any
     title: string
@@ -19,20 +22,25 @@ interface CarouselItem {
     backgroundColor: string
 }
 
+//inerface of state
 interface State {
     activeIndex: number
     carouselItems: Array<CarouselItem>
 }
 
+// interface to pass navigation
 interface Props {
     navigation: any
 }
+
+// Main Class
 class OnboardingScreens extends React.Component<Props, State> {
     carousel: any
     constructor(props: any) {
-        super(props)
+        super(props) // getting props
         this.state = {
             activeIndex: 0,
+            // data to be put up on onboarding screens
             carouselItems: [
                 {
                     SVG: OnBoardOneSvg,
@@ -55,20 +63,93 @@ class OnboardingScreens extends React.Component<Props, State> {
             ],
         }
     }
+    _isMounted = false
+    // check mounting of component
+    componentDidMount() {
+        this._isMounted = true
+        loc(this)
+    }
+    componentWillUnMount() {
+        this._isMounted = false
+        rol()
+    }
+    //navigation function
+    _handleNavigation = () => {
+        console.log('Navigate')
+        this.props.navigation.navigate('login')
+    }
 
+    // function to render carousel
     _renderItem({ item, index }: any) {
-        const { SVG, title, subHeading, backgroundColor } = item
-        // const { navigation } = this.props
+        const styles = StyleSheet.create({
+            ItemContainer: {
+                display: 'flex',
+                padding: '5%',
+                width: wp('100%'),
+                height: hp('100%'),
+            },
+            ItemBottomContainer: {
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: '30%', //40%
+            },
+            skipText: {
+                fontFamily: 'AirbnbCerealBold',
+                color: colors.white,
+                fontSize: wp('4%'),
+                lineHeight: wp('5%'),
+            },
+            titleContainer: {},
+            line: {
+                height: wp('10%'),
+                width: wp('1%'),
+                backgroundColor: colors.white,
+                marginRight: wp('3%'),
+            },
+            lineContainer: {
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+            },
+            titleText: {
+                fontFamily: 'AirbnbCerealBold',
+                color: colors.white,
+                fontSize: wp('5%'),
+                lineHeight: wp('6%'),
+            },
+            subHeadingText: {
+                fontFamily: 'AirbnbCerealBook',
+                color: colors.white,
+                fontSize: wp('5%'),
+                lineHeight: wp('7%'),
+                marginTop: wp('5%'),
+                marginRight: wp('5%'),
+            },
+            bottomWrapper: {
+                display: 'flex',
+                justifyContent: 'space-between',
+            },
+        })
 
+        //carousel data as props to item
+        const { SVG, title, subHeading, backgroundColor } = item
         return (
-            <View
+            <ScrollView
                 style={[
                     styles.ItemContainer,
                     { backgroundColor: backgroundColor, paddingTop: '25%' },
                 ]}
             >
                 <View style={{ /*  height: '50%', */ paddingBottom: '5%' }}>
-                    <SVG width={wp('99.51%')} height={hp('36.18%')} />
+                    <SVG
+                        width={wp('99.51%')}
+                        height={hp('36.18%')}
+                        // viewBox={`0 0 ${wp('99.51%')} ${hp('36.18%')}}`}
+                        // viewBox={`0 0 ${{width}} ${hp('36.18%')}}`}
+                    />
                 </View>
 
                 <View style={styles.bottomWrapper}>
@@ -80,7 +161,6 @@ class OnboardingScreens extends React.Component<Props, State> {
                         </View>
                         <Text style={styles.subHeadingText}>{subHeading}</Text>
                     </View>
-
                     <View style={styles.ItemBottomContainer}>
                         <NextSvg
                             onPress={() => console.log('Next')}
@@ -88,15 +168,13 @@ class OnboardingScreens extends React.Component<Props, State> {
                         />
                         <Text
                             style={styles.skipText}
-                            onPress={() =>
-                                this.props.navigation.navigate('signUp')
-                            }
+                            // onPress={() => this.props.navigation('signUp')}
                         >
                             Skip
                         </Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 
@@ -104,7 +182,7 @@ class OnboardingScreens extends React.Component<Props, State> {
         const { activeIndex, carouselItems } = this.state
 
         return (
-            <View style={{ position: 'absolute', bottom: 0 }}>
+            <ScrollView style={{ position: 'absolute', bottom: 0 }}>
                 <Pagination
                     dotsLength={carouselItems.length}
                     activeDotIndex={activeIndex}
@@ -124,15 +202,17 @@ class OnboardingScreens extends React.Component<Props, State> {
                         marginHorizontal: 0,
                     }}
                 />
-            </View>
+            </ScrollView>
         )
     }
 
     render() {
+        // const { navigation } = this.props
         const currentObject = this
+
         return (
             <SafeAreaView>
-                <View>
+                <ScrollView>
                     <Carousel
                         layout={'default'}
                         ref={(ref: any) => (this.carousel = ref)}
@@ -142,71 +222,26 @@ class OnboardingScreens extends React.Component<Props, State> {
                         renderItem={this._renderItem}
                         onSnapToItem={(index: number) => {
                             console.log(index + 1)
+                            // console.log(navigate('login'))
                             currentObject.setState({
                                 ...currentObject.state,
                                 activeIndex: index,
                             })
                         }}
                     />
-                </View>
-                {this.pagination}
+                    {/* <Text
+                        style={{
+                            paddingTop: 30,
+                        }}
+                        onPress={this._handleNavigation}
+                    >
+                        Skip
+                    </Text> */}
+                    {this.pagination}
+                </ScrollView>
             </SafeAreaView>
         )
     }
 }
 
 export default OnboardingScreens
-
-const styles = StyleSheet.create({
-    ItemContainer: {
-        display: 'flex',
-        padding: '5%',
-        width: '100%',
-        height: '100%',
-    },
-    ItemBottomContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-
-        marginTop: '30%',
-    },
-    skipText: {
-        fontFamily: 'AirbnbCerealBold',
-        color: colors.white,
-        fontSize: wp('4%'),
-        lineHeight: wp('5%'),
-    },
-    titleContainer: {},
-    line: {
-        height: wp('10%'),
-        width: wp('1%'),
-        backgroundColor: colors.white,
-        marginRight: wp('3%'),
-    },
-    lineContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-    },
-    titleText: {
-        fontFamily: 'AirbnbCerealBold',
-        color: colors.white,
-        fontSize: wp('5%'),
-        lineHeight: wp('6%'),
-    },
-    subHeadingText: {
-        fontFamily: 'AirbnbCerealBook',
-        color: colors.white,
-        fontSize: wp('5%'),
-        lineHeight: wp('7%'),
-        marginTop: wp('5%'),
-        marginRight: wp('5%'),
-    },
-    bottomWrapper: {
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-})

@@ -7,7 +7,6 @@ import Svg, {
     LinearGradient,
     Stop,
 } from 'react-native-svg'
-
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg

@@ -22,7 +22,6 @@ export default function App() {
     if (!loaded) {
         return <Text>Loading</Text>
     }
-
     return (
         <NavigationContainer>
             <Stack.Navigator>
