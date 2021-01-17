@@ -1,63 +1,62 @@
-import React, { Component, ReactNode } from "react";
-import { Pressable, View, StyleSheet, Text } from "react-native";
+import React, { Component, ReactNode } from 'react'
+import { Pressable, View, StyleSheet, Text } from 'react-native'
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-  listenOrientationChange as loc,
-  removeOrientationListener as rol,
-} from "react-native-responsive-screen";
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
+} from 'react-native-responsive-screen'
+import { colors } from '../../lib/colors'
 interface ICustomButtonProps {
-  children?: ReactNode;
-  buttonType?: string;
-  title?: string;
-  onPressButton: () => void;
-  style?: any;
+    title?: string
+    onPressButton: () => void
+    buttonStyles?: any
+    buttonTextStyles?: any
 }
 class CustomButton extends Component<ICustomButtonProps, {}> {
-  handlePress = () => {
-    this.props.onPressButton();
-  };
+    handlePress = () => {
+        this.props.onPressButton()
+    }
 
-  renderBasicButton = () => {
-    return (
-      <View style={[styles.basicButton,this.props.style]}>
-        <Text style={styles.buttonTitle}>{this.props.title}</Text>
-      </View>
-    );
-  };
+    renderBasicButton = () => {
+        const { buttonStyles, buttonTextStyles, title } = this.props
+        return (
+            <View style={[styles.basicButton, buttonStyles]}>
+                <Text style={[styles.buttonTitle, buttonTextStyles]}>
+                    {title}
+                </Text>
+            </View>
+        )
+    }
 
-  render() {
-    const { children, buttonType } = this.props;
-    return (
-      <Pressable
-        onPress={this.handlePress}
-        style={buttonType === "basic" && { width: "100%" }}
-      >
-        {buttonType === "basic" ? this.renderBasicButton() : children}
-      </Pressable>
-    );
-  }
+    render() {
+        return (
+            <Pressable onPress={this.handlePress}>
+                {this.renderBasicButton()}
+            </Pressable>
+        )
+    }
 }
-export default CustomButton;
+export default CustomButton
 
 const styles = StyleSheet.create({
-  basicButton: {
-    backgroundColor: "#FF6C65",
+    basicButton: {
+        backgroundColor: '#FF6C65',
 
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: wp("85.33%"),
-    margin: "5%",
-    marginLeft: wp("0%"),
-    marginRight: wp("0%"),
-    borderRadius: wp("2.66%"),
-    padding: "5%",
-  },
- 
-  buttonTitle: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: hp("1.576%"),
-  },
-});
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: wp('100%'),
+        margin: '5%',
+        marginLeft: wp('0%'),
+        marginRight: wp('0%'),
+        borderRadius: wp('2.66%'),
+        padding: '5%',
+    },
+
+    buttonTitle: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: hp('1.576%'),
+    },
+})
