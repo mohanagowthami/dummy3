@@ -27,7 +27,6 @@ class LoginScreen extends Component<ILoginScreen, {}> {
 
     // navigate to signUp page
     handleNavigation = () => {
-        console.log('signUp')
         this.props.navigation.navigate('signUp')
     }
 

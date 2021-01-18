@@ -184,7 +184,8 @@ class PickYourChoice extends Component<IProps, IState> {
             },
         })
         const { category, travelList, shoppingList } = this.state
-        console.log('on change potrait')
+        console.log('auto rotating')
+
         return (
             <SafeAreaView style={styles.container}>
                 <Text style={styles.titleText}>
@@ -274,7 +275,6 @@ class PickYourChoice extends Component<IProps, IState> {
                         >
                             {foodTypesList.map((Svg: any, index: number) => {
                                 const Item = Svg
-                                console.log(Item, 'item')
                                 return (
                                     <View
                                         key={index}
@@ -321,9 +321,15 @@ class PickYourChoice extends Component<IProps, IState> {
                                             }
                                         >
                                             {ele.checked ? (
-                                                <CheckedSvg />
+                                                <CheckedSvg
+                                                    width={wp('6.5%')}
+                                                    height={wp('6.5%')}
+                                                />
                                             ) : (
-                                                <UncheckedSvg />
+                                                <UncheckedSvg
+                                                    width={wp('6.5%')}
+                                                    height={wp('6.5%')}
+                                                />
                                             )}
                                         </Pressable>
                                     </View>
@@ -360,9 +366,15 @@ class PickYourChoice extends Component<IProps, IState> {
                                             }
                                         >
                                             {ele.checked ? (
-                                                <CheckedSvg />
+                                                <CheckedSvg
+                                                    width={wp('6.5%')}
+                                                    height={wp('6.5%')}
+                                                />
                                             ) : (
-                                                <UncheckedSvg />
+                                                <UncheckedSvg
+                                                    width={wp('6.5%')}
+                                                    height={wp('6.5%')}
+                                                />
                                             )}
                                         </Pressable>
                                     </View>
