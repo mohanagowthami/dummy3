@@ -114,7 +114,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 marginTop: 0,
             },
             customTextFieldStyles: {
-                // width: wp('13.33%'),
+                width: wp('13.33%'),
                 borderBottomColor: colors.darkGrey,
             },
         })
