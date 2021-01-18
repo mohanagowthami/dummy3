@@ -143,7 +143,12 @@ class OnboardingScreens extends React.Component<Props, State> {
                     { backgroundColor: backgroundColor, paddingTop: '25%' },
                 ]}
             >
-                <View style={{ /*  height: '50%', */ paddingBottom: '5%' }}>
+                <View
+                    style={{
+                        /*  height: '50%', */ paddingBottom: '5%',
+                        paddingLeft: '0%',
+                    }}
+                >
                     <SVG
                         width={wp('99.51%')}
                         height={hp('36.18%')}

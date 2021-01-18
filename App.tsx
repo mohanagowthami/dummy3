@@ -7,6 +7,7 @@ import * as Font from 'expo-font'
 import SignUpScreen from './src/screens/SignUpScreen'
 import BottomTab from './src/components/BottomTab'
 import OnboardingScreens from './src/screens/OnboardingScreens'
+import PickYourChoice from './src/screens/PickYourChoice'
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -16,6 +17,8 @@ export default function App() {
     const [loaded] = Font.useFonts({
         AirbnbCerealBold: require('./assets/fonts/AirbnbCerealBold.ttf'),
         AirbnbCerealBook: require('./assets/fonts/AirbnbCerealBook.ttf'),
+        ArchivoRegular: require('./assets/fonts/ArchivoRegular.ttf'),
+        ArchivoBold: require('./assets/fonts/ArchivoBold.ttf'),
     })
 
     // conditioning to load fonts
@@ -26,13 +29,18 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
-                    name="onBoarding"
-                    component={OnboardingScreens}
+                    name="pickYourChoice"
+                    component={PickYourChoice}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
                     name="login"
                     component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="onBoarding"
+                    component={OnboardingScreens}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
