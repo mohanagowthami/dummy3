@@ -23,14 +23,11 @@ import {
 
 const Tab = createBottomTabNavigator()
 class BottomTab extends React.Component<{}, {}> {
-    _isMounted = false
     // check mounting of component
     componentDidMount() {
-        this._isMounted = true
         loc(this)
     }
     componentWillUnMount() {
-        this._isMounted = false
         rol()
     }
     render() {
@@ -48,7 +45,7 @@ class BottomTab extends React.Component<{}, {}> {
                         tabBarLabel: 'Home',
                         tabBarIcon: ({ color }) => (
                             <HomeSvg
-                                name="homme"
+                                name="home"
                                 fill={color}
                                 width={wp('5.2%')}
                                 height={hp('2.8%')}

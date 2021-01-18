@@ -75,9 +75,8 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                         />
                         <CustomButton
                             title="Get OTP"
-                            buttonType="basic"
                             onPressButton={handleSubmit}
-                            style={styles.getOTPButton}
+                            buttonStyles={styles.getOTPButton}
                         />
                     </View>
                 )}
