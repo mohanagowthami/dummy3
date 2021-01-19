@@ -31,7 +31,7 @@ interface State {
     modalVisible: any
 }
 class LoginScreen extends React.Component<ILoginScreen, State> {
-    _isMounted = false
+    _isMounted: boolean
     inputRef: any
     constructor(props: ILoginScreen) {
         super(props)
@@ -39,6 +39,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             modalVisible: false,
         }
         this.inputRef = Array(4).fill(React.createRef())
+        this._isMounted = false
     }
     componentDidMount() {
         this._isMounted = true
@@ -50,7 +51,9 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         rol()
     }
     // callBack function
-    callBack = (value: string) => console.log(value, 'on call back value')
+    callBack = (value: string) => {
+        console.log(value, 'on call back value')
+    }
 
     // navigate to signUp page
     handleNavigation = () => {
@@ -262,9 +265,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         })
 
         return (
-            <ScrollView
-                style={{ display: 'flex', flex: 1, backgroundColor: 'white' }}
-            >
+            <ScrollView>
                 {this.state.modalVisible && (
                     <View>
                         <Modal

@@ -1,12 +1,14 @@
 import * as React from 'react'
+import { LogBox } from 'react-native'
 import Svg, {
     SvgProps,
     G,
-    Path,
     Defs,
     LinearGradient,
     Stop,
+    Path,
 } from 'react-native-svg'
+/* SVGR has dropped some elements not supported by react-native-svg: title */
 
 function OnBoardTwoSvg(props: SvgProps | any) {
     return (

@@ -11,7 +11,7 @@ import HappySvg from './HappySvg'
 import HomeSvg from './HomeSvg'
 import LocalMarketsSvg from './LocalMarketsSvg'
 import MallsSvg from './MallsSvg'
-import WorkshipSvg from './WorkshipSvg'
+import WorshipSvg from './WorshipSvg'
 import SightSvg from './SightSvg'
 import NorthIndianSvg from './NorthIndianSvg'
 import SouthIndianSvg from './SouthIndianSvg'
@@ -20,6 +20,7 @@ import ContinentalSvg from './ContinentalSvg'
 import BakerySvg from './BakerySvg'
 import LocalDeliciousSvg from './LocalDeliciousSvg'
 import UncheckedSvg from './UncheckedSvg'
+
 export {
     AdventureSvg,
     CalendarSvg,
@@ -33,7 +34,7 @@ export {
     HomeSvg,
     LocalMarketsSvg,
     MallsSvg,
-    WorkshipSvg,
+    WorshipSvg,
     SightSvg,
     NorthIndianSvg,
     SouthIndianSvg,

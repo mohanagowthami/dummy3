@@ -139,7 +139,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         })
         console.log(this.inputRef, 'inputRef')
         return (
-            <View style={styles.modalContainer}>
+            <ScrollView>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
                 <Text style={styles.modalDescription}>
                     Enter the OTP you received to{' '}
@@ -182,7 +182,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                     Did’t receive code?
                     <Text style={styles.resendOTP}> Resend OTP</Text>
                 </Text>
-            </View>
+            </ScrollView>
         )
     }
     // Modal enabling function => True or False
@@ -281,7 +281,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                         />
                         <Text style={styles.loginText}>SignUp</Text>
                         <SignUpForm onPressGetOTP={this.onPressGetOTP} />
-
                         <View style={[styles.loginBottom]}>
                             <Text style={styles.loginWith}>
                                 Or Login with...

@@ -1,7 +1,15 @@
+import { ScrollView } from 'react-native-gesture-handler'
 // react
 import React, { Component } from 'react'
 // react-native
-import { View, StyleSheet, Text, Pressable, SafeAreaView } from 'react-native'
+import {
+    View,
+    StyleSheet,
+    Text,
+    Pressable,
+    SafeAreaView,
+    Image,
+} from 'react-native'
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
@@ -15,7 +23,7 @@ import CustomButton from '../components/common/CustomButton'
 import { colors } from '../lib/colors'
 // Svgs
 import {
-    WorkshipSvg,
+    WorshipSvg,
     AdventureSvg,
     SightSvg,
     HangoutsSvg,
@@ -31,7 +39,6 @@ import {
     CheckedSvg,
     UncheckedSvg,
 } from '../../assets/svgs/index'
-import { ScrollView } from 'react-native-gesture-handler'
 
 interface IProps {
     navigation: any
@@ -67,13 +74,13 @@ export const travelList = [
     {
         name: 'Worship',
         checked: false,
-        Svg: WorkshipSvg,
+        Svg: WorshipSvg,
     },
 ]
 
 export const foodTypesList = [
-    NorthIndianSvg,
     SouthIndianSvg,
+    NorthIndianSvg,
     ChineseSvg,
     ContinentalSvg,
     LocalDeliciousSvg,
@@ -86,6 +93,7 @@ export const shoppingList = [
     { Svg: HandicraftsSvg, name: 'Handicrafts', checked: false },
 ]
 class PickYourChoice extends Component<IProps, IState> {
+    _isMounted = false
     constructor(props: IProps) {
         super(props)
         this.state = {
@@ -96,10 +104,12 @@ class PickYourChoice extends Component<IProps, IState> {
     }
 
     componentDidMount() {
+        this._isMounted = true
         loc(this)
     }
 
     componentWillUnMount() {
+        this._isMounted = false
         rol()
     }
 
@@ -137,9 +147,10 @@ class PickYourChoice extends Component<IProps, IState> {
                 paddingTop: wp('7%'),
             },
             titleText: {
-                fontFamily: 'AirbnbCerealBook',
-                fontWeight: '400',
-                fontSize: wp('5%'),
+                fontFamily: 'ArchivoRegular',
+                // fontWeight: '400',
+                fontWeight: 'normal',
+                fontSize: wp('6%'),
                 lineHeight: wp('6%'),
             },
             buttonsContainer: {
@@ -150,7 +161,7 @@ class PickYourChoice extends Component<IProps, IState> {
             },
             smallButton: {
                 width: wp('30%'),
-                borderRadius: wp('3.3%'),
+                borderRadius: wp('5.6%'), //3.3%
                 marginTop: wp('5.3%'),
                 paddingVertical: wp('2.5%'),
             },
@@ -175,11 +186,11 @@ class PickYourChoice extends Component<IProps, IState> {
                 marginLeft: hp('4%'),
             },
             EvenItem: {
-                marginVertical: wp('1%'),
+                // marginVertical: wp('1%'),
             },
             oddItem: {
-                marginVertical: wp('1%'),
-                marginRight: wp('1%'),
+                // marginVertical: wp('1%'),
+                // marginRight: wp('1%'),
             },
             buttonTextStyles: {
                 fontFamily: 'AirbnbCerealBook',
@@ -188,206 +199,221 @@ class PickYourChoice extends Component<IProps, IState> {
             },
         })
         const { category, travelList, shoppingList } = this.state
-        console.log('on change potrait')
+        // console.log('on change potrait')
         return (
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.titleText}>
-                    {this.state.category === 'food'
-                        ? 'Gourmet'
-                        : this.state.category === 'travel'
-                        ? 'Explore'
-                        : 'Memories'}
-                </Text>
+            <ScrollView>
+                <SafeAreaView style={styles.container}>
+                    {/* Title for pick your choice */}
+                    <Text style={styles.titleText}>
+                        {this.state.category === 'food'
+                            ? 'Gourmet'
+                            : this.state.category === 'travel'
+                            ? 'Explore'
+                            : 'Memories'}
+                    </Text>
+                    {/* Choice */}
+                    <View style={styles.buttonsContainer}>
+                        <CustomButton
+                            onPressButton={() => this.onPressButton('food')}
+                            title="Food"
+                            buttonStyles={[
+                                styles.smallButton,
+                                {
+                                    backgroundColor:
+                                        this.state.category !== 'food'
+                                            ? 'rgba(255,108,101,0.2)'
+                                            : colors.orange,
+                                },
+                            ]}
+                            buttonTextStyles={[
+                                styles.buttonTextStyles,
+                                {
+                                    color:
+                                        this.state.category !== 'food'
+                                            ? colors.orange
+                                            : colors.white,
+                                },
+                            ]}
+                        />
+                        <CustomButton
+                            onPressButton={() => this.onPressButton('travel')}
+                            title="Travel"
+                            buttonStyles={[
+                                styles.smallButton,
+                                {
+                                    backgroundColor:
+                                        this.state.category !== 'travel'
+                                            ? 'rgba(253,210,106,0.2)'
+                                            : colors.yellow,
+                                },
+                            ]}
+                            buttonTextStyles={[
+                                {
+                                    color:
+                                        this.state.category !== 'travel'
+                                            ? colors.yellow
+                                            : colors.white,
+                                },
+                                styles.buttonTextStyles,
+                            ]}
+                        />
+                        <CustomButton
+                            onPressButton={() => this.onPressButton('shopping')}
+                            title="Shopping"
+                            buttonStyles={[
+                                styles.smallButton,
+                                {
+                                    backgroundColor:
+                                        this.state.category !== 'shopping'
+                                            ? 'rgba(102,197,218,0.3)'
+                                            : colors.skyBlue,
+                                },
+                            ]}
+                            buttonTextStyles={[
+                                {
+                                    color:
+                                        this.state.category !== 'shopping'
+                                            ? colors.skyBlue
+                                            : colors.white,
+                                },
+                                styles.buttonTextStyles,
+                            ]}
+                        />
+                    </View>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {category === 'food' ? (
+                            <View
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    flexWrap: 'wrap',
+                                }}
+                            >
+                                {foodTypesList.map(
+                                    (Svg: any, index: number) => {
+                                        // const Item = Svg
+                                        // console.log(Item, 'item')
+                                        return (
+                                            <View
+                                                key={index}
+                                                style={
+                                                    index % 2 === 0
+                                                        ? styles.EvenItem
+                                                        : styles.oddItem
+                                                }
+                                            >
+                                                <Svg
+                                                    width={wp('43.73%')}
+                                                    height={hp('21.57%')}
+                                                />
+                                            </View>
+                                        )
+                                    }
+                                )}
+                            </View>
+                        ) : category === 'travel' ? (
+                            <>
+                                {travelList.map((ele: Item, index: number) => {
+                                    const { Svg } = ele
 
-                <View style={styles.buttonsContainer}>
-                    <CustomButton
-                        onPressButton={() => this.onPressButton('food')}
-                        title="Food"
-                        buttonStyles={[
-                            styles.smallButton,
-                            {
-                                backgroundColor:
-                                    this.state.category !== 'food'
-                                        ? 'rgba(255,108,101,0.2)'
-                                        : colors.orange,
-                            },
-                        ]}
-                        buttonTextStyles={[
-                            styles.buttonTextStyles,
-                            {
-                                color:
-                                    this.state.category !== 'food'
-                                        ? colors.orange
-                                        : colors.white,
-                            },
-                        ]}
-                    />
-                    <CustomButton
-                        onPressButton={() => this.onPressButton('travel')}
-                        title="Travel"
-                        buttonStyles={[
-                            styles.smallButton,
-                            {
-                                backgroundColor:
-                                    this.state.category !== 'travel'
-                                        ? 'rgba(253,210,106,0.2)'
-                                        : colors.yellow,
-                            },
-                        ]}
-                        buttonTextStyles={[
-                            {
-                                color:
-                                    this.state.category !== 'travel'
-                                        ? colors.yellow
-                                        : colors.white,
-                            },
-                            styles.buttonTextStyles,
-                        ]}
-                    />
-                    <CustomButton
-                        onPressButton={() => this.onPressButton('shopping')}
-                        title="Shopping"
-                        buttonStyles={[
-                            styles.smallButton,
-                            {
-                                backgroundColor:
-                                    this.state.category !== 'shopping'
-                                        ? 'rgba(102,197,218,0.3)'
-                                        : colors.skyBlue,
-                            },
-                        ]}
-                        buttonTextStyles={[
-                            {
-                                color:
-                                    this.state.category !== 'shopping'
-                                        ? colors.skyBlue
-                                        : colors.white,
-                            },
-                            styles.buttonTextStyles,
-                        ]}
-                    />
-                </View>
-                <ScrollView>
-                    {category === 'food' ? (
-                        <View
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            {foodTypesList.map((Svg: any, index: number) => {
-                                const Item = Svg
-                                console.log(Item, 'item')
-                                return (
-                                    <View
-                                        key={index}
-                                        style={
-                                            index % 2 === 0
-                                                ? styles.EvenItem
-                                                : styles.oddItem
-                                        }
-                                    >
-                                        <Svg width={375} height={hp('30%')} />
-                                    </View>
-                                )
-                            })}
-                        </View>
-                    ) : category === 'travel' ? (
-                        <>
-                            {travelList.map((ele: Item, index: number) => {
-                                const { Svg } = ele
+                                    return (
+                                        <View style={styles.Item} key={index}>
+                                            <View
+                                                style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                }}
+                                            >
+                                                <Svg
+                                                    width={wp('24%')}
+                                                    height={wp('24%')}
+                                                />
+                                                <Text style={styles.ItemText}>
+                                                    {ele.name}
+                                                </Text>
+                                            </View>
 
-                                return (
-                                    <View style={styles.Item} key={index}>
-                                        <View
-                                            style={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Svg
-                                                width={wp('24%')}
-                                                height={wp('24%')}
-                                            />
-                                            <Text style={styles.ItemText}>
-                                                {ele.name}
-                                            </Text>
+                                            <Pressable
+                                                onPress={() =>
+                                                    this.onPressCheckItem(
+                                                        'travel',
+                                                        index
+                                                    )
+                                                }
+                                            >
+                                                {ele.checked ? (
+                                                    <CheckedSvg />
+                                                ) : (
+                                                    <UncheckedSvg />
+                                                )}
+                                            </Pressable>
                                         </View>
+                                    )
+                                })}
+                            </>
+                        ) : (
+                            <>
+                                {shoppingList.map(
+                                    (ele: Item, index: number) => {
+                                        const { Svg } = ele
+                                        return (
+                                            <View
+                                                style={styles.Item}
+                                                key={index}
+                                            >
+                                                <View
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                    }}
+                                                >
+                                                    <Svg
+                                                        width={wp('24%')}
+                                                        height={wp('24%')}
+                                                    />
+                                                    <Text
+                                                        style={styles.ItemText}
+                                                    >
+                                                        {ele.name}
+                                                    </Text>
+                                                </View>
+                                                <Pressable
+                                                    onPress={() =>
+                                                        this.onPressCheckItem(
+                                                            'shopping',
+                                                            index
+                                                        )
+                                                    }
+                                                >
+                                                    {ele.checked ? (
+                                                        <CheckedSvg />
+                                                    ) : (
+                                                        <UncheckedSvg />
+                                                    )}
+                                                </Pressable>
+                                            </View>
+                                        )
+                                    }
+                                )}
+                            </>
+                        )}
+                    </ScrollView>
 
-                                        <Pressable
-                                            onPress={() =>
-                                                this.onPressCheckItem(
-                                                    'travel',
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            {ele.checked ? (
-                                                <CheckedSvg />
-                                            ) : (
-                                                <UncheckedSvg />
-                                            )}
-                                        </Pressable>
-                                    </View>
-                                )
-                            })}
-                        </>
-                    ) : (
-                        <>
-                            {shoppingList.map((ele: Item, index: number) => {
-                                const { Svg } = ele
-                                return (
-                                    <View style={styles.Item} key={index}>
-                                        <View
-                                            style={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Svg
-                                                width={wp('24%')}
-                                                height={wp('24%')}
-                                            />
-                                            <Text style={styles.ItemText}>
-                                                {ele.name}
-                                            </Text>
-                                        </View>
-                                        <Pressable
-                                            onPress={() =>
-                                                this.onPressCheckItem(
-                                                    'shopping',
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            {ele.checked ? (
-                                                <CheckedSvg />
-                                            ) : (
-                                                <UncheckedSvg />
-                                            )}
-                                        </Pressable>
-                                    </View>
-                                )
-                            })}
-                        </>
-                    )}
-                </ScrollView>
-
-                <CustomButton
-                    onPressButton={this.onPressNext}
-                    title="Next"
-                    buttonStyles={{
-                        display: 'flex',
-                        width: '100%',
-                    }}
-                    buttonTextStyles={[
-                        { fontFamily: 'ArchivoBold', fontSize: hp('2%') },
-                    ]}
-                />
-            </SafeAreaView>
+                    <CustomButton
+                        onPressButton={this.onPressNext}
+                        title="Next"
+                        buttonStyles={{
+                            display: 'flex',
+                            width: '100%',
+                        }}
+                        buttonTextStyles={[
+                            { fontFamily: 'ArchivoBold', fontSize: hp('2%') },
+                        ]}
+                    />
+                </SafeAreaView>
+            </ScrollView>
         )
     }
 }

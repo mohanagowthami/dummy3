@@ -34,6 +34,9 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
             },
             getOTPButton: {
                 width: '100%',
+                display: 'flex',
+                alignContent: 'center',
+                alignItems: 'center',
             },
             inputBox: {
                 width: wp('85.33%'),
@@ -73,11 +76,12 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                             value={values.email}
                             style={styles.inputBox}
                         />
-                        <CustomButton
-                            title="Get OTP"
-                            onPressButton={handleSubmit}
-                            buttonStyles={styles.getOTPButton}
-                        />
+                        <View style={styles.getOTPButton}>
+                            <CustomButton
+                                title="Get OTP"
+                                onPressButton={handleSubmit}
+                            />
+                        </View>
                     </View>
                 )}
             </Formik>

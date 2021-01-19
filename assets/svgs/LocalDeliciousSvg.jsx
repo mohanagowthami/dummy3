@@ -5,9 +5,9 @@ import Svg, { G, Rect, Defs, Pattern, Use, Image } from 'react-native-svg'
 ) {
     return (
         <Svg
-            width={500}
-            height={500}
-            viewBox="0 0 500 500"
+            width={224}
+            height={246}
+            viewBox="0 0 224 246"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
