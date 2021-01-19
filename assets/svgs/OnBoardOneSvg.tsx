@@ -7,12 +7,20 @@ import Svg, {
     LinearGradient,
     Stop,
 } from 'react-native-svg'
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
+} from 'react-native-responsive-screen'
 
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg
-            width={373}
-            height={275}
+            width={wp('90%')}
+            // width={373}
+            // height={275}
+            height={hp('30%')}
             viewBox="0 0 373 275"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

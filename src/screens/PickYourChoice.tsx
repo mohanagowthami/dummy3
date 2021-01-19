@@ -22,23 +22,27 @@ import CustomButton from '../components/common/CustomButton'
 //colors
 import { colors } from '../lib/colors'
 // Svgs
-import {
-    WorshipSvg,
-    AdventureSvg,
-    SightSvg,
-    HangoutsSvg,
-    MallsSvg,
-    LocalMarketsSvg,
-    HandicraftsSvg,
-    NorthIndianSvg,
-    SouthIndianSvg,
-    ChineseSvg,
-    ContinentalSvg,
-    LocalDeliciousSvg,
-    BakerySvg,
-    CheckedSvg,
-    UncheckedSvg,
-} from '../../assets/svgs/index'
+import { CheckedSvg, UncheckedSvg, HappySvg } from '../../assets/svgs/index'
+import { color } from 'react-native-reanimated'
+
+// food images
+const southindian = require('../../assets/images/pickyourchoice/food/southindian.png')
+const northindian = require('../../assets/images/pickyourchoice/food/northindian.png')
+const chinese = require('../../assets/images/pickyourchoice/food/chinese.png')
+const continental = require('../../assets/images/pickyourchoice/food/continental.png')
+const bakery = require('../../assets/images/pickyourchoice/food/bakery.png')
+const localdelicacies = require('../../assets/images/pickyourchoice/food/localdelicacies.png')
+
+//travel images
+const sightseeing = require('../../assets/images/pickyourchoice/travel/sightseeing.png')
+const hangouts = require('../../assets/images/pickyourchoice/travel/hangouts.png')
+const adventure = require('../../assets/images/pickyourchoice/travel/adventure.png')
+const worship = require('../../assets/images/pickyourchoice/travel/worship.png')
+
+//shopping images
+const malls = require('../../assets/images/pickyourchoice/shopping/malls.png')
+const localmarkets = require('../../assets/images/pickyourchoice/shopping/localmarkets.png')
+const handicrafts = require('../../assets/images/pickyourchoice/shopping/handicraft.png')
 
 interface IProps {
     navigation: any
@@ -59,38 +63,38 @@ export const travelList = [
     {
         name: 'Sight Seeing',
         checked: false,
-        Svg: SightSvg,
+        Svg: sightseeing,
     },
     {
         name: 'Hangouts',
         checked: false,
-        Svg: HangoutsSvg,
+        Svg: hangouts,
     },
     {
         name: 'Adventure',
         checked: false,
-        Svg: AdventureSvg,
+        Svg: adventure,
     },
     {
         name: 'Worship',
         checked: false,
-        Svg: WorshipSvg,
+        Svg: worship,
     },
 ]
 
 export const foodTypesList = [
-    SouthIndianSvg,
-    NorthIndianSvg,
-    ChineseSvg,
-    ContinentalSvg,
-    LocalDeliciousSvg,
-    BakerySvg,
+    southindian,
+    northindian,
+    chinese,
+    continental,
+    bakery,
+    localdelicacies,
 ]
 
 export const shoppingList = [
-    { Svg: MallsSvg, name: 'Malls', checked: false },
-    { Svg: LocalMarketsSvg, name: 'Local Markets', checked: false },
-    { Svg: HandicraftsSvg, name: 'Handicrafts', checked: false },
+    { Svg: malls, name: 'Malls', checked: false },
+    { Svg: localmarkets, name: 'Local Markets', checked: false },
+    { Svg: handicrafts, name: 'Handicrafts', checked: false },
 ]
 class PickYourChoice extends Component<IProps, IState> {
     _isMounted = false
@@ -170,7 +174,11 @@ class PickYourChoice extends Component<IProps, IState> {
                 fontSize: wp('4%'),
                 lineHeight: wp('5%'),
             },
-            TravelListContainer: {},
+            TravelListContainer: {
+                display: 'flex',
+                flex: 1,
+                backgroundColor: colors.white,
+            },
             Item: {
                 display: 'flex',
                 flexDirection: 'row',
@@ -180,17 +188,17 @@ class PickYourChoice extends Component<IProps, IState> {
             },
             ItemText: {
                 color: colors.grey,
-                fontSize: hp('2.8%'),
-                lineHeight: hp('3%'),
+                fontSize: wp('4.8%'),
+                lineHeight: hp('3.2%'),
                 fontFamily: 'ArchivoRegular',
                 marginLeft: hp('4%'),
             },
             EvenItem: {
-                // marginVertical: wp('1%'),
+                marginVertical: wp('1%'),
             },
             oddItem: {
-                // marginVertical: wp('1%'),
-                // marginRight: wp('1%'),
+                marginVertical: wp('1%'),
+                marginRight: wp('1%'),
             },
             buttonTextStyles: {
                 fontFamily: 'AirbnbCerealBook',
@@ -201,7 +209,14 @@ class PickYourChoice extends Component<IProps, IState> {
         const { category, travelList, shoppingList } = this.state
         // console.log('on change potrait')
         return (
-            <ScrollView>
+            <View
+                style={{
+                    display: 'flex',
+                    flex: 1,
+                    paddingTop: hp('3.15%'),
+                    backgroundColor: colors.white,
+                }}
+            >
                 <SafeAreaView style={styles.container}>
                     {/* Title for pick your choice */}
                     <Text style={styles.titleText}>
@@ -302,17 +317,27 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         : styles.oddItem
                                                 }
                                             >
-                                                <Svg
+                                                <Image
+                                                    style={{
+                                                        // borderRadius: wp('50%'),
+                                                        width: wp('43%'),
+                                                        height: hp('30%'),
+                                                    }}
+                                                    source={Svg}
+                                                    // resizeMethod="scale"
+                                                    resizeMode="contain"
+                                                />
+                                                {/* <Svg
                                                     width={wp('43.73%')}
                                                     height={hp('21.57%')}
-                                                />
+                                                /> */}
                                             </View>
                                         )
                                     }
                                 )}
                             </View>
                         ) : category === 'travel' ? (
-                            <>
+                            <View style={styles.TravelListContainer}>
                                 {travelList.map((ele: Item, index: number) => {
                                     const { Svg } = ele
 
@@ -325,10 +350,11 @@ class PickYourChoice extends Component<IProps, IState> {
                                                     alignItems: 'center',
                                                 }}
                                             >
-                                                <Svg
+                                                <Image source={Svg} />
+                                                {/* <Svg
                                                     width={wp('24%')}
                                                     height={wp('24%')}
-                                                />
+                                                /> */}
                                                 <Text style={styles.ItemText}>
                                                     {ele.name}
                                                 </Text>
@@ -351,9 +377,9 @@ class PickYourChoice extends Component<IProps, IState> {
                                         </View>
                                     )
                                 })}
-                            </>
+                            </View>
                         ) : (
-                            <>
+                            <View style={styles.TravelListContainer}>
                                 {shoppingList.map(
                                     (ele: Item, index: number) => {
                                         const { Svg } = ele
@@ -369,10 +395,11 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         alignItems: 'center',
                                                     }}
                                                 >
-                                                    <Svg
+                                                    <Image source={Svg} />
+                                                    {/* <Svg
                                                         width={wp('24%')}
                                                         height={wp('24%')}
-                                                    />
+                                                    /> */}
                                                     <Text
                                                         style={styles.ItemText}
                                                     >
@@ -397,7 +424,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                         )
                                     }
                                 )}
-                            </>
+                            </View>
                         )}
                     </ScrollView>
 
@@ -407,13 +434,15 @@ class PickYourChoice extends Component<IProps, IState> {
                         buttonStyles={{
                             display: 'flex',
                             width: '100%',
+                            alignContent: 'center',
+                            alignItems: 'center',
                         }}
                         buttonTextStyles={[
-                            { fontFamily: 'ArchivoBold', fontSize: hp('2%') },
+                            { fontFamily: 'ArchivoBold', fontSize: wp('4%') },
                         ]}
                     />
                 </SafeAreaView>
-            </ScrollView>
+            </View>
         )
     }
 }

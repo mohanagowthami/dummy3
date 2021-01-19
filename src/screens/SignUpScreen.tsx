@@ -47,7 +47,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     // check mounting of component
     componentDidMount() {
         this._isMounted = true
-
         loc(this)
     }
     componentWillUnMount() {
@@ -56,7 +55,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // Verify & Continue Function
     onPressVerifyAndContinue = () => {
-        console.log(this.inputRef[0], 'ref')
+        // console.log(this.inputRef[0], 'ref')
         this.setModalVisible()
         this.props.navigation.navigate('pickYourChoice')
     }
@@ -137,9 +136,9 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 fontSize: hp('2%'),
             },
         })
-        console.log(this.inputRef, 'inputRef')
+        // console.log(this.inputRef, 'inputRef')
         return (
-            <ScrollView>
+            <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
                 <Text style={styles.modalDescription}>
                     Enter the OTP you received to{' '}
@@ -182,7 +181,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                     Did’t receive code?
                     <Text style={styles.resendOTP}> Resend OTP</Text>
                 </Text>
-            </ScrollView>
+            </View>
         )
     }
     // Modal enabling function => True or False
@@ -194,7 +193,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // Get OTP button sets the modal to true from initial false state
     onPressGetOTP = () => {
-        console.log('mohna set ')
+        // console.log('mohna set ')
         this.setModalVisible()
     }
     // render
@@ -202,12 +201,17 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         const styles = StyleSheet.create({
             container: {
                 display: 'flex',
+                flex: 1,
                 alignItems: 'center',
+                paddingTop: hp('4.68%'),
+                paddingRight: wp('7.4%'),
+                paddingLeft: wp('7.2%'),
+                paddingBottom: hp('5.52%'),
             },
             loginText: {
                 color: colors.darkBlack,
                 margin: '1%',
-                fontSize: hp('4.069%'),
+                fontSize: wp('9%'),
                 fontFamily: 'AirbnbCerealBold',
             },
             loginBottom: {
@@ -216,7 +220,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 height: hp('25%'),
                 backgroundColor: '#fff',
                 marginBottom: '7%',
-
                 alignItems: 'center',
                 justifyContent: 'space-between',
             },
@@ -225,17 +228,17 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 marginBottom: '7%',
             },
             loginWith: {
-                fontSize: hp('2.02%'),
+                fontSize: wp('4%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.lightBlack,
             },
             haveAnAccount: {
-                fontSize: hp('1.576%'),
+                fontSize: wp('3.73%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.lightBlack,
             },
             signIn: {
-                fontSize: hp('1.576%'),
+                fontSize: wp('3.73%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.orange,
             },
@@ -301,7 +304,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                             </View>
                             <Text>
                                 <Text style={styles.haveAnAccount}>
-                                    Already have an account?
+                                    Already have an account?{' '}
                                 </Text>
                                 <Text
                                     style={styles.signIn}
