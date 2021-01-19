@@ -7,7 +7,7 @@ import Svg, {
     Use,
     Image,
 } from 'react-native-svg'
-function SightSvg(props) {
+function SvgComponent(props: SvgProps | any) {
     return (
         <Svg
             width={88}
@@ -41,4 +41,4 @@ function SightSvg(props) {
         </Svg>
     )
 }
-export default SightSvg
+export default SvgComponent

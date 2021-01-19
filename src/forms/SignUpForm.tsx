@@ -1,19 +1,58 @@
 import React, { Component } from 'react'
-import CustomTextField from '../components/common/CustomTextField'
+
 import { Formik } from 'formik'
 import CustomButton from '../components/common/CustomButton'
 import { View, StyleSheet } from 'react-native'
-
+import CustomTextField from '../components/common/CustomTextField'
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
+} from 'react-native-responsive-screen'
 interface ISignUpFormProps {
     onPressGetOTP: () => void
 }
 
 class SignUpForm extends Component<ISignUpFormProps, {}> {
+    _isMounted = false
+    // check mounting of component
+    componentDidMount() {
+        this._isMounted = true
+        loc(this)
+    }
+    componentWillUnMount() {
+        this._isMounted = false
+        rol()
+    }
     render() {
+        const styles = StyleSheet.create({
+            container: {
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+            },
+            getOTPButton: {
+                width: '100%',
+                display: 'flex',
+                alignContent: 'center',
+                alignItems: 'center',
+            },
+            inputBox: {
+                width: wp('85.33%'),
+                margin: '7%',
+                marginLeft: wp('0%'),
+                // fontSize: hp("1.576%"),
+                marginRight: wp('0%'),
+                // borderRadius: wp("2.66%"),
+            },
+        })
+
         return (
             <Formik
                 initialValues={{ mobileNumber: '', fullName: '', email: '' }}
                 onSubmit={(values) => {
+                    console.log(values)
                     this.props.onPressGetOTP()
                 }}
             >
@@ -37,12 +76,12 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                             value={values.email}
                             style={styles.inputBox}
                         />
-                        <CustomButton
-                            title="Get OTP"
-                            buttonType="basic"
-                            onPressButton={handleSubmit}
-                            style={styles.getOTPButton}
-                        />
+                        <View style={styles.getOTPButton}>
+                            <CustomButton
+                                title="Get OTP"
+                                onPressButton={handleSubmit}
+                            />
+                        </View>
                     </View>
                 )}
             </Formik>
@@ -50,19 +89,3 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
     }
 }
 export default SignUpForm
-
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-    },
-    inputBox: {
-        margin: '7%',
-        marginHorizontal: 0,
-    },
-    getOTPButton: {
-        width: '100%',
-        margin: '7%',
-    },
-})

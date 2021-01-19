@@ -12,6 +12,8 @@ interface ICustomButtonProps {
     onPressButton: () => void
     buttonStyles?: any
     buttonTextStyles?: any
+    buttonType?: any // added
+    style?: any //added
 }
 class CustomButton extends Component<ICustomButtonProps, {}> {
     handlePress = () => {
@@ -41,12 +43,11 @@ export default CustomButton
 
 const styles = StyleSheet.create({
     basicButton: {
-        backgroundColor: '#FF6C65',
-
+        backgroundColor: colors.orange,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: wp('100%'),
+        width: wp('85.33%'),
         margin: '5%',
         marginLeft: wp('0%'),
         marginRight: wp('0%'),
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     },
 
     buttonTitle: {
-        color: 'white',
+        color: colors.white,
         fontWeight: 'bold',
         fontSize: hp('1.576%'),
     },

@@ -7,7 +7,7 @@ import Svg, {
     Use,
     Image,
 } from 'react-native-svg'
-function WorkshipSvg(props) {
+function WorshipSvg(props) {
     return (
         <Svg
             width={88}
@@ -41,4 +41,4 @@ function WorkshipSvg(props) {
         </Svg>
     )
 }
-export default WorkshipSvg
+export default WorshipSvg
