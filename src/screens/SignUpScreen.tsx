@@ -55,7 +55,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // Verify & Continue Function
     onPressVerifyAndContinue = () => {
-        // console.log(this.inputRef[0], 'ref')
         this.setModalVisible()
         this.props.navigation.navigate('pickYourChoice')
     }
@@ -136,7 +135,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 fontSize: hp('2%'),
             },
         })
-        // console.log(this.inputRef, 'inputRef')
+
         return (
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
@@ -193,7 +192,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // Get OTP button sets the modal to true from initial false state
     onPressGetOTP = () => {
-        // console.log('mohna set ')
         this.setModalVisible()
     }
     // render

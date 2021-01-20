@@ -259,7 +259,6 @@ class OnboardingScreens extends React.Component<Props, State> {
                     itemWidth={wp('100%')}
                     renderItem={this._renderItem.bind(this)}
                     onSnapToItem={(index: number) => {
-                        console.log(index + 1)
                         currentObject.setState({
                             ...currentObject.state,
                             activeIndex: index,

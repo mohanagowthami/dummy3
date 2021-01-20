@@ -52,7 +52,6 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
             <Formik
                 initialValues={{ mobileNumber: '', fullName: '', email: '' }}
                 onSubmit={(values) => {
-                    console.log(values)
                     this.props.onPressGetOTP()
                 }}
             >

@@ -46,16 +46,17 @@ export default function App() {
                 />
 
                 <Stack.Screen
+                    name="pickYourChoice"
+                    component={PickYourChoice}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
                     name="login"
                     component={LoginScreen}
                     options={{ headerShown: false }}
                 />
 
-                <Stack.Screen
-                    name="pickYourChoice"
-                    component={PickYourChoice}
-                    options={{ headerShown: false }}
-                />
                 <Stack.Screen
                     name="bottomTab"
                     component={BottomTab}

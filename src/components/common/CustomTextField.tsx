@@ -47,7 +47,6 @@ class CustomTextField extends Component<
     }
 
     handleBlur = () => {
-        console.log(this.state.text, 'text123')
         this.props.onCallBack && this.props.onCallBack(this.state.text)
     }
     render() {
@@ -62,12 +61,7 @@ class CustomTextField extends Component<
             },
         })
         const { style, value, handleChange } = this.props
-        console.log(
-            this.state.text,
-            this.props.value,
-            this.props.handleChange,
-            'text123'
-        )
+
         return (
             <>
                 <TextInput

@@ -207,7 +207,7 @@ class PickYourChoice extends Component<IProps, IState> {
             },
         })
         const { category, travelList, shoppingList } = this.state
-        // console.log('on change potrait')
+
         return (
             <View
                 style={{
@@ -306,8 +306,6 @@ class PickYourChoice extends Component<IProps, IState> {
                             >
                                 {foodTypesList.map(
                                     (Svg: any, index: number) => {
-                                        // const Item = Svg
-                                        // console.log(Item, 'item')
                                         return (
                                             <View
                                                 key={index}

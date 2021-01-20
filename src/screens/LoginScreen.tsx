@@ -60,9 +60,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     }
 
     // callBack function
-    callBack = (value: string) => {
-        console.log(value, 'on call back value')
-    }
+    callBack = (value: string) => {}
 
     // navigate to signUp page
     handleNavigation = () => {
@@ -140,7 +138,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 fontSize: hp('2%'),
             },
         })
-        // console.log(this.inputRef, 'inputRef')
+
         return (
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
