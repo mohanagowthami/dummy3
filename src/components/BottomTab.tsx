@@ -1,25 +1,30 @@
-import React, { Component } from 'react'
-
+// react
+import React from 'react'
+// react-native
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import HomeScreen from '../screens/HomeScreen'
-import ExploreScreen from '../screens/ExploreScreen'
-import LuckyCardsScreen from '../screens/LuckyCardsScreen'
-import CalenderScreen from '../screens/CalenderScreen'
-import ProfileScreen from '../screens/ProfileScreen'
-import { colors } from '../lib/colors'
-import * as Svg from 'react-native-svg'
-import ProfileSvg from '../../assets/svgs/ProfileSvg'
-import CalenderSvg from '../../assets/svgs/CalendarSvg'
-import HappySvg from '../../assets/svgs/HappySvg'
-import HomeSvg from '../../assets/svgs/HomeSvg'
-import DirectionSvg from '../../assets/svgs/DirectionSvg'
-
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+
+// svgs
+import ProfileSvg from '../../assets/svgs/ProfileSvg'
+import CalenderSvg from '../../assets/svgs/CalendarSvg'
+import HappySvg from '../../assets/svgs/HappySvg'
+import HomeSvg from '../../assets/svgs/HomeSvg'
+import DirectionSvg from '../../assets/svgs/DirectionSvg'
+// screens
+import HomeScreen from '../screens/HomeScreens'
+import ExploreScreen from '../screens/ExploreScreen'
+import LuckyCardsScreen from '../screens/LuckyCardsScreen'
+import CalenderScreen from '../screens/CalenderScreen'
+import ProfileScreen from '../screens/ProfileScreen'
+import HomeScreens from '../screens/HomeScreens'
+// colors
+import { colors } from '../lib/colors'
 
 const Tab = createBottomTabNavigator()
 class BottomTab extends React.Component<{}, {}> {
@@ -40,7 +45,7 @@ class BottomTab extends React.Component<{}, {}> {
             >
                 <Tab.Screen
                     name="home"
-                    component={HomeScreen}
+                    component={HomeScreens}
                     options={{
                         tabBarLabel: 'Home',
                         tabBarIcon: ({ color }) => (

@@ -1,12 +1,24 @@
+// react
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, Image } from 'react-native'
-import { ScrollView, TextInput } from 'react-native-gesture-handler'
+// react-native
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    Pressable,
+    ScrollView,
+    TextInput,
+    SafeAreaView,
+} from 'react-native'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
-import { SafeAreaView } from 'react-native-safe-area-context'
+// react-native-snap-carousel
 import Carousel, { Pagination } from 'react-native-snap-carousel'
+// svgs
 import {
     BellIcon,
     NavigationIcon,
@@ -14,11 +26,15 @@ import {
     RightArrow,
     SearchIcon,
 } from '../../assets/svgs'
+// components
 import CustomButton from '../components/common/CustomButton'
 import CustomTextField from '../components/common/CustomTextField'
+// colors
 import { colors } from '../lib/colors'
 
-interface IProps {}
+interface IProps {
+    navigation: any
+}
 
 interface ICategoryType {
     trendsList: Array<any>
@@ -422,10 +438,18 @@ class HomeScreen extends Component<IProps, Istate> {
                         ]}
                     >
                         <Text style={styles.frappyText}>Local Favourites</Text>
-                        <View style={styles.sectionHeaderWrapper}>
-                            <Text style={styles.showAllText}>Show all</Text>
-                            <RightArrow />
-                        </View>
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate(
+                                    'localFavourites'
+                                )
+                            }
+                        >
+                            <View style={styles.sectionHeaderWrapper}>
+                                <Text style={styles.showAllText}>Show all</Text>
+                                <RightArrow />
+                            </View>
+                        </Pressable>
                     </View>
                     {this.renderLocalFavourities()}
                     <View style={[styles.TitleContainer]}>
