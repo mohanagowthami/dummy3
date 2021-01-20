@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import CalendarSvg from './CalendarSvg'
 import CheckedSvg from './CheckedSvg'
 
@@ -12,17 +10,18 @@ import SearchIcon from './SearchIcon'
 import NavigationIcon from './NavigationIcon'
 import RightArrow from './RightArrow'
 import Rating from './Rating'
+import UnfilledStar from './UnfilledStar'
 
 export {
     CalendarSvg,
     CheckedSvg,
     HappySvg,
     HomeSvg,
-    CheckedSvg,
     UncheckedSvg,
     BellIcon,
     SearchIcon,
     NavigationIcon,
     RightArrow,
     Rating,
+    UnfilledStar,
 }

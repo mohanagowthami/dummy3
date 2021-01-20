@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import HomeScreen from './HomeScreen'
 import ItemInDetailScreen from './ItemInDetailScreen'
 import LocalFavourites from './LocalFavourites'
+import ReviewsAndRating from './ReviewsAndRating'
 
 const Stack = createStackNavigator()
 class HomeScreens extends Component {
@@ -13,10 +14,16 @@ class HomeScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
+                    name="reviewsAndRating"
+                    component={ReviewsAndRating}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="home"
                     component={HomeScreen}
                     options={{ headerShown: false }}
                 />
+
                 <Stack.Screen
                     name="localFavourites"
                     component={LocalFavourites}

@@ -41,6 +41,7 @@ class BottomTab extends React.Component<{}, {}> {
                 sceneContainerStyle={{ paddingTop: hp('3%') }}
                 tabBarOptions={{
                     activeTintColor: colors.orange,
+                    keyboardHidesTabBar: true,
                 }}
             >
                 <Tab.Screen

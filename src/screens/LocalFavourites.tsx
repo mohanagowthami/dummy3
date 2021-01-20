@@ -101,6 +101,7 @@ class LocalFavourites extends Component<IProps, IState> {
                             onPress={() =>
                                 this.props.navigation.navigate('itemInDetail')
                             }
+                            key={index}
                         >
                             <View style={styles.renderItemContainer}>
                                 <View
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.lightPink,
         justifyContent: 'space-between',
         height: wp('34%'),
-
         marginTop: wp('5%'),
         paddingVertical: wp('3%'),
     },

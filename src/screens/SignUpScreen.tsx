@@ -1,8 +1,14 @@
 // react
 import React from 'react'
 // react native
-import { View, Text, StyleSheet } from 'react-native'
-import { ScrollView, TextInput } from 'react-native'
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TextInput,
+    SafeAreaView,
+} from 'react-native'
 // Modal
 import Modal from 'react-native-modal'
 // react native responsive screen
@@ -201,7 +207,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 display: 'flex',
                 flex: 1,
                 alignItems: 'center',
-                paddingTop: hp('4.68%'),
+                paddingTop: hp('6%'),
                 paddingRight: wp('7.4%'),
                 paddingLeft: wp('7.2%'),
                 paddingBottom: hp('5.52%'),
@@ -249,74 +255,78 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
             },
         })
         return (
-            <View
-                style={{
-                    backgroundColor: colors.white,
-                }}
-            >
-                {this.state.modalVisible && (
-                    <View>
-                        <Modal
-                            isVisible={this.state.modalVisible}
-                            backdropColor={colors.white}
-                            backdropOpacity={0.9}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
+            <SafeAreaView>
+                <View
+                    style={{
+                        backgroundColor: colors.white,
+                    }}
+                >
+                    {this.state.modalVisible && (
+                        <View>
+                            <Modal
+                                isVisible={this.state.modalVisible}
+                                backdropColor={colors.white}
+                                backdropOpacity={0.9}
                             >
-                                {/* This call renders the modal*/}
-                                {this.renderModalContent()}
-                            </View>
-                        </Modal>
-                    </View>
-                )}
-                <ScrollView>
-                    <View style={styles.container}>
-                        <WelcomeSvg
-                            width={wp('66.35%')}
-                            height={hp('19.90%')}
-                        />
-                        <Text style={styles.loginText}>SignUp</Text>
-                        <SignUpForm onPressGetOTP={this.onPressGetOTP} />
-                        <View style={[styles.loginBottom]}>
-                            <Text style={styles.loginWith}>
-                                Or Login with...
-                            </Text>
-                            <View style={styles.socialIconsContainer}>
-                                <FacebookSvg
-                                    width={wp('14.66%')}
-                                    height={hp('6.19')}
-                                />
-                                <TwitterSvg
-                                    width={wp('14.66%')}
-                                    height={hp('6.19')}
-                                />
-                                <GoogleSvg
-                                    width={wp('14.66%')}
-                                    height={hp('6.19')}
-                                />
-                            </View>
-                            <Text>
-                                <Text style={styles.haveAnAccount}>
-                                    Already have an account?{' '}
-                                </Text>
-                                <Text
-                                    style={styles.signIn}
-                                    onPress={() =>
-                                        this.props.navigation.navigate('login')
-                                    }
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
                                 >
-                                    Sign In
-                                </Text>
-                            </Text>
+                                    {/* This call renders the modal*/}
+                                    {this.renderModalContent()}
+                                </View>
+                            </Modal>
                         </View>
-                    </View>
-                </ScrollView>
-            </View>
+                    )}
+                    <ScrollView keyboardShouldPersistTaps="always">
+                        <View style={styles.container}>
+                            <WelcomeSvg
+                                width={wp('66.35%')}
+                                height={hp('19.90%')}
+                            />
+                            <Text style={styles.loginText}>SignUp</Text>
+                            <SignUpForm onPressGetOTP={this.onPressGetOTP} />
+                            <View style={[styles.loginBottom]}>
+                                <Text style={styles.loginWith}>
+                                    Or Login with...
+                                </Text>
+                                <View style={styles.socialIconsContainer}>
+                                    <FacebookSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                    <TwitterSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                    <GoogleSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                </View>
+                                <Text>
+                                    <Text style={styles.haveAnAccount}>
+                                        Already have an account?{' '}
+                                    </Text>
+                                    <Text
+                                        style={styles.signIn}
+                                        onPress={() =>
+                                            this.props.navigation.navigate(
+                                                'login'
+                                            )
+                                        }
+                                    >
+                                        Sign In
+                                    </Text>
+                                </Text>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
+            </SafeAreaView>
         )
     }
 }

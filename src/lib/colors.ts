@@ -12,4 +12,5 @@ export const colors = {
     lightPink: '#FFE8E7',
     lightGreyTwo: '#EAECEF',
     lightGreyThree: '#B8BBC6',
+    lightGreyFour: '#F7F8FA',
 }

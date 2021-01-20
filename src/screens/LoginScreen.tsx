@@ -1,7 +1,14 @@
 // React
 import React from 'react'
 // React native
-import { ScrollView, TextInput, View, Text, StyleSheet } from 'react-native'
+import {
+    ScrollView,
+    TextInput,
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+} from 'react-native'
 // React native responsive screen
 import {
     widthPercentageToDP as wp,
@@ -209,7 +216,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 paddingRight: wp('7.4%'),
                 paddingLeft: wp('7.2%'),
                 paddingBottom: hp('5.52%'),
-                // padding: '10%',
                 backgroundColor: colors.white,
             },
             tinyLogo: {
@@ -235,10 +241,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 marginBottom: hp('7%'),
             },
             loginButtonBox: {
-                // width: '100%',
-                // display: 'flex',
-                // alignContent: 'center',
-                // alignItems: 'center',
                 marginTop: '7%',
                 marginBottom: '7%',
             },
@@ -269,7 +271,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         })
 
         return (
-            <ScrollView style={{ backgroundColor: colors.white }}>
+            <ScrollView
+                style={{ backgroundColor: colors.white }}
+                keyboardShouldPersistTaps="always"
+            >
                 {this.state.modalVisible && (
                     <View>
                         <Modal
