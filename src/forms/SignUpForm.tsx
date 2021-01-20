@@ -80,6 +80,12 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                             <CustomButton
                                 title="Get OTP"
                                 onPressButton={handleSubmit}
+                                buttonTextStyles={[
+                                    {
+                                        fontFamily: 'ArchivoBold',
+                                        fontSize: wp('4%'),
+                                    },
+                                ]}
                             />
                         </View>
                     </View>

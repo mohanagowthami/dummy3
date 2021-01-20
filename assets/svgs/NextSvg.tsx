@@ -1,12 +1,18 @@
 import * as React from 'react'
 import Svg, { SvgProps, Path, Rect } from 'react-native-svg'
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
+} from 'react-native-responsive-screen'
 
 function NextSvg(props: SvgProps | any) {
     return (
         <Svg
-            width={55}
-            height={55}
-            viewBox="0 0 55 55"
+            width={wp('15%')}
+            height={hp('10%')}
+            viewBox="0 0 70 70"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             {...props}

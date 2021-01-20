@@ -6,6 +6,8 @@ import {
     StyleSheet,
     ScrollView,
     Pressable,
+    Image,
+    ImageBackground,
 } from 'react-native'
 
 import Carousel, { Pagination } from 'react-native-snap-carousel'
@@ -20,6 +22,10 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+
+const onboarding1 = require('../../assets/images/onboarding/onboardingone.png')
+const onboarding2 = require('../../assets/images/onboarding/onboardingtwo.png')
+const onboarding3 = require('../../assets/images/onboarding/onboardingthree.png')
 
 // inteface of carousel layout
 interface CarouselItem {
@@ -50,22 +56,22 @@ class OnboardingScreens extends React.Component<Props, State> {
             // data to be put up on onboarding screens
             carouselItems: [
                 {
-                    SVG: OnBoardOneSvg,
+                    SVG: onboarding1,
                     title: 'Humanize',
                     subHeading: 'Your friend on the go',
                     backgroundColor: colors.skyBlue,
                 },
                 {
-                    SVG: OnBoardTwoSvg,
-                    title: 'Personlize',
+                    SVG: onboarding2,
+                    title: 'Personalize',
                     subHeading: 'Customized exclusively for you.',
                     backgroundColor: colors.orange,
                 },
                 {
-                    SVG: OnBoardThreeSvg,
+                    SVG: onboarding3,
                     title: 'Localize',
                     subHeading: 'Explore, experience and enjoy.',
-                    backgroundColor: colors.yellow,
+                    backgroundColor: colors.darkyellow,
                 },
             ],
         }
@@ -93,13 +99,13 @@ class OnboardingScreens extends React.Component<Props, State> {
                     height: hp('1.18%'),
                     borderRadius: hp('7.23%'),
                     marginHorizontal: 0,
-                    backgroundColor: 'white',
+                    backgroundColor: colors.white,
                 }}
-                inactiveDotScale={1}
+                inactiveDotScale={0.9}
                 inactiveDotStyle={{
                     width: wp('2.4%'),
                     height: hp('1.18%'),
-                    borderRadius: hp('0.59%'),
+                    borderRadius: wp('4.16%'),
                     marginHorizontal: 0,
                     borderColor: colors.white,
                     borderWidth: wp('0.5%'),
@@ -118,20 +124,21 @@ class OnboardingScreens extends React.Component<Props, State> {
             ItemBottomContainer: {
                 display: 'flex',
                 flexDirection: 'row',
-
                 position: 'absolute',
                 bottom: '3%',
             },
             skipText: {
                 fontFamily: 'AirbnbCerealBold',
                 color: colors.white,
-                fontSize: wp('4%'),
+                fontSize: wp('4.8%'),
+                paddingLeft: wp('10%'),
                 lineHeight: wp('5%'),
             },
             titleContainer: {},
             line: {
-                height: wp('10%'),
-                width: wp('1%'),
+                height: hp('6.18%'),
+                width: wp('1.33%'),
+                borderRadius: 4,
                 backgroundColor: colors.white,
                 marginRight: wp('3%'),
             },
@@ -140,19 +147,24 @@ class OnboardingScreens extends React.Component<Props, State> {
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
+                paddingHorizontal: '5%',
             },
             titleText: {
                 fontFamily: 'AirbnbCerealBold',
                 color: colors.white,
-                fontSize: wp('5%'),
-                lineHeight: wp('6%'),
+                fontSize: wp('8%'),
+                fontWeight: 'bold',
+                lineHeight: hp('7%'),
             },
             subHeadingText: {
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.white,
-                fontSize: wp('5%'),
-                lineHeight: wp('7%'),
-                marginTop: wp('5%'),
+                paddingHorizontal: '9%',
+                // paddingTop: '5%',
+                fontSize: wp('6%'),
+                // lineHeight: wp('7%'),
+                // marginTop: wp('5%'),
+                marginTop: wp('3%'),
                 marginRight: wp('5%'),
             },
             bottomWrapper: {
@@ -162,6 +174,8 @@ class OnboardingScreens extends React.Component<Props, State> {
             bottomContainer: {
                 flex: 1,
                 justifyContent: 'flex-end',
+                paddingRight: wp('9.75%'),
+                paddingBottom: hp('2%'),
             },
             wrapper: {
                 display: 'flex',
@@ -179,11 +193,21 @@ class OnboardingScreens extends React.Component<Props, State> {
                 style={{
                     flex: 1,
                     backgroundColor: backgroundColor,
-                    padding: '5%',
+                    // padding: '5%',
                 }}
             >
-                <View style={{ paddingTop: '25%', paddingBottom: '25%' }}>
-                    <SVG width={wp('99.51%')} height={hp('36.18%')} />
+                <View
+                    style={{
+                        paddingTop: '25%',
+                        paddingBottom: '25%',
+                    }}
+                >
+                    {/* <SVG width={wp('99.51%')} height={hp('36.18%')} /> */}
+                    <Image
+                        style={{ width: wp('100%'), height: hp('30%') }}
+                        resizeMode="contain"
+                        source={SVG}
+                    />
                 </View>
 
                 <View>
@@ -197,17 +221,20 @@ class OnboardingScreens extends React.Component<Props, State> {
                 <View style={styles.bottomContainer}>
                     <View style={styles.wrapper}>
                         {this.pagination}
-                        <NextSvg
-                            onPress={() => {
-                                const temp = { ...this.state }
-                                temp.activeIndex = temp.activeIndex + 1
-                                temp.activeIndex <
-                                this.state.carouselItems.length
-                                    ? this.carousel.snapToNext()
-                                    : navigation.navigate('signUp')
-                                this.setState(temp)
-                            }}
-                        />
+                        <View style={{ paddingHorizontal: wp('2%') }}>
+                            <NextSvg
+                                onPress={() => {
+                                    const temp = { ...this.state }
+                                    temp.activeIndex = temp.activeIndex + 1
+                                    temp.activeIndex <
+                                    this.state.carouselItems.length
+                                        ? this.carousel.snapToNext()
+                                        : navigation.navigate('signUp')
+                                    this.setState(temp)
+                                }}
+                            />
+                        </View>
+
                         <Pressable
                             onPress={() => navigation.navigate('signUp')}
                         >

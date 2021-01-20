@@ -50,6 +50,15 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         this._isMounted = false
         rol()
     }
+    onChangeOtp = (index: number) => {
+        this.inputRef[index].focus()
+    }
+
+    onPressVerifyAndContinue = () => {
+        this.setModalVisible()
+        this.props.navigation.navigate('pickYourChoice')
+    }
+
     // callBack function
     callBack = (value: string) => {
         console.log(value, 'on call back value')
@@ -58,26 +67,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     // navigate to signUp page
     handleNavigation = () => {
         this.props.navigation.navigate('signUp')
-    }
-
-    // Modal enabling function => True or False
-    setModalVisible = () => {
-        this._isMounted &&
-            this.setState((prevState, props) => ({
-                modalVisible: !prevState.modalVisible,
-            }))
-    }
-    // Get OTP Button function
-    onPressOTPButton = () => {
-        this.setModalVisible()
-    }
-
-    onChangeOtp = (index: number) => {
-        this.inputRef[index].focus()
-    }
-
-    onPressVerifyAndContinue = () => {
-        this.props.navigation.navigate('pickYourChoice')
     }
 
     renderModalContent = () => {
@@ -151,7 +140,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 fontSize: hp('2%'),
             },
         })
-        console.log(this.inputRef, 'inputRef')
+        // console.log(this.inputRef, 'inputRef')
         return (
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
@@ -199,6 +188,17 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             </View>
         )
     }
+    // Modal enabling function => True or False
+    setModalVisible = () => {
+        this._isMounted &&
+            this.setState((prevState, props) => ({
+                modalVisible: !prevState.modalVisible,
+            }))
+    }
+    // Get OTP Button function
+    onPressOTPButton = () => {
+        this.setModalVisible()
+    }
     render() {
         // navigation as prop
         const { navigation } = this.props
@@ -211,7 +211,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 paddingRight: wp('7.4%'),
                 paddingLeft: wp('7.2%'),
                 paddingBottom: hp('5.52%'),
-                padding: '10%',
+                // padding: '10%',
                 backgroundColor: colors.white,
             },
             tinyLogo: {
@@ -222,7 +222,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 color: colors.darkBlack,
                 margin: '1%',
                 marginTop: hp('2.56%'),
-                fontSize: hp('4.069%'),
+                fontSize: wp('9%'),
                 fontFamily: 'AirbnbCerealBold',
             },
             inputBox: {
@@ -234,23 +234,30 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 height: hp('24.41%'),
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                marginBottom: hp('7%'),
+            },
+            loginButtonBox: {
+                // width: '100%',
+                // display: 'flex',
+                // alignContent: 'center',
+                // alignItems: 'center',
+                marginTop: '7%',
                 marginBottom: '7%',
             },
-            loginButtonBox: {},
             loginWith: {
-                fontSize: hp('2.36%'),
-                marginTop: hp('8.28%'),
+                fontSize: wp('3.7%'),
+                marginTop: hp('7.28%'),
                 marginBottom: hp('5.92%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.lightBlack,
             },
             newToFrappy: {
-                fontSize: hp('1.842%'),
+                fontSize: wp('3.73%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.lightBlack,
             },
             signUp: {
-                fontSize: hp('1.842%'),
+                fontSize: wp('3.73%'),
                 fontFamily: 'AirbnbCerealBook',
                 color: colors.orange,
             },
@@ -264,7 +271,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         })
 
         return (
-            <ScrollView>
+            <ScrollView style={{ backgroundColor: colors.white }}>
                 {this.state.modalVisible && (
                     <View>
                         <Modal
@@ -284,7 +291,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                             </View>
                         </Modal>
                     </View>
-                )}{' '}
+                )}
                 <View style={styles.container}>
                     <WelcomeSvg
                         style={{
@@ -299,11 +306,19 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                         placeholder="Mobile Number"
                         style={styles.inputBox}
                     />
-                    <CustomButton
-                        title="Get OTP"
-                        onPressButton={this.onPressOTPButton}
-                        buttonStyles={styles.loginButtonBox}
-                    />
+                    <View style={styles.loginButtonBox}>
+                        <CustomButton
+                            title="Get OTP"
+                            onPressButton={this.onPressOTPButton}
+                            // buttonStyles={styles.loginButtonBox}
+                            buttonTextStyles={[
+                                {
+                                    fontFamily: 'ArchivoBold',
+                                    fontSize: wp('4%'),
+                                },
+                            ]}
+                        />
+                    </View>
 
                     <View style={styles.loginBottom}>
                         <Text style={styles.loginWith}>Or Login with...</Text>
