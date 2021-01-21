@@ -25,6 +25,7 @@ import ProfileScreen from '../screens/ProfileScreen'
 import HomeScreens from '../screens/HomeScreens'
 // colors
 import { colors } from '../lib/colors'
+import ProfileScreens from '../screens/ProfileScreens'
 
 const Tab = createBottomTabNavigator()
 class BottomTab extends React.Component<{}, {}> {
@@ -107,7 +108,7 @@ class BottomTab extends React.Component<{}, {}> {
                 />
                 <Tab.Screen
                     name="profile"
-                    component={ProfileScreen}
+                    component={ProfileScreens}
                     options={{
                         tabBarLabel: 'Profile',
                         tabBarIcon: ({ color }) => (

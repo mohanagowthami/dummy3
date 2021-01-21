@@ -25,6 +25,7 @@ import Loading from '../../assets/svgs/icons/Loading'
 import ProfileIcon from '../../assets/svgs/icons/ProfileIcon'
 import Profile from '../../assets/svgs/icons/Profile'
 import SearchIcon from '../../assets/svgs/SearchIcon'
+import BackIcon from '../../assets/svgs/icons/BackIcon'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
@@ -115,6 +116,22 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             >
                 {/* Item - back button,image,name,address,time,distance */}
                 <View>
+                    <View
+                        style={{
+                            paddingLeft: wp('5.6%'),
+                            // paddingTop: hp('4.07%'),
+                        }}
+                    >
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate(
+                                    'localFavourites'
+                                )
+                            }
+                        >
+                            <BackIcon />
+                        </Pressable>
+                    </View>
                     <Image
                         style={[
                             styles.hallOfFameImage,
@@ -428,7 +445,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
-        paddingTop: hp('2%'),
     },
     mainimage: {
         // alignSelf: 'center',
