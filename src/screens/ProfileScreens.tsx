@@ -23,12 +23,11 @@ class ProfileScreens extends Component {
                     component={Profile}
                     options={{ headerShown: false }}
                 />
-
-                {/* <Stack.Screen
+                <Stack.Screen
                     name="profileSettings"
                     component={ProfileSettings}
                     options={{ headerShown: false }}
-                /> */}
+                />
                 <Stack.Screen
                     name="accountSettings"
                     component={AccountSettings}
