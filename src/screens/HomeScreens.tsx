@@ -14,13 +14,13 @@ class HomeScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
-                    name="reviewsAndRating"
-                    component={ReviewsAndRating}
+                    name="home"
+                    component={HomeScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
+                    name="reviewsAndRating"
+                    component={ReviewsAndRating}
                     options={{ headerShown: false }}
                 />
 

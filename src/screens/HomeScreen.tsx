@@ -470,9 +470,8 @@ class HomeScreen extends Component<IProps, Istate> {
                                         numberOfRatings,
                                     } = ele
                                     return (
-                                        <>
+                                        <View key={index}>
                                             <View
-                                                key={index}
                                                 style={
                                                     styles.recapItemContaineer
                                                 }
@@ -557,7 +556,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                         colors.lightGreyTwo,
                                                 }}
                                             ></View>
-                                        </>
+                                        </View>
                                     )
                                 }
                             )}
@@ -576,6 +575,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             display: 'flex',
                             flexDirection: 'row',
                             flexWrap: 'wrap',
+                            justifyContent: 'space-between',
                             marginBottom: wp('15%'),
                         }}
                     >
@@ -692,7 +692,6 @@ const styles = StyleSheet.create({
     hallOfFameImage: {
         width: wp('25%'),
         height: wp('25%'),
-        marginRight: wp('5%'),
         marginTop: wp('5%'),
         borderRadius: wp('5%'),
     },

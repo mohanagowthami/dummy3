@@ -9,7 +9,6 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-
 // svgs
 import ProfileSvg from '../../assets/svgs/ProfileSvg'
 import CalenderSvg from '../../assets/svgs/CalendarSvg'
@@ -17,7 +16,7 @@ import HappySvg from '../../assets/svgs/HappySvg'
 import HomeSvg from '../../assets/svgs/HomeSvg'
 import DirectionSvg from '../../assets/svgs/DirectionSvg'
 // screens
-import HomeScreen from '../screens/HomeScreens'
+import HomeScreen from '../screens/HomeScreen'
 import ExploreScreen from '../screens/ExploreScreen'
 import LuckyCardsScreen from '../screens/LuckyCardsScreen'
 import CalenderScreen from '../screens/CalenderScreen'
@@ -46,7 +45,7 @@ class BottomTab extends React.Component<{}, {}> {
             >
                 <Tab.Screen
                     name="home"
-                    component={HomeScreens}
+                    component={HomeScreen}
                     options={{
                         tabBarLabel: 'Home',
                         tabBarIcon: ({ color }) => (

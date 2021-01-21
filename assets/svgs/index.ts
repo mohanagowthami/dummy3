@@ -1,9 +1,7 @@
 import CalendarSvg from './CalendarSvg'
 import CheckedSvg from './CheckedSvg'
-
 import HappySvg from './HappySvg'
 import HomeSvg from './HomeSvg'
-
 import UncheckedSvg from './UncheckedSvg'
 import BellIcon from './BellIcon'
 import SearchIcon from './SearchIcon'
