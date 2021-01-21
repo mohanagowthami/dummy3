@@ -1,7 +1,15 @@
 // react
 import React, { Component } from 'react'
 // react-native
-import { Text, View, ScrollView, StyleSheet, Image } from 'react-native'
+import {
+    Text,
+    View,
+    ScrollView,
+    StyleSheet,
+    Image,
+    Pressable,
+    TextInput,
+} from 'react-native'
 import { colors } from '../lib/colors'
 import {
     widthPercentageToDP as wp,
@@ -14,7 +22,9 @@ import PhotoIcon from '../../assets/svgs/icons/PhotoIcon'
 import RatingIcon from '../../assets/svgs/icons/RatingIcon'
 import ReadMore from '../../assets/svgs/icons/ReadMore'
 import Loading from '../../assets/svgs/icons/Loading'
+import ProfileIcon from '../../assets/svgs/icons/ProfileIcon'
 import Profile from '../../assets/svgs/icons/Profile'
+import SearchIcon from '../../assets/svgs/SearchIcon'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
@@ -22,13 +32,13 @@ interface IProps {
     navigation: any
 }
 
-interface ICategoryType {
+interface IListType {
     photos: Array<any>
     RatingAndReview: Array<any>
 }
 interface Istate {
     category: string
-    categoryData: ICategoryType
+    categoryData: IListType
     activeIndex: number
 }
 const ItemContent = {
@@ -101,9 +111,9 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         return (
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                style={styles.container}
+                style={styles.maincontainer}
             >
-                {/* Item - image,name,address,time,distance */}
+                {/* Item - back button,image,name,address,time,distance */}
                 <View>
                     <Image
                         style={[
@@ -214,94 +224,199 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         )
                     })}
                 </View>
+
                 {/* Reviews and Ratings Section*/}
-                <View style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Text style={styles.frappyText}>Ratings and Reviews</Text>
-                    <View style={styles.reviewcontainer}>
+                <View
+                    style={[
+                        styles.TitleContainer,
+                        { marginTop: 0, marginBottom: wp('6%') },
+                    ]}
+                >
+                    <Text style={styles.frappyText}>
+                        Ratings and Reviews(98)
+                    </Text>
+                </View>
+                <View style={styles.reviewcontainer}>
+                    <View style={{ display: 'flex', flexDirection: 'column' }}>
                         <Image
-                            source={require('../../assets/images/homescreen/itemdetails/profile.png')}
+                            resizeMode="contain"
+                            style={{ height: hp('6.3%'), width: wp('12.8%') }}
+                            source={{ uri: image1 }}
                         />
-                        <View>
-                            <View style={{ display: 'flex' }}>
-                                <Text
-                                    style={[
-                                        styles.frappyText,
-                                        {
-                                            fontSize: wp('4.8%'),
-                                            fontWeight: '500',
-                                        },
-                                    ]}
-                                >
-                                    Rohit Sharma
-                                </Text>
-                                <View>
-                                    <Text
-                                        style={{
-                                            fontFamily: 'AirbnbCerealBook',
-                                            fontSize: wp('3.73%'),
-                                            color: '#888888',
-                                        }}
-                                    >
-                                        November <View style={styles.line} />{' '}
-                                        <Text
-                                            style={{ color: colors.darkorange }}
-                                        >
-                                            New
-                                        </Text>
-                                    </Text>
-                                </View>
-                            </View>
-                            <View>
-                                <Text
-                                    style={{
-                                        fontFamily: 'AirbnbCerealBook',
-                                        fontSize: wp('3.73%'),
-                                    }}
-                                >
-                                    Dummy text is text that is used in the
-                                    publishing industry or by web designers to
-                                    occupy.
-                                    <Text style={{ color: colors.darkorange }}>
-                                        {' '}
-                                        Readmore <ReadMore />
-                                    </Text>
-                                </Text>
-                                <View
-                                    style={{
-                                        height: hp('0.5%'),
-                                        width: wp('85%'),
-                                        borderRadius: 4,
-                                        marginTop: hp('2%'),
-                                        backgroundColor: colors.lightGreyTwo,
-                                    }}
-                                />
-                            </View>
-                            <View
+                    </View>
+                    <View
+                        style={{
+                            display: 'flex',
+                            // flex: 1,
+                            flexDirection: 'column',
+                            paddingLeft: wp('2%'),
+                            paddingRight: wp('13.066%'),
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.frappyText,
+                                { fontSize: wp('4.8%'), fontWeight: '500' },
+                            ]}
+                        >
+                            User Name
+                        </Text>
+                        <Text
+                            style={[
+                                styles.address,
+                                { paddingBottom: hp('1%') },
+                            ]}
+                        >
+                            November 2020{' '}
+                            <View style={[styles.line, { height: hp('3%') }]} />
+                            <Text
                                 style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    alignSelf: 'center',
-                                    flexDirection: 'row',
-                                    height: hp('4.73%'),
-                                    width: wp('32.53%'),
-                                    borderRadius: 5,
-                                    backgroundColor: '#F3F4F6',
+                                    color: colors.darkorange,
                                 }}
                             >
-                                <Text
-                                    style={[
-                                        styles.frappyText,
-                                        {
-                                            fontSize: wp('3.2%'),
-                                        },
-                                    ]}
-                                >
-                                    Load More{' '}
-                                </Text>
-                                <Loading />
-                            </View>
+                                {' '}
+                                New
+                            </Text>
+                        </Text>
+                        <Text
+                            style={{
+                                fontFamily: 'AirbnbCerealBook',
+                                fontSize: wp('3.73%'),
+                                color: colors.grey,
+                                paddingRight: wp('2%'),
+                                // paddingBottom: hp('2.5%'),
+                            }}
+                        >
+                            Dummy text is text that is used in the publishing
+                            industry or by web designers to occupy.
+                            <Text style={{ color: colors.darkorange }}>
+                                {' '}
+                                Readmore <ReadMore />
+                            </Text>
+                        </Text>
+                    </View>
+                </View>
+                <View
+                    style={[
+                        styles.line,
+                        {
+                            width: wp('89.33%'),
+                            height: hp('0.263%'),
+                            paddingLeft: wp('5%'),
+                            paddingRight: wp('2%'),
+                            marginBottom: hp('2%'),
+                            marginRight: wp('0%'),
+                            alignSelf: 'center',
+                        },
+                    ]}
+                />
+                <View style={styles.reviewcontainer}>
+                    <View style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Image
+                            resizeMode="contain"
+                            style={{ height: hp('6.3%'), width: wp('12.8%') }}
+                            source={{ uri: image1 }}
+                        />
+                    </View>
+                    <View
+                        style={{
+                            display: 'flex',
+                            // flex: 1,
+                            flexDirection: 'column',
+                            paddingLeft: wp('2%'),
+                            paddingRight: wp('13.066%'),
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.frappyText,
+                                { fontSize: wp('4.8%'), fontWeight: '500' },
+                            ]}
+                        >
+                            User Name
+                        </Text>
+                        <Text
+                            style={[
+                                styles.address,
+                                { paddingBottom: hp('1%') },
+                            ]}
+                        >
+                            November 2020{' '}
+                            <View style={[styles.line, { height: hp('3%') }]} />
+                            <Text
+                                style={{
+                                    color: colors.darkorange,
+                                }}
+                            >
+                                {' '}
+                                New
+                            </Text>
+                        </Text>
+                        <Text
+                            style={{
+                                fontFamily: 'AirbnbCerealBook',
+                                fontSize: wp('3.73%'),
+                                color: colors.grey,
+                                paddingRight: wp('2%'),
+                                // paddingBottom: hp('2.5%'),
+                            }}
+                        >
+                            Dummy text is text that is used in the publishing
+                            industry or by web designers to occupy.
+                            <Text style={{ color: colors.darkorange }}>
+                                {' '}
+                                Readmore <ReadMore />
+                            </Text>
+                        </Text>
+                        <View
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                flexWrap: 'wrap',
+                                marginBottom: wp('1%'),
+                                paddingLeft: hp('2%'),
+                            }}
+                        >
+                            {this.state.categoryData.RatingAndReview.map(
+                                (item, index) => {
+                                    const { id, photo } = item
+                                    return (
+                                        <View key={index}>
+                                            <Image
+                                                resizeMode="contain"
+                                                style={[
+                                                    styles.hallOfFameImage,
+                                                    {
+                                                        width: wp('11.73%'),
+                                                        height: hp('6.78%'),
+                                                    },
+                                                ]}
+                                                source={{
+                                                    uri: photo,
+                                                }}
+                                            />
+                                        </View>
+                                    )
+                                }
+                            )}
                         </View>
+                    </View>
+                </View>
+                <View style={styles.loadmorecontainer}>
+                    <Text style={styles.loadmoretext}>
+                        Load More{' '}
+                        <View style={{ alignSelf: 'center' }}>
+                            <Loading width={wp('3%')} height={wp('3%')} />
+                        </View>
+                    </Text>
+                </View>
+                <View style={styles.searchcontainer}>
+                    <View style={styles.searchButton}>
+                        <Profile width={wp('5%')} height={wp('5%')} />
+                        <TextInput
+                            placeholder="Write a review"
+                            style={styles.searchInput}
+                        />
                     </View>
                 </View>
             </ScrollView>
@@ -309,7 +424,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     }
 }
 const styles = StyleSheet.create({
-    container: {
+    maincontainer: {
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
@@ -366,7 +481,7 @@ const styles = StyleSheet.create({
         paddingBottom: hp('1.10%'),
     },
     line: {
-        height: hp('1.315%'),
+        height: hp('1.515%'),
         width: wp('0.666%'),
         borderRadius: 4,
         backgroundColor: colors.lightGreyTwo,
@@ -422,11 +537,50 @@ const styles = StyleSheet.create({
         // marginTop: hp('5%'),
         borderRadius: wp('5%'),
     },
+    loadmorecontainer: {
+        display: 'flex',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        borderRadius: wp('1.33%'),
+        backgroundColor: '#F3F4F6',
+        width: wp('32.53%'),
+        height: hp('4.73%'),
+    },
+    loadmoretext: {
+        textAlign: 'center',
+        fontSize: wp('3.2%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: '#888888',
+        fontWeight: '500',
+    },
     reviewcontainer: {
         display: 'flex',
         flexDirection: 'row',
         // alignItems: 'center',
         paddingBottom: hp('3%'),
+    },
+    searchcontainer: {
+        paddingTop: hp('2.76%'),
+        paddingLeft: wp('4.533%'),
+        paddingRight: wp('5.33%'),
+        paddingBottom: hp('5.55%'),
+    },
+    searchButton: {
+        display: 'flex',
+        flexDirection: 'row',
+        flex: 1,
+        padding: '2%',
+        backgroundColor: '#F3F4F6',
+        // backgroundColor: 'cyan',
+        borderRadius: wp('3%'),
+        alignItems: 'center',
+    },
+    searchInput: {
+        flex: 1,
+        marginLeft: wp('3%'),
+        fontSize: wp('4%'),
+        fontFamily: 'ArchivoRegular',
+        color: colors.grey,
     },
 })
 
