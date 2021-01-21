@@ -9,6 +9,7 @@ import {
     Pressable,
     SafeAreaView,
     Image,
+    ImageBackground,
 } from 'react-native'
 // react-native-responsive-screen
 import {
@@ -57,6 +58,7 @@ interface IState {
     category: string
     travelList: Array<Item>
     shoppingList: Array<Item>
+    foodTypesList: Array<Item>
 }
 
 export const travelList = [
@@ -83,12 +85,36 @@ export const travelList = [
 ]
 
 export const foodTypesList = [
-    southindian,
-    northindian,
-    chinese,
-    continental,
-    bakery,
-    localdelicacies,
+    {
+        Svg: southindian,
+        name: 'South Indian',
+        checked: false,
+    },
+    {
+        Svg: northindian,
+        name: 'North Indian',
+        checked: false,
+    },
+    {
+        Svg: chinese,
+        name: 'Chinese',
+        checked: false,
+    },
+    {
+        Svg: continental,
+        name: 'Continental',
+        checked: false,
+    },
+    {
+        Svg: bakery,
+        name: 'Bakery',
+        checked: false,
+    },
+    {
+        Svg: localdelicacies,
+        name: 'Local Delicacies',
+        checked: false,
+    },
 ]
 
 export const shoppingList = [
@@ -104,6 +130,7 @@ class PickYourChoice extends Component<IProps, IState> {
             category: 'food',
             travelList: travelList,
             shoppingList: shoppingList,
+            foodTypesList: foodTypesList,
         }
     }
 
@@ -132,6 +159,9 @@ class PickYourChoice extends Component<IProps, IState> {
             mutatedState.travelList[index].checked = !mutatedState.travelList[
                 index
             ].checked
+        } else if (type === 'food') {
+            mutatedState.foodTypesList[index].checked = !mutatedState
+                .foodTypesList[index].checked
         } else {
             mutatedState.shoppingList[index].checked = !mutatedState
                 .shoppingList[index].checked
@@ -167,7 +197,8 @@ class PickYourChoice extends Component<IProps, IState> {
                 width: wp('30%'),
                 borderRadius: wp('5.6%'), //3.3%
                 marginTop: wp('5.3%'),
-                paddingVertical: wp('2.5%'),
+                paddingVertical: wp('3.5%'),
+                borderWidth: wp('0.3%'),
             },
             buttonTitle: {
                 fontFamily: 'AirbnbCerealBold',
@@ -205,6 +236,9 @@ class PickYourChoice extends Component<IProps, IState> {
                 fontSize: wp('4%'),
                 lineHeight: wp('5%'),
             },
+            overlay: {
+                flex: 1,
+            },
         })
         const { category, travelList, shoppingList } = this.state
 
@@ -238,6 +272,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                         this.state.category !== 'food'
                                             ? 'rgba(255,108,101,0.2)'
                                             : colors.orange,
+
+                                    borderColor: colors.orange,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -260,6 +296,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                         this.state.category !== 'travel'
                                             ? 'rgba(253,210,106,0.2)'
                                             : colors.yellow,
+
+                                    borderColor: colors.yellow,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -282,6 +320,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                         this.state.category !== 'shopping'
                                             ? 'rgba(102,197,218,0.3)'
                                             : colors.skyBlue,
+
+                                    borderColor: colors.skyBlue,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -302,34 +342,78 @@ class PickYourChoice extends Component<IProps, IState> {
                                     display: 'flex',
                                     flexDirection: 'row',
                                     flexWrap: 'wrap',
+                                    justifyContent: 'space-between',
                                 }}
                             >
-                                {foodTypesList.map(
-                                    (Svg: any, index: number) => {
+                                {this.state.foodTypesList.map(
+                                    (element: any, index: number) => {
+                                        const { Svg, name } = element
                                         return (
-                                            <View
+                                            <Pressable
                                                 key={index}
-                                                style={
-                                                    index % 2 === 0
-                                                        ? styles.EvenItem
-                                                        : styles.oddItem
+                                                onPress={() =>
+                                                    this.onPressCheckItem(
+                                                        'food',
+                                                        index
+                                                    )
                                                 }
                                             >
-                                                <Image
+                                                <View
                                                     style={{
-                                                        // borderRadius: wp('50%'),
-                                                        width: wp('43%'),
-                                                        height: hp('30%'),
+                                                        borderWidth: wp('1%'),
+                                                        borderColor: this.state
+                                                            .foodTypesList[
+                                                            index
+                                                        ].checked
+                                                            ? colors.darkyellow
+                                                            : colors.white,
+                                                        marginBottom: hp('2%'),
+                                                        borderRadius: wp('2%'),
                                                     }}
-                                                    source={Svg}
-                                                    // resizeMethod="scale"
-                                                    resizeMode="contain"
-                                                />
-                                                {/* <Svg
-                                                    width={wp('43.73%')}
-                                                    height={hp('21.57%')}
-                                                /> */}
-                                            </View>
+                                                >
+                                                    <ImageBackground
+                                                        style={{
+                                                            // borderRadius: wp('50%'),
+                                                            width: wp('44%'),
+                                                            height: hp('23%'),
+                                                        }}
+                                                        source={Svg}
+                                                        resizeMode="cover"
+                                                    >
+                                                        <View
+                                                            style={{
+                                                                flex: 1,
+                                                                display: 'flex',
+                                                                flexDirection:
+                                                                    'row',
+                                                                alignItems:
+                                                                    'flex-end',
+                                                                justifyContent:
+                                                                    'center',
+                                                            }}
+                                                        >
+                                                            <Text
+                                                                style={{
+                                                                    color:
+                                                                        colors.white,
+                                                                    marginBottom: wp(
+                                                                        '5%'
+                                                                    ),
+                                                                    fontFamily:
+                                                                        'ArchivoRegular',
+                                                                    fontWeight:
+                                                                        '500',
+                                                                    fontSize: wp(
+                                                                        '4.5%'
+                                                                    ),
+                                                                }}
+                                                            >
+                                                                {name}
+                                                            </Text>
+                                                        </View>
+                                                    </ImageBackground>
+                                                </View>
+                                            </Pressable>
                                         )
                                     }
                                 )}

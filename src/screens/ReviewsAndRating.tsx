@@ -153,7 +153,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
             <SafeAreaView style={styles.container}>
                 {this.state.showModal && this.renderModal()}
 
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
                         <Text style={styles.titleText}>
                             Reviews and ratings

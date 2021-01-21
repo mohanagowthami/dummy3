@@ -15,6 +15,10 @@ interface ICustomTextFieldProps {
     value?: string
     handleChange?: () => void
     maxLength?: number
+    textAlign?: any
+    multiline: boolean
+    textAlignVertical?: any
+    placeholderTextColor?: any
 }
 
 interface ICustomTextFieldState {
@@ -58,22 +62,19 @@ class CustomTextField extends Component<
                 borderBottomColor: '#DFE1E6',
                 fontFamily: 'AirbnbCerealBook',
                 fontSize: hp('2%'),
+                color: 'red',
             },
         })
         const { style, value, handleChange } = this.props
 
         return (
-            <>
-                <TextInput
-                    {...this.props}
-                    style={[styles.textInput, style]}
-                    onChangeText={
-                        handleChange ? handleChange : this.handleChange
-                    }
-                    value={value ? value : this.state.text}
-                    onBlur={this.handleBlur}
-                />
-            </>
+            <TextInput
+                {...this.props}
+                style={[styles.textInput, style]}
+                onChangeText={handleChange ? handleChange : this.handleChange}
+                value={value ? value : this.state.text}
+                onBlur={this.handleBlur}
+            />
         )
     }
 }
