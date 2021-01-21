@@ -35,20 +35,22 @@ import { colors } from '../lib/colors'
 interface IProps {
     navigation: any
 }
-
+// divisioning of the screen
 interface ICategoryType {
     trendsList: Array<any>
     localFavouritesList: Array<any>
     recapList: Array<any>
     hallOfFame: Array<any>
 }
+// state - data
 interface Istate {
     category: string
     categoryData: ICategoryType
     activeIndex: number
 }
-
+// data
 const foodContent = {
+    // first division - trends list data
     trendsList: [
         {
             title: 'restaurant1',
@@ -69,6 +71,7 @@ const foodContent = {
                 'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
         },
     ],
+    // second division - local favourites data
     localFavouritesList: [
         {
             image:
@@ -106,6 +109,7 @@ const foodContent = {
             rating: 4.8,
         },
     ],
+    // third division - recap data
     recapList: [
         {
             image:
@@ -132,6 +136,7 @@ const foodContent = {
             numberOfRatings: 233,
         },
     ],
+    // fourth division - hall of fame data
     hallOfFame: [
         'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
         'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
@@ -141,8 +146,10 @@ const foodContent = {
         'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
     ],
 }
+// Main class component
 class HomeScreen extends Component<IProps, Istate> {
     carousel: any
+    // destructuring props and state
     constructor(props: IProps) {
         super(props)
         this.state = {
@@ -151,13 +158,13 @@ class HomeScreen extends Component<IProps, Istate> {
             activeIndex: 0,
         }
     }
-
+    // category selection
     onPressButton = (type: string) => {
         this.setState({
             category: type,
         })
     }
-
+    // rendering an item for carousel
     _renderItem({ item, index }: any) {
         return (
             <View style={styles.renderItemContainer}>
@@ -196,10 +203,9 @@ class HomeScreen extends Component<IProps, Istate> {
             </View>
         )
     }
-
+    // pagination function
     get pagination() {
         const { activeIndex, categoryData } = this.state
-
         return (
             <Pagination
                 dotsLength={categoryData.trendsList.length}
@@ -225,7 +231,7 @@ class HomeScreen extends Component<IProps, Istate> {
             />
         )
     }
-
+    // trends slider function
     renderTrendsSlider = () => {
         return (
             <>
@@ -248,7 +254,7 @@ class HomeScreen extends Component<IProps, Istate> {
             </>
         )
     }
-
+    // local favourites slider function
     renderLocalFavourities = () => {
         return (
             <ScrollView horizontal={true}>
@@ -347,6 +353,7 @@ class HomeScreen extends Component<IProps, Istate> {
     }
 
     render() {
+        // Main return function
         return (
             <ScrollView style={styles.container}>
                 <View>
@@ -430,6 +437,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             ]}
                         />
                     </View>
+                    {/* calling trend slider function*/}
                     {this.renderTrendsSlider()}
                     <View
                         style={[
@@ -451,6 +459,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             </View>
                         </Pressable>
                     </View>
+                    {/* calling local favourites function*/}
                     {this.renderLocalFavourities()}
                     <View style={[styles.TitleContainer]}>
                         <Text style={styles.frappyText}>Recap</Text>
