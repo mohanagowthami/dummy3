@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, Pressable } from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -51,7 +51,18 @@ class ProfileSettings extends Component<IProps, Istate> {
             <View style={styles.maincontainer}>
                 <View style={styles.heading}>
                     <View style={styles.backicon}>
-                        <BackIcon />
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate(
+                                    'accountSettings'
+                                )
+                            }
+                        >
+                            <BackIcon
+                                width={wp('3.13%')}
+                                height={hp('2.84%')}
+                            />
+                        </Pressable>
                     </View>
                     <Text style={styles.profset}>Profile Settings</Text>
                 </View>
@@ -88,6 +99,8 @@ class ProfileSettings extends Component<IProps, Istate> {
                         display: 'flex',
                         flexDirection: 'row',
                         alignSelf: 'center',
+                        paddingTop: hp('40.94%'),
+                        // backgroundColor: 'black',
                     }}
                 >
                     <CustomButton
@@ -111,17 +124,21 @@ const styles = StyleSheet.create({
     },
     backicon: {
         paddingLeft: wp('7.44%'),
-        paddingTop: hp('0.1%'),
+        paddingTop: hp('2%'),
         paddingRight: wp('15.46%'),
     },
     heading: {
         display: 'flex',
+        paddingTop: hp('1%'),
         paddingBottom: hp('5.52%'),
         flexDirection: 'row',
     },
     profset: {
         fontFamily: 'ArchivoBold',
-        fontSize: wp('4.26%'),
+        fontSize: wp('5%'),
+        paddingTop: hp('2%'),
+        // justifyContent: 'center',
+        paddingLeft: wp('6%'),
     },
     inputBox: {
         // marginTop: '7%',

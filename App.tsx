@@ -14,6 +14,7 @@ import OnboardingScreens from './src/screens/OnboardingScreens'
 import PickYourChoice from './src/screens/PickYourChoice'
 // components
 import BottomTab from './src/components/BottomTab'
+import FoodSearchResults from './src/screens/FoodResults'
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -34,6 +35,11 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
+                {/* <Stack.Screen
+                    name="foodSearchResults"
+                    component={FoodSearchResults}
+                    options={{ headerShown: false }}
+                /> */}
                 <Stack.Screen
                     name="bottomTab"
                     component={BottomTab}

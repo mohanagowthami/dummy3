@@ -39,7 +39,7 @@ class BottomTab extends React.Component<{}, {}> {
     render() {
         return (
             <Tab.Navigator
-                // sceneContainerStyle={{ paddingTop: hp('3%') }}
+                sceneContainerStyle={{ paddingTop: hp('3%') }}
                 tabBarOptions={{
                     activeTintColor: colors.orange,
                 }}

@@ -2,6 +2,7 @@
 
 import CalendarSvg from './CalendarSvg'
 import CheckedSvg from './CheckedSvg'
+import ClockIcon from './ClockIcon'
 
 import HappySvg from './HappySvg'
 import HomeSvg from './HomeSvg'
@@ -16,6 +17,7 @@ import Rating from './Rating'
 export {
     CalendarSvg,
     CheckedSvg,
+    ClockIcon,
     HappySvg,
     HomeSvg,
     CheckedSvg,

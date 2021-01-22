@@ -51,48 +51,39 @@ class Profile extends Component<IProps, Istate> {
                 {this.state.categoryData.profileDetails.map((item, index) => {
                     const { name, image, place } = item
                     return (
-                        <View style={styles.container}>
-                            <View style={styles.imageandbackicon}>
+                        <>
+                            <View style={styles.container}>
                                 <View
                                     style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        // backgroundColor: 'black',
+                                        paddingLeft: wp('6.8%'),
+                                        paddingTop: hp('3.57%'),
                                     }}
                                 >
-                                    <BackIcon />
-                                </View>
-                                <View
-                                    style={{
-                                        display: 'flex',
-                                        position: 'relative',
-                                        // backgroundColor: 'cyan',
-                                    }}
-                                >
-                                    <Image
-                                        style={styles.profileimage}
-                                        resizeMode="contain"
-                                        source={{
-                                            uri: image,
-                                        }}
-                                    />
-                                    <View
-                                        style={{
-                                            position: 'absolute',
-                                            width: wp('8.66%'),
-                                            height: wp('8.66%'),
-                                            left: wp('52%'),
-                                            top: hp('11.8%'),
-                                            right: wp('3%'),
-                                            borderRadius: wp('4.33%'),
-                                            backgroundColor: colors.orange,
-                                            // alignSelf: 'center',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
+                                    <Pressable
+                                        onPress={() =>
+                                            this.props.navigation.navigate(
+                                                'profileScreen'
+                                            )
+                                        }
                                     >
-                                        <Camera />
+                                        <BackIcon
+                                            width={wp('2.92%')}
+                                            height={hp('2.86%')}
+                                        />
+                                    </Pressable>
+                                </View>
+                                <View style={styles.imageandbackicon}>
+                                    <View style={styles.imagecontainer}>
+                                        <Image
+                                            style={styles.profileimage}
+                                            resizeMode="contain"
+                                            source={{
+                                                uri: image,
+                                            }}
+                                        />
+                                        <View style={styles.cameraicon}>
+                                            <Camera />
+                                        </View>
                                     </View>
                                 </View>
                             </View>
@@ -100,7 +91,7 @@ class Profile extends Component<IProps, Istate> {
                                 <Text style={styles.name}>{name}</Text>
                                 <Text style={styles.place}>{place}</Text>
                             </View>
-                        </View>
+                        </>
                     )
                 })}
             </View>
@@ -154,17 +145,25 @@ const styles = StyleSheet.create({
     },
     profilecontainer: {
         display: 'flex',
-        paddingTop: hp('0.5%'),
+        paddingTop: hp('1%'),
     },
     container: {
         display: 'flex',
-        // backgroundColor: 'yellow',
+        flexDirection: 'row',
     },
     imageandbackicon: {
         display: 'flex',
-        // flexDirection: 'row',
-        paddingRight: wp('12.8%'),
-        // justifyContent: 'space-between',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    imagecontainer: {
+        display: 'flex',
+        position: 'relative',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingRight: wp('25.4%'),
     },
     profileimage: {
         display: 'flex',
@@ -175,6 +174,18 @@ const styles = StyleSheet.create({
         marginLeft: wp('10%'),
         // paddingLeft: wp('8%'),
         borderRadius: wp('9.605%'),
+    },
+    cameraicon: {
+        position: 'absolute',
+        width: wp('8.66%'),
+        height: wp('8.66%'),
+        left: wp('47%'),
+        top: hp('11.3%'),
+        right: wp('3%'),
+        borderRadius: wp('4.33%'),
+        backgroundColor: colors.orange,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     name: {
         fontFamily: 'ArchivoRegular',
@@ -191,7 +202,7 @@ const styles = StyleSheet.create({
     },
     nameandplace: {
         paddingTop: hp('3.55%'),
-        paddingBottom: hp('6.93%'),
+        // paddingBottom: hp('6.93%'),
         lineHeight: hp('1.1%'),
     },
     backicon: {
@@ -208,7 +219,7 @@ const styles = StyleSheet.create({
     },
     optionscontainer: {
         display: 'flex',
-        padding: wp('8%'),
+        padding: wp('7%'),
     },
     optioncontainer: {
         display: 'flex',
