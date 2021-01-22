@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -8,6 +9,7 @@ import {
 } from 'react-native-responsive-screen'
 import BackIcon from '../../assets/svgs/icons/BackIcon'
 import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
+import Camera from '../../assets/svgs/icons/profile/Camera'
 import { colors } from '../lib/colors'
 
 interface IProps {
@@ -28,7 +30,7 @@ const details = {
         {
             name: 'Rohit Sharma',
             image:
-                'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
+                'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
             place: 'Hyderabad',
         },
     ],
@@ -51,13 +53,48 @@ class Profile extends Component<IProps, Istate> {
                     return (
                         <View style={styles.container}>
                             <View style={styles.imageandbackicon}>
-                                <Image
-                                    style={styles.profileimage}
-                                    resizeMode="cover"
-                                    source={{
-                                        uri: image,
+                                <View
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        // backgroundColor: 'black',
                                     }}
-                                />
+                                >
+                                    <BackIcon />
+                                </View>
+                                <View
+                                    style={{
+                                        display: 'flex',
+                                        position: 'relative',
+                                        // backgroundColor: 'cyan',
+                                    }}
+                                >
+                                    <Image
+                                        style={styles.profileimage}
+                                        resizeMode="contain"
+                                        source={{
+                                            uri: image,
+                                        }}
+                                    />
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            width: wp('8.66%'),
+                                            height: wp('8.66%'),
+                                            left: wp('52%'),
+                                            top: hp('11.8%'),
+                                            right: wp('3%'),
+                                            borderRadius: wp('4.33%'),
+                                            backgroundColor: colors.orange,
+                                            // alignSelf: 'center',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Camera />
+                                    </View>
+                                </View>
                             </View>
                             <View style={styles.nameandplace}>
                                 <Text style={styles.name}>{name}</Text>
@@ -71,36 +108,40 @@ class Profile extends Component<IProps, Istate> {
     }
     _renderdetails = () => {
         return (
-            <View>
-                <Text>Username</Text>
-                <Text>UserName</Text>
+            <View style={styles.optionscontainer}>
+                <View style={styles.optioncontainer}>
+                    <Text style={styles.heading}>Username</Text>
+                    <Text style={styles.details}>UserName</Text>
+                </View>
                 <View style={styles.line} />
-                <Text>Email</Text>
-                <Text>Email</Text>
+                <View style={styles.optioncontainer}>
+                    <Text style={styles.heading}>Email</Text>
+                    <Text style={styles.details}>Email</Text>
+                </View>
                 <View style={styles.line} />
-                <Text>Phone</Text>
-                <Text>Phone</Text>
+                <View style={styles.optioncontainer}>
+                    <Text style={styles.heading}>Phone</Text>
+                    <Text style={styles.details}>Phone</Text>
+                </View>
                 <View style={styles.line} />
-                <Text>Gender</Text>
-                <Text>Gender</Text>
+                <View style={styles.optioncontainer}>
+                    <Text style={styles.heading}>Gender</Text>
+                    <Text style={styles.details}>Gender</Text>
+                </View>
                 <View style={styles.line} />
-                <Text>Date of Birth</Text>
-                <Text>Date of Birth</Text>
-                <View style={styles.line} />
+                <View style={styles.optioncontainer}>
+                    <Text style={styles.heading}>Date of Birth</Text>
+                    <Text style={styles.details}>Date of Birth</Text>
+                </View>
             </View>
         )
     }
     render() {
         return (
-            <View style={styles.maincontainer}>
-                <View>
-                    <BackIcon />
-                    <View>{/* <Image /> */}</View>
-                </View>
-                <Text>Profile</Text>
+            <ScrollView style={styles.maincontainer}>
                 {this._renderinfo()}
                 {this._renderdetails()}
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -109,6 +150,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         paddingTop: hp('2.93%'),
+        backgroundColor: colors.white,
     },
     profilecontainer: {
         display: 'flex',
@@ -116,18 +158,23 @@ const styles = StyleSheet.create({
     },
     container: {
         display: 'flex',
+        // backgroundColor: 'yellow',
     },
     imageandbackicon: {
         display: 'flex',
-        flexDirection: 'row',
+        // flexDirection: 'row',
         paddingRight: wp('12.8%'),
         // justifyContent: 'space-between',
     },
     profileimage: {
         display: 'flex',
-        width: wp('25.006%'),
-        height: wp('12.368%'),
+        position: 'relative',
+        width: wp('38.93%'),
+        height: hp('19.210%'),
         alignSelf: 'center',
+        marginLeft: wp('10%'),
+        // paddingLeft: wp('8%'),
+        borderRadius: wp('9.605%'),
     },
     name: {
         fontFamily: 'ArchivoRegular',
@@ -158,6 +205,29 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginTop: hp('3.42%'),
         backgroundColor: colors.lightGreyTwo,
+    },
+    optionscontainer: {
+        display: 'flex',
+        padding: wp('8%'),
+    },
+    optioncontainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        // borderBottomColor: 'red',
+        paddingTop: hp('3%'),
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        // paddingVertical: wp('3%'),
+    },
+    heading: {
+        fontFamily: 'ArchivoRegular',
+        fontSize: wp('4.53%'),
+        color: '#B8BBC6',
+    },
+    details: {
+        fontFamily: 'ArchivoRegular',
+        fontSize: wp('4.53%'),
+        color: '#333A4D',
     },
 })
 export default Profile
