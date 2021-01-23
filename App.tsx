@@ -15,6 +15,8 @@ import PickYourChoice from './src/screens/PickYourChoice'
 // components
 import BottomTab from './src/components/BottomTab'
 import FoodSearchResults from './src/screens/FoodResults'
+import FrappyPlannerCards from './src/screens/FrappyPlannerCards'
+import FrappyPlannerCalendar from './src/screens/FrappyPlannerCalendar'
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -36,6 +38,16 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 {/* <Stack.Screen
+                    name="frappyPlannerCalendar"
+                    component={FrappyPlannerCalendar}
+                    options={{ headerShown: false }}
+                /> */}
+                {/* <Stack.Screen
+                    name="frappyPlannerCards"
+                    component={FrappyPlannerCards}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="foodSearchResults"
                     component={FoodSearchResults}
                     options={{ headerShown: false }}
