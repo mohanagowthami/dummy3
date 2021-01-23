@@ -6,8 +6,7 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-
-class CalenderScreen extends Component<{}, {}> {
+class Profile extends Component<{}, {}> {
     _isMounted = false
     // check mounting of component
     componentDidMount() {
@@ -19,7 +18,8 @@ class CalenderScreen extends Component<{}, {}> {
         rol()
     }
     render() {
-        return <Text>CalenderScreen</Text>
+        return <Text>Profile</Text>
     }
 }
-export default CalenderScreen
+
+export default Profile

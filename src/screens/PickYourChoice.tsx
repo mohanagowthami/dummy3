@@ -10,6 +10,7 @@ import {
     SafeAreaView,
     Image,
     ImageBackground,
+    ActivityIndicator,
 } from 'react-native'
 // react-native-responsive-screen
 import {
@@ -24,7 +25,10 @@ import CustomButton from '../components/common/CustomButton'
 import { colors } from '../lib/colors'
 // Svgs
 import { CheckedSvg, UncheckedSvg, HappySvg } from '../../assets/svgs/index'
-import { color } from 'react-native-reanimated'
+// service
+import FavoriteService from '../services/favorites.service'
+// endpoints
+import { FAVORITES } from '../lib/endpoints'
 
 // food images
 const southindian = require('../../assets/images/pickyourchoice/food/southindian.png')
@@ -59,6 +63,7 @@ interface IState {
     travelList: Array<Item>
     shoppingList: Array<Item>
     foodTypesList: Array<Item>
+    isLoading: boolean
 }
 
 export const travelList = [
@@ -122,6 +127,8 @@ export const shoppingList = [
     { Svg: localmarkets, name: 'Local Markets', checked: false },
     { Svg: handicrafts, name: 'Handicrafts', checked: false },
 ]
+
+const favoriteService = new FavoriteService()
 class PickYourChoice extends Component<IProps, IState> {
     _isMounted = false
     constructor(props: IProps) {
@@ -131,6 +138,7 @@ class PickYourChoice extends Component<IProps, IState> {
             travelList: travelList,
             shoppingList: shoppingList,
             foodTypesList: foodTypesList,
+            isLoading: false,
         }
     }
 
@@ -145,13 +153,54 @@ class PickYourChoice extends Component<IProps, IState> {
     }
 
     onPressButton = (type: string) => {
-        this.setState({
-            category: type,
-        })
+        this.setState({ ...this.state, category: type })
     }
 
-    onPressNext = () => {
-        this.props.navigation.navigate('bottomTab')
+    filterByChecked = (list: any) => {
+        let filteredList: any = []
+        list.forEach((element: any) => {
+            if (element.checked) filteredList.push(element.name)
+        })
+        return filteredList
+    }
+
+    onPressNext = async () => {
+        const { category } = this.state
+        if (category === 'food')
+            this.setState({ ...this.state, category: 'travel' })
+        else if (category === 'travel')
+            this.setState({ ...this.state, category: 'shopping' })
+        else {
+            this.setState({
+                ...this.state,
+                isLoading: true,
+            })
+            const selectedTravelist = this.filterByChecked(
+                this.state.travelList
+            )
+            const selectedFoodList = this.filterByChecked(
+                this.state.foodTypesList
+            )
+            const selectedShoppingList = this.filterByChecked(
+                this.state.shoppingList
+            )
+            const response = await favoriteService.pusher(FAVORITES, {
+                username: 'dorababu',
+                food_category: selectedFoodList,
+                travel_category: selectedTravelist,
+                shopping_category: selectedShoppingList,
+            })
+            console.log(response, 'response')
+            if (response)
+                this.props.navigation.navigate('bottomTab', {
+                    screen: 'home',
+                    params: {
+                        food_category: selectedFoodList,
+                        travel_category: selectedTravelist,
+                        shopping_category: selectedShoppingList,
+                    },
+                })
+        }
     }
     onPressCheckItem = (type: string, index: number) => {
         let mutatedState = { ...this.state }
@@ -240,291 +289,348 @@ class PickYourChoice extends Component<IProps, IState> {
                 flex: 1,
             },
         })
-        const { category, travelList, shoppingList } = this.state
+        const { category, travelList, shoppingList, isLoading } = this.state
 
         return (
-            <View
-                style={{
-                    display: 'flex',
-                    flex: 1,
-                    paddingTop: hp('3.15%'),
-                    backgroundColor: colors.white,
-                }}
-            >
-                <SafeAreaView style={styles.container}>
-                    {/* Title for pick your choice */}
-                    <Text style={styles.titleText}>
-                        {this.state.category === 'food'
-                            ? 'Gourmet'
-                            : this.state.category === 'travel'
-                            ? 'Explore'
-                            : 'Memories'}
-                    </Text>
-                    {/* Choice */}
-                    <View style={styles.buttonsContainer}>
-                        <CustomButton
-                            onPressButton={() => this.onPressButton('food')}
-                            title="Food"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== 'food'
-                                            ? 'rgba(255,108,101,0.2)'
-                                            : colors.orange,
-
-                                    borderColor: colors.orange,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                styles.buttonTextStyles,
-                                {
-                                    color:
-                                        this.state.category !== 'food'
-                                            ? colors.orange
-                                            : colors.white,
-                                },
-                            ]}
-                        />
-                        <CustomButton
-                            onPressButton={() => this.onPressButton('travel')}
-                            title="Travel"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== 'travel'
-                                            ? 'rgba(253,210,106,0.2)'
-                                            : colors.yellow,
-
-                                    borderColor: colors.yellow,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                {
-                                    color:
-                                        this.state.category !== 'travel'
-                                            ? colors.yellow
-                                            : colors.white,
-                                },
-                                styles.buttonTextStyles,
-                            ]}
-                        />
-                        <CustomButton
-                            onPressButton={() => this.onPressButton('shopping')}
-                            title="Shopping"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== 'shopping'
-                                            ? 'rgba(102,197,218,0.3)'
-                                            : colors.skyBlue,
-
-                                    borderColor: colors.skyBlue,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                {
-                                    color:
-                                        this.state.category !== 'shopping'
-                                            ? colors.skyBlue
-                                            : colors.white,
-                                },
-                                styles.buttonTextStyles,
-                            ]}
-                        />
+            <>
+                {isLoading ? (
+                    <View
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flex: 1,
+                        }}
+                    >
+                        <ActivityIndicator size="large" color={colors.grey} />
                     </View>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        {category === 'food' ? (
-                            <View
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    flexWrap: 'wrap',
-                                    justifyContent: 'space-between',
-                                }}
-                            >
-                                {this.state.foodTypesList.map(
-                                    (element: any, index: number) => {
-                                        const { Svg, name } = element
-                                        return (
-                                            <Pressable
-                                                key={index}
-                                                onPress={() =>
-                                                    this.onPressCheckItem(
-                                                        'food',
-                                                        index
-                                                    )
-                                                }
-                                            >
-                                                <View
-                                                    style={{
-                                                        borderWidth: wp('1%'),
-                                                        borderColor: this.state
-                                                            .foodTypesList[
-                                                            index
-                                                        ].checked
-                                                            ? colors.darkyellow
-                                                            : colors.white,
-                                                        marginBottom: hp('2%'),
-                                                        borderRadius: wp('2%'),
-                                                    }}
-                                                >
-                                                    <ImageBackground
-                                                        style={{
-                                                            // borderRadius: wp('50%'),
-                                                            width: wp('44%'),
-                                                            height: hp('23%'),
-                                                        }}
-                                                        source={Svg}
-                                                        resizeMode="cover"
+                ) : (
+                    <View
+                        style={{
+                            display: 'flex',
+                            flex: 1,
+                            paddingTop: hp('3.15%'),
+                            backgroundColor: colors.white,
+                        }}
+                    >
+                        <SafeAreaView style={styles.container}>
+                            {/* Title for pick your choice */}
+                            <Text style={styles.titleText}>
+                                {this.state.category === 'food'
+                                    ? 'Gourmet'
+                                    : this.state.category === 'travel'
+                                    ? 'Explore'
+                                    : 'Memories'}
+                            </Text>
+                            {/* Choice */}
+                            <View style={styles.buttonsContainer}>
+                                <CustomButton
+                                    onPressButton={() =>
+                                        this.onPressButton('food')
+                                    }
+                                    title="Food"
+                                    buttonStyles={[
+                                        styles.smallButton,
+                                        {
+                                            backgroundColor:
+                                                this.state.category !== 'food'
+                                                    ? 'rgba(255,108,101,0.2)'
+                                                    : colors.orange,
+
+                                            borderColor: colors.orange,
+                                        },
+                                    ]}
+                                    buttonTextStyles={[
+                                        styles.buttonTextStyles,
+                                        {
+                                            color:
+                                                this.state.category !== 'food'
+                                                    ? colors.orange
+                                                    : colors.white,
+                                        },
+                                    ]}
+                                />
+                                <CustomButton
+                                    onPressButton={() =>
+                                        this.onPressButton('travel')
+                                    }
+                                    title="Travel"
+                                    buttonStyles={[
+                                        styles.smallButton,
+                                        {
+                                            backgroundColor:
+                                                this.state.category !== 'travel'
+                                                    ? 'rgba(253,210,106,0.2)'
+                                                    : colors.yellow,
+
+                                            borderColor: colors.yellow,
+                                        },
+                                    ]}
+                                    buttonTextStyles={[
+                                        {
+                                            color:
+                                                this.state.category !== 'travel'
+                                                    ? colors.yellow
+                                                    : colors.white,
+                                        },
+                                        styles.buttonTextStyles,
+                                    ]}
+                                />
+                                <CustomButton
+                                    onPressButton={() =>
+                                        this.onPressButton('shopping')
+                                    }
+                                    title="Shopping"
+                                    buttonStyles={[
+                                        styles.smallButton,
+                                        {
+                                            backgroundColor:
+                                                this.state.category !==
+                                                'shopping'
+                                                    ? 'rgba(102,197,218,0.3)'
+                                                    : colors.skyBlue,
+
+                                            borderColor: colors.skyBlue,
+                                        },
+                                    ]}
+                                    buttonTextStyles={[
+                                        {
+                                            color:
+                                                this.state.category !==
+                                                'shopping'
+                                                    ? colors.skyBlue
+                                                    : colors.white,
+                                        },
+                                        styles.buttonTextStyles,
+                                    ]}
+                                />
+                            </View>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                {category === 'food' ? (
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            flexWrap: 'wrap',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        {this.state.foodTypesList.map(
+                                            (element: any, index: number) => {
+                                                const { Svg, name } = element
+                                                return (
+                                                    <Pressable
+                                                        key={index}
+                                                        onPress={() =>
+                                                            this.onPressCheckItem(
+                                                                'food',
+                                                                index
+                                                            )
+                                                        }
                                                     >
                                                         <View
                                                             style={{
-                                                                flex: 1,
+                                                                borderWidth: wp(
+                                                                    '1%'
+                                                                ),
+                                                                borderColor: this
+                                                                    .state
+                                                                    .foodTypesList[
+                                                                    index
+                                                                ].checked
+                                                                    ? colors.darkyellow
+                                                                    : colors.white,
+                                                                marginBottom: hp(
+                                                                    '2%'
+                                                                ),
+                                                                borderRadius: wp(
+                                                                    '2%'
+                                                                ),
+                                                            }}
+                                                        >
+                                                            <ImageBackground
+                                                                style={{
+                                                                    // borderRadius: wp('50%'),
+                                                                    width: wp(
+                                                                        '44%'
+                                                                    ),
+                                                                    height: hp(
+                                                                        '23%'
+                                                                    ),
+                                                                }}
+                                                                source={Svg}
+                                                                resizeMode="cover"
+                                                            >
+                                                                <View
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        display:
+                                                                            'flex',
+                                                                        flexDirection:
+                                                                            'row',
+                                                                        alignItems:
+                                                                            'flex-end',
+                                                                        justifyContent:
+                                                                            'center',
+                                                                    }}
+                                                                >
+                                                                    <Text
+                                                                        style={{
+                                                                            color:
+                                                                                colors.white,
+                                                                            marginBottom: wp(
+                                                                                '5%'
+                                                                            ),
+                                                                            fontFamily:
+                                                                                'ArchivoRegular',
+                                                                            fontWeight:
+                                                                                '500',
+                                                                            fontSize: wp(
+                                                                                '4.5%'
+                                                                            ),
+                                                                        }}
+                                                                    >
+                                                                        {name}
+                                                                    </Text>
+                                                                </View>
+                                                            </ImageBackground>
+                                                        </View>
+                                                    </Pressable>
+                                                )
+                                            }
+                                        )}
+                                    </View>
+                                ) : category === 'travel' ? (
+                                    <View style={styles.TravelListContainer}>
+                                        {travelList.map(
+                                            (ele: Item, index: number) => {
+                                                const { Svg } = ele
+
+                                                return (
+                                                    <View
+                                                        style={styles.Item}
+                                                        key={index}
+                                                    >
+                                                        <View
+                                                            style={{
                                                                 display: 'flex',
                                                                 flexDirection:
                                                                     'row',
                                                                 alignItems:
-                                                                    'flex-end',
-                                                                justifyContent:
                                                                     'center',
                                                             }}
                                                         >
-                                                            <Text
-                                                                style={{
-                                                                    color:
-                                                                        colors.white,
-                                                                    marginBottom: wp(
-                                                                        '5%'
-                                                                    ),
-                                                                    fontFamily:
-                                                                        'ArchivoRegular',
-                                                                    fontWeight:
-                                                                        '500',
-                                                                    fontSize: wp(
-                                                                        '4.5%'
-                                                                    ),
-                                                                }}
-                                                            >
-                                                                {name}
-                                                            </Text>
-                                                        </View>
-                                                    </ImageBackground>
-                                                </View>
-                                            </Pressable>
-                                        )
-                                    }
-                                )}
-                            </View>
-                        ) : category === 'travel' ? (
-                            <View style={styles.TravelListContainer}>
-                                {travelList.map((ele: Item, index: number) => {
-                                    const { Svg } = ele
-
-                                    return (
-                                        <View style={styles.Item} key={index}>
-                                            <View
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                }}
-                                            >
-                                                <Image source={Svg} />
-                                                {/* <Svg
+                                                            <Image
+                                                                source={Svg}
+                                                            />
+                                                            {/* <Svg
                                                     width={wp('24%')}
                                                     height={wp('24%')}
                                                 /> */}
-                                                <Text style={styles.ItemText}>
-                                                    {ele.name}
-                                                </Text>
-                                            </View>
+                                                            <Text
+                                                                style={
+                                                                    styles.ItemText
+                                                                }
+                                                            >
+                                                                {ele.name}
+                                                            </Text>
+                                                        </View>
 
-                                            <Pressable
-                                                onPress={() =>
-                                                    this.onPressCheckItem(
-                                                        'travel',
-                                                        index
-                                                    )
-                                                }
-                                            >
-                                                {ele.checked ? (
-                                                    <CheckedSvg />
-                                                ) : (
-                                                    <UncheckedSvg />
-                                                )}
-                                            </Pressable>
-                                        </View>
-                                    )
-                                })}
-                            </View>
-                        ) : (
-                            <View style={styles.TravelListContainer}>
-                                {shoppingList.map(
-                                    (ele: Item, index: number) => {
-                                        const { Svg } = ele
-                                        return (
-                                            <View
-                                                style={styles.Item}
-                                                key={index}
-                                            >
-                                                <View
-                                                    style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'row',
-                                                        alignItems: 'center',
-                                                    }}
-                                                >
-                                                    <Image source={Svg} />
-                                                    {/* <Svg
+                                                        <Pressable
+                                                            onPress={() =>
+                                                                this.onPressCheckItem(
+                                                                    'travel',
+                                                                    index
+                                                                )
+                                                            }
+                                                        >
+                                                            {ele.checked ? (
+                                                                <CheckedSvg />
+                                                            ) : (
+                                                                <UncheckedSvg />
+                                                            )}
+                                                        </Pressable>
+                                                    </View>
+                                                )
+                                            }
+                                        )}
+                                    </View>
+                                ) : (
+                                    <View style={styles.TravelListContainer}>
+                                        {shoppingList.map(
+                                            (ele: Item, index: number) => {
+                                                const { Svg } = ele
+                                                return (
+                                                    <View
+                                                        style={styles.Item}
+                                                        key={index}
+                                                    >
+                                                        <View
+                                                            style={{
+                                                                display: 'flex',
+                                                                flexDirection:
+                                                                    'row',
+                                                                alignItems:
+                                                                    'center',
+                                                            }}
+                                                        >
+                                                            <Image
+                                                                source={Svg}
+                                                            />
+                                                            {/* <Svg
                                                         width={wp('24%')}
                                                         height={wp('24%')}
                                                     /> */}
-                                                    <Text
-                                                        style={styles.ItemText}
-                                                    >
-                                                        {ele.name}
-                                                    </Text>
-                                                </View>
-                                                <Pressable
-                                                    onPress={() =>
-                                                        this.onPressCheckItem(
-                                                            'shopping',
-                                                            index
-                                                        )
-                                                    }
-                                                >
-                                                    {ele.checked ? (
-                                                        <CheckedSvg />
-                                                    ) : (
-                                                        <UncheckedSvg />
-                                                    )}
-                                                </Pressable>
-                                            </View>
-                                        )
-                                    }
+                                                            <Text
+                                                                style={
+                                                                    styles.ItemText
+                                                                }
+                                                            >
+                                                                {ele.name}
+                                                            </Text>
+                                                        </View>
+                                                        <Pressable
+                                                            onPress={() =>
+                                                                this.onPressCheckItem(
+                                                                    'shopping',
+                                                                    index
+                                                                )
+                                                            }
+                                                        >
+                                                            {ele.checked ? (
+                                                                <CheckedSvg />
+                                                            ) : (
+                                                                <UncheckedSvg />
+                                                            )}
+                                                        </Pressable>
+                                                    </View>
+                                                )
+                                            }
+                                        )}
+                                    </View>
                                 )}
-                            </View>
-                        )}
-                    </ScrollView>
+                            </ScrollView>
 
-                    <CustomButton
-                        onPressButton={this.onPressNext}
-                        title="Next"
-                        buttonStyles={{
-                            display: 'flex',
-                            width: '100%',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                        }}
-                        buttonTextStyles={[
-                            { fontFamily: 'ArchivoBold', fontSize: wp('4%') },
-                        ]}
-                    />
-                </SafeAreaView>
-            </View>
+                            <CustomButton
+                                onPressButton={this.onPressNext}
+                                title="Next"
+                                buttonStyles={{
+                                    display: 'flex',
+                                    width: '100%',
+                                    alignContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                                buttonTextStyles={[
+                                    {
+                                        fontFamily: 'ArchivoBold',
+                                        fontSize: wp('4%'),
+                                    },
+                                ]}
+                            />
+                        </SafeAreaView>
+                    </View>
+                )}
+            </>
         )
     }
 }

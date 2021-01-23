@@ -1,4 +1,8 @@
 export const BACKEND_API = 'https://frappy-crawler.herokuapp.com/'
-export const FOOD_FAVORITES = `${BACKEND_API}api/food/favorites/`
-export const TRAVEL_FAVORITES = `${BACKEND_API}api/travel/favorites/`
-export const SHOPPING_FAVORITES = `${BACKEND_API}api/shopping/favorites/`
+
+export const FAVORITES = `${BACKEND_API}api/user/favorites/`
+
+export const FAVORITE_RESTAURANTS = `${BACKEND_API}api/favorites/food/restaurants/`
+
+export const FAVORITE_SHOPPINGMALL = `${BACKEND_API}api/favorites/shopping/malls/`
+export const FAVORITE_TRAVELPLACES = `${BACKEND_API}api/favorites/travel/places/`

@@ -15,6 +15,11 @@ class HomeScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
+                    name="home"
+                    component={HomeScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="itemInDetail"
                     component={ItemInDetailScreen}
                     options={{
@@ -29,12 +34,6 @@ class HomeScreens extends Component {
                 <Stack.Screen
                     name="reviewsAndRating"
                     component={ReviewsAndRating}
-                    options={{ headerShown: false }}
-                />
-
-                <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
                     options={{ headerShown: false }}
                 />
 

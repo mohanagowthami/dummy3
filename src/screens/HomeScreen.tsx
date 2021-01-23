@@ -28,12 +28,18 @@ import {
 } from '../../assets/svgs'
 // components
 import CustomButton from '../components/common/CustomButton'
-import CustomTextField from '../components/common/CustomTextField'
 // colors
 import { colors } from '../lib/colors'
+// endpoints
+import { FAVORITE_RESTAURANTS, FAVORITE_TRAVELPLACES } from '../lib/endpoints'
+// services
+import RestaurantService from '../services/restaurants.service'
+import ShoppingMallService from '../services/shoppingmall.service'
+import TravelService from '../services/travel.service'
 
 interface IProps {
     navigation: any
+    route: any
 }
 // divisioning of the screen
 interface ICategoryType {
@@ -45,11 +51,21 @@ interface ICategoryType {
 // state - data
 interface Istate {
     category: string
-    categoryData: ICategoryType
+    categoryData: Array<{ isDatafetched: boolean; data: ICategoryType }>
     activeIndex: number
 }
+
+const colorsList = [
+    '#FFEA75',
+    'FFE8E7',
+    '#C3F4FF',
+    '#E2F0FF',
+    '#FFE2F5',
+    '#E1E2FF',
+    '#FFE5B2',
+]
 // data
-const foodContent = {
+const content = {
     // first division - trends list data
     trendsList: [
         {
@@ -147,6 +163,10 @@ const foodContent = {
     ],
 }
 // Main class component
+
+const restaurantService = new RestaurantService()
+const travelService = new TravelService()
+const shoppingService = new ShoppingMallService()
 class HomeScreen extends Component<IProps, Istate> {
     carousel: any
     // destructuring props and state
@@ -154,20 +174,128 @@ class HomeScreen extends Component<IProps, Istate> {
         super(props)
         this.state = {
             category: 'food',
-            categoryData: foodContent,
+            categoryData: [
+                {
+                    isDatafetched: false,
+                    data: {
+                        trendsList: [],
+                        localFavouritesList: [],
+                        recapList: [],
+                        hallOfFame: [],
+                    },
+                },
+                {
+                    isDatafetched: false,
+                    data: {
+                        trendsList: [],
+                        localFavouritesList: [],
+                        recapList: [],
+                        hallOfFame: [],
+                    },
+                },
+                {
+                    isDatafetched: false,
+                    data: {
+                        trendsList: [],
+                        localFavouritesList: [],
+                        recapList: [],
+                        hallOfFame: [],
+                    },
+                },
+            ],
             activeIndex: 0,
         }
     }
+
+    async componentDidMount() {
+        try {
+            const response = await restaurantService.pusher(
+                FAVORITE_RESTAURANTS,
+                {
+                    username: 'dorababu',
+                }
+            )
+            console.log(response, 'respose')
+            let data = { ...this.state }
+            data.categoryData[0].isDatafetched = true
+            data.categoryData[0].data.localFavouritesList = response.results
+            console.log(
+                data.categoryData[0].data.localFavouritesList,
+                'restaurants'
+            )
+            this.setState({ ...data })
+        } catch {
+            alert('something went wrong')
+        }
+    }
+
+    getActiveIndex = () => {
+        const { category } = this.state
+        if (category === 'food') return 0
+        else if (category === 'travel') return 1
+        else if (category === 'shopping') return 2
+        else return 0
+    }
+
+    getSelectedCategoryData = async (type: string) => {
+        let url
+        let service: any
+        let index = 0
+        let stateData = { ...this.state }
+        if (type === 'travel') {
+            url = FAVORITE_TRAVELPLACES
+            service = travelService
+            index = 1
+            stateData.category = 'travel'
+        } else if (type === 'shopping') {
+            url = FAVORITE_TRAVELPLACES
+            service = shoppingService
+            index = 2
+            stateData.category = 'shopping'
+        }
+        if (type !== 'food' && !this.state.categoryData[index].isDatafetched) {
+            console.log('getSelectedCategory function calling')
+            try {
+                const response = await service!.pusher(url, {
+                    username: 'dorababu',
+                })
+                console.log(response, 'in outside function')
+                stateData.categoryData[index].isDatafetched = true
+
+                if (response.results.length > 0) {
+                    stateData.categoryData[
+                        this.getActiveIndex()
+                    ].data = response
+                }
+
+                this.setState(stateData)
+            } catch (error) {
+                alert('something wrong')
+            }
+        }
+    }
+
     // category selection
-    onPressButton = (type: string) => {
-        this.setState({
-            category: type,
-        })
+    onPressButton = async (type: string) => {
+        this.setState({ ...this.state, category: type }, () =>
+            this.getSelectedCategoryData(type)
+        )
     }
     // rendering an item for carousel
     _renderItem({ item, index }: any) {
         return (
-            <View style={styles.renderItemContainer}>
+            <View
+                style={[
+                    styles.renderItemContainer,
+                    {
+                        backgroundColor: `${
+                            colorsList[
+                                Math.floor(Math.random() * colorsList.length)
+                            ]
+                        }`,
+                    },
+                ]}
+            >
                 <View
                     style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
@@ -205,10 +333,11 @@ class HomeScreen extends Component<IProps, Istate> {
     }
     // pagination function
     get pagination() {
-        const { activeIndex, categoryData } = this.state
+        const { categoryData, activeIndex } = this.state
+        const index = this.getActiveIndex()
         return (
             <Pagination
-                dotsLength={categoryData.trendsList.length}
+                dotsLength={categoryData[index].data.trendsList.length}
                 activeDotIndex={activeIndex}
                 inactiveDotStyle={{
                     width: 10,
@@ -233,12 +362,18 @@ class HomeScreen extends Component<IProps, Istate> {
     }
     // trends slider function
     renderTrendsSlider = () => {
+        const { categoryData } = this.state
+        console.log(
+            categoryData[this.getActiveIndex()].data.trendsList,
+            'trensdsList'
+        )
+
         return (
             <>
                 <Carousel
                     layout={'default'}
                     ref={(ref: any) => (this.carousel = ref)}
-                    data={this.state.categoryData.trendsList}
+                    data={categoryData[this.getActiveIndex()].data.trendsList}
                     sliderWidth={wp('100%')}
                     itemWidth={wp('100%')}
                     renderItem={this._renderItem}
@@ -250,103 +385,136 @@ class HomeScreen extends Component<IProps, Istate> {
                         })
                     }}
                 />
-                {this.pagination}
+                {categoryData[this.getActiveIndex()].data.trendsList &&
+                    this.pagination}
             </>
         )
     }
+
+    //  commonElement = (food_category:Array<string>,cuisines:Array<string>) =>
+    //     {
+    //      if (food_category.some((item: any) => cuisines.includes(item)))
+
+    //     }
     // local favourites slider function
     renderLocalFavourities = () => {
+        const { categoryData } = this.state
+        console.log(categoryData, 'categoryData')
+        // const {
+        //     food_category,
+        //     travel_category,
+        //     shopping_category,
+        // } = this.props.route.params
+        console.log(this.props.route, 'route')
+
         return (
             <ScrollView horizontal={true}>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    {this.state.categoryData.localFavouritesList.map(
-                        (item, index) => {
-                            const { image, name, companyName, rating } = item
-                            return (
+                    {categoryData[
+                        this.getActiveIndex()
+                    ].data.localFavouritesList.map((item, index) => {
+                        const {
+                            menu_images,
+                            name,
+                            overall_rating,
+                            cuisines,
+                        } = item
+                        const image =
+                            menu_images.length > 0
+                                ? menu_images[0].image
+                                : 'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
+                        console.log(image, 'image')
+                        return (
+                            <View
+                                style={{
+                                    paddingVertical: wp('6%'),
+                                    width: wp('55%'),
+                                    height: wp('60%'),
+                                    backgroundColor: `${
+                                        colorsList[
+                                            Math.floor(
+                                                Math.random() *
+                                                    colorsList.length
+                                            )
+                                        ]
+                                    }`,
+                                    borderRadius: wp('3%'),
+                                    marginRight: wp('5%'),
+                                    paddingHorizontal: wp('5%'),
+                                    flex: 1,
+                                }}
+                                key={index}
+                            >
+                                <Image
+                                    source={{
+                                        uri: image,
+                                    }}
+                                    style={{
+                                        width: '50%',
+                                        height: '50%',
+                                        display: 'flex',
+                                        alignSelf: 'center',
+                                    }}
+                                />
                                 <View
                                     style={{
-                                        paddingVertical: wp('6%'),
-                                        width: wp('55%'),
-                                        height: wp('60%'),
-                                        backgroundColor: colors.lightPink,
-                                        borderRadius: wp('3%'),
-                                        marginRight: wp('5%'),
-                                        paddingHorizontal: wp('5%'),
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
                                         flex: 1,
+                                        marginTop: wp('4%'),
                                     }}
-                                    key={index}
                                 >
-                                    <Image
-                                        source={{
-                                            uri: image,
-                                        }}
+                                    <Text
                                         style={{
-                                            width: '50%',
-                                            height: '50%',
-                                            display: 'flex',
-                                            alignSelf: 'center',
+                                            fontFamily: 'ArchivoBold',
+                                            fontSize: wp('4.8%'),
+                                            color: colors.darkBlack,
                                         }}
-                                    />
+                                    >
+                                        {cuisines[0]}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontFamily: 'ArchivoRegular',
+                                            fontSize: wp('3.8%'),
+                                            color: colors.orange,
+                                        }}
+                                    >
+                                        {name}
+                                    </Text>
                                     <View
                                         style={{
                                             display: 'flex',
+                                            flexDirection: 'row',
                                             justifyContent: 'space-between',
-                                            flex: 1,
-                                            marginTop: wp('4%'),
+                                            alignItems: 'center',
                                         }}
                                     >
-                                        <Text
-                                            style={{
-                                                fontFamily: 'ArchivoBold',
-                                                fontSize: wp('4.8%'),
-                                                color: colors.darkBlack,
-                                            }}
-                                        >
-                                            {name}
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                fontFamily: 'ArchivoRegular',
-                                                fontSize: wp('3.8%'),
-                                                color: colors.orange,
-                                            }}
-                                        >
-                                            {companyName}
-                                        </Text>
                                         <View
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'row',
-                                                justifyContent: 'space-between',
                                                 alignItems: 'center',
                                             }}
                                         >
-                                            <View
+                                            <Rating />
+                                            <Text
                                                 style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
+                                                    marginLeft: wp('2%'),
                                                 }}
                                             >
-                                                <Rating />
-                                                <Text
-                                                    style={{
-                                                        marginLeft: wp('2%'),
-                                                    }}
-                                                >
-                                                    {rating}
-                                                </Text>
-                                            </View>
-                                            <NavigationIcon
-                                                width={wp('7.8%')}
-                                                height={wp('7.8%')}
-                                            />
+                                                {overall_rating}
+                                            </Text>
                                         </View>
+                                        <NavigationIcon
+                                            width={wp('7.8%')}
+                                            height={wp('7.8%')}
+                                        />
                                     </View>
                                 </View>
-                            )
-                        }
-                    )}
+                            </View>
+                        )
+                    })}
                 </View>
             </ScrollView>
         )
@@ -371,7 +539,9 @@ class HomeScreen extends Component<IProps, Istate> {
                     </View>
                     <View style={styles.buttonsContainer}>
                         <CustomButton
-                            onPressButton={() => this.onPressButton('food')}
+                            onPressButton={() =>
+                                this.getSelectedCategoryData('food')
+                            }
                             title="Food"
                             buttonStyles={[
                                 styles.smallButton,
@@ -380,6 +550,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                         this.state.category !== 'food'
                                             ? 'rgba(255,108,101,0.2)'
                                             : colors.orange,
+                                    borderColor: colors.orange,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -393,7 +564,9 @@ class HomeScreen extends Component<IProps, Istate> {
                             ]}
                         />
                         <CustomButton
-                            onPressButton={() => this.onPressButton('travel')}
+                            onPressButton={() =>
+                                this.getSelectedCategoryData('travel')
+                            }
                             title="Travel"
                             buttonStyles={[
                                 styles.smallButton,
@@ -402,6 +575,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                         this.state.category !== 'travel'
                                             ? 'rgba(253,210,106,0.2)'
                                             : colors.yellow,
+                                    borderColor: colors.yellow,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -415,7 +589,9 @@ class HomeScreen extends Component<IProps, Istate> {
                             ]}
                         />
                         <CustomButton
-                            onPressButton={() => this.onPressButton('shopping')}
+                            onPressButton={() =>
+                                this.getSelectedCategoryData('shopping')
+                            }
                             title="Shopping"
                             buttonStyles={[
                                 styles.smallButton,
@@ -424,6 +600,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                         this.state.category !== 'shopping'
                                             ? 'rgba(102,197,218,0.3)'
                                             : colors.skyBlue,
+                                    borderColor: colors.skyBlue,
                                 },
                             ]}
                             buttonTextStyles={[
@@ -438,7 +615,8 @@ class HomeScreen extends Component<IProps, Istate> {
                         />
                     </View>
                     {/* calling trend slider function*/}
-                    {this.renderTrendsSlider()}
+                    {this.state.categoryData[this.getActiveIndex()].data &&
+                        this.renderTrendsSlider()}
                     <View
                         style={[
                             styles.TitleContainer,
@@ -449,7 +627,12 @@ class HomeScreen extends Component<IProps, Istate> {
                         <Pressable
                             onPress={() =>
                                 this.props.navigation.navigate(
-                                    'localFavourites'
+                                    'localFavourites',
+                                    {
+                                        localFavourites: this.state
+                                            .categoryData[this.getActiveIndex()]
+                                            .data.localFavouritesList,
+                                    }
                                 )
                             }
                         >
@@ -460,7 +643,8 @@ class HomeScreen extends Component<IProps, Istate> {
                         </Pressable>
                     </View>
                     {/* calling local favourites function*/}
-                    {this.renderLocalFavourities()}
+                    {this.state.categoryData[this.getActiveIndex()].data &&
+                        this.renderLocalFavourities()}
                     <View style={[styles.TitleContainer]}>
                         <Text style={styles.frappyText}>Recap</Text>
                         <View style={styles.sectionHeaderWrapper}>
@@ -470,8 +654,11 @@ class HomeScreen extends Component<IProps, Istate> {
                     </View>
                     <View>
                         <View>
-                            {this.state.categoryData.recapList.map(
-                                (ele, index) => {
+                            {this.state.categoryData[this.getActiveIndex()]
+                                .data &&
+                                this.state.categoryData[
+                                    this.getActiveIndex()
+                                ].data.recapList.map((ele, index) => {
                                     const {
                                         name,
                                         location,
@@ -567,8 +754,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                             ></View>
                                         </View>
                                     )
-                                }
-                            )}
+                                })}
                         </View>
                     </View>
 
@@ -588,20 +774,20 @@ class HomeScreen extends Component<IProps, Istate> {
                             marginBottom: wp('15%'),
                         }}
                     >
-                        {this.state.categoryData.hallOfFame.map(
-                            (item, index) => {
-                                return (
-                                    <View key={index}>
-                                        <Image
-                                            style={styles.hallOfFameImage}
-                                            source={{
-                                                uri: item,
-                                            }}
-                                        />
-                                    </View>
-                                )
-                            }
-                        )}
+                        {this.state.categoryData[
+                            this.getActiveIndex()
+                        ].data.hallOfFame.map((item, index) => {
+                            return (
+                                <View key={index}>
+                                    <Image
+                                        style={styles.hallOfFameImage}
+                                        source={{
+                                            uri: item,
+                                        }}
+                                    />
+                                </View>
+                            )
+                        })}
                     </View>
                 </View>
             </ScrollView>
@@ -657,9 +843,11 @@ const styles = StyleSheet.create({
     },
     smallButton: {
         width: wp('27%'),
-        borderRadius: wp('3.3%'),
+        borderRadius: wp('5%'),
         marginTop: wp('5.3%'),
-        paddingVertical: wp('2.5%'),
+        paddingVertical: wp('3%'),
+        marginBottom: wp('4%'),
+        borderWidth: wp('0.3%'),
     },
     buttonTitle: {
         fontFamily: 'AirbnbCerealBold',
@@ -681,7 +869,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         borderRadius: wp('3%'),
-        backgroundColor: colors.lightPink,
+
         justifyContent: 'space-between',
         height: wp('34%'),
         alignItems: 'center',

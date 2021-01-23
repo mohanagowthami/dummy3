@@ -17,4 +17,8 @@ export const colors = {
     greyBackground: '#F7F8FA',
     greytwobackground: '#E5E5E5',
     darkorange: '#F53838',
+    namecolor: '#010101',
+    optionsblack: '#352C2D',
+    lightGreyFive: '#979797',
+    greyTwo: '#77838F',
 }

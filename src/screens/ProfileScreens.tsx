@@ -3,9 +3,10 @@ import React, { Component } from 'react'
 // react-navigation
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
 // screens
-import HomeScreen from './HomeScreen'
-import ItemInDetailScreen from './ItemInDetailScreen'
-import LocalFavourites from './LocalFavourites'
+import Profile from './Profile'
+import ProfileSettings from './ProfileSettings'
+import AccountSettings from './AccountSettings'
+import ProfileScreen from './ProfileScreen'
 
 const Stack = createStackNavigator()
 class ProfileScreens extends Component {
@@ -13,23 +14,29 @@ class ProfileScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="localFavourites"
-                    component={LocalFavourites}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="itemInDetail"
-                    component={ItemInDetailScreen}
+                    name="accountSettings"
+                    component={AccountSettings}
                     options={{
                         headerShown: false,
                         // headerTitleStyle: { color: 'white' },
                     }}
                 />
+                <Stack.Screen
+                    name="profileScreen"
+                    component={ProfileScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="profile"
+                    component={Profile}
+                    options={{ headerShown: false }}
+                />
+
+                {/* <Stack.Screen
+                    name="profileSettings"
+                    component={ProfileSettings}
+                    options={{ headerShown: false }}
+                /> */}
             </Stack.Navigator>
         )
     }

@@ -20,6 +20,15 @@ import { BellIcon, NavigationIcon, SearchIcon } from '../../assets/svgs'
 // colors
 import { colors } from '../lib/colors'
 
+const colorsList = [
+    '#FFEA75',
+    'FFE8E7',
+    '#C3F4FF',
+    '#E2F0FF',
+    '#FFE2F5',
+    '#E1E2FF',
+    '#FFE5B2',
+]
 export const localFavouritesList = [
     {
         image:
@@ -87,15 +96,17 @@ export const localFavouritesList = [
 ]
 interface IProps {
     navigation: any
+    route: any
 }
 
 interface IState {}
 class LocalFavourites extends Component<IProps, IState> {
     renderLocalFavouritesList = () => {
+        const { localFavourites } = this.props.route.params
         return (
             <ScrollView>
-                {localFavouritesList.map((ele, index) => {
-                    const { image, name, companyName, rating } = ele
+                {localFavourites.map((ele: any, index: number) => {
+                    const { menu_images, overall_rating, name, cuisines } = ele
                     return (
                         <Pressable
                             onPress={() =>
@@ -103,7 +114,21 @@ class LocalFavourites extends Component<IProps, IState> {
                             }
                             key={index}
                         >
-                            <View style={styles.renderItemContainer}>
+                            <View
+                                style={[
+                                    styles.renderItemContainer,
+                                    {
+                                        backgroundColor: `${
+                                            colorsList[
+                                                Math.floor(
+                                                    Math.random() *
+                                                        colorsList.length
+                                                )
+                                            ]
+                                        }`,
+                                    },
+                                ]}
+                            >
                                 <View
                                     style={{
                                         display: 'flex',
@@ -121,7 +146,7 @@ class LocalFavourites extends Component<IProps, IState> {
                                                 marginBottom: wp('1%'),
                                             }}
                                         >
-                                            {name}
+                                            {cuisines[0]}
                                         </Text>
                                         <Text
                                             style={{
@@ -131,7 +156,7 @@ class LocalFavourites extends Component<IProps, IState> {
                                                 color: colors.grey,
                                             }}
                                         >
-                                            {companyName}
+                                            {name}
                                         </Text>
                                     </View>
                                     <NavigationIcon
@@ -142,7 +167,9 @@ class LocalFavourites extends Component<IProps, IState> {
 
                                 <Image
                                     source={{
-                                        uri: image,
+                                        uri: menu_images[0]
+                                            ? menu_images[0].image
+                                            : 'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
                                     }}
                                     style={{
                                         width: wp('28%'),
@@ -218,7 +245,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         borderRadius: wp('3%'),
-        backgroundColor: colors.lightPink,
         justifyContent: 'space-between',
         height: wp('34%'),
         marginTop: wp('5%'),

@@ -10,22 +10,25 @@ import {
     Pressable,
     TextInput,
 } from 'react-native'
-import { colors } from '../lib/colors'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+// components
 import CustomButton from '../components/common/CustomButton'
+// colors
+import { colors } from '../lib/colors'
+
+// icons
 import RightArrow from '../../assets/svgs/RightArrow'
 import BookmarkIcon from '../../assets/svgs/icons/BookmarkIcon'
 import PhotoIcon from '../../assets/svgs/icons/PhotoIcon'
 import RatingIcon from '../../assets/svgs/icons/RatingIcon'
 import ReadMore from '../../assets/svgs/icons/ReadMore'
 import Loading from '../../assets/svgs/icons/Loading'
-import ProfileIcon from '../../assets/svgs/icons/ProfileIcon'
 import Profile from '../../assets/svgs/icons/Profile'
-import SearchIcon from '../../assets/svgs/SearchIcon'
-// import BackIcon from '../../assets/svgs/icons/BackIcon'
+import BackIcon from '../../assets/svgs/icons/BackIcon'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
@@ -129,7 +132,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                 )
                             }
                         >
-                            {/* <BackIcon /> */}
+                            <BackIcon />
                         </Pressable>
                     </View>
                     <Image

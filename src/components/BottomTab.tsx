@@ -19,11 +19,13 @@ import DirectionSvg from '../../assets/svgs/DirectionSvg'
 
 import ExploreScreen from '../screens/ExploreScreen'
 import LuckyCardsScreen from '../screens/LuckyCardsScreen'
-import CalenderScreen from '../screens/CalenderScreen'
+import CalenderScreen from '../screens/AddDateToCalender'
 import ProfileScreen from '../screens/ProfileScreen'
 import HomeScreens from '../screens/HomeScreens'
 // colors
 import { colors } from '../lib/colors'
+import ProfileScreens from '../screens/ProfileScreens'
+import CalenderScreens from '../screens/CalendarScreens'
 
 const Tab = createBottomTabNavigator()
 class BottomTab extends React.Component<{}, {}> {
@@ -92,7 +94,7 @@ class BottomTab extends React.Component<{}, {}> {
 
                 <Tab.Screen
                     name="calender"
-                    component={CalenderScreen}
+                    component={CalenderScreens}
                     options={{
                         tabBarLabel: 'Calender',
                         tabBarIcon: ({ color }) => (
@@ -107,7 +109,7 @@ class BottomTab extends React.Component<{}, {}> {
                 />
                 <Tab.Screen
                     name="profile"
-                    component={ProfileScreen}
+                    component={ProfileScreens}
                     options={{
                         tabBarLabel: 'Profile',
                         tabBarIcon: ({ color }) => (

@@ -7,6 +7,7 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+import { colors } from '../../lib/colors'
 interface ICustomTextFieldProps {
     onCallBack?: (value: any) => void
     autoFocus?: boolean
@@ -16,7 +17,7 @@ interface ICustomTextFieldProps {
     handleChange?: () => void
     maxLength?: number
     textAlign?: any
-    multiline: boolean
+    multiline?: boolean
     textAlignVertical?: any
     placeholderTextColor?: any
 }
@@ -62,7 +63,7 @@ class CustomTextField extends Component<
                 borderBottomColor: '#DFE1E6',
                 fontFamily: 'AirbnbCerealBook',
                 fontSize: hp('2%'),
-                color: 'red',
+                color: colors.greyTwo,
             },
         })
         const { style, value, handleChange } = this.props
