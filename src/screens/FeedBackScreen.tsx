@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
-import CustomButton from '../components/common/CustomButton'
-import CustomTextField from '../components/common/CustomTextField'
+import CustomButton from '../components/buttons/CustomButton'
+import CustomTextField from '../components/input-controllers/CustomTextField'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,

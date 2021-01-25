@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 
 import { Formik } from 'formik'
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../buttons/CustomButton'
 import { View, StyleSheet } from 'react-native'
-import CustomTextField from '../components/common/CustomTextField'
+import CustomTextField from '../input-controllers/CustomTextField'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,

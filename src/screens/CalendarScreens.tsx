@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 // screens
 import ReviewsAndRating from './ReviewsAndRating'
 import AddDateToCalender from './AddDateToCalender'
+import FrappyPlannerCalendar from './FrappyPlannerCalendar'
 
 const Stack = createStackNavigator()
 class CalenderScreens extends Component {
@@ -12,13 +13,13 @@ class CalenderScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
-                    name="addDate"
-                    component={AddDateToCalender}
+                    name="frappyCalender"
+                    component={FrappyPlannerCalendar}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="reviewsAndRating"
-                    component={ReviewsAndRating}
+                    name="addDateToCalender"
+                    component={AddDateToCalender}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

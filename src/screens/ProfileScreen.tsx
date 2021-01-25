@@ -12,8 +12,8 @@ import Social from '../../assets/svgs/icons/profile/Social'
 import Settings from '../../assets/svgs/icons/profile/Settings'
 import Logout from '../../assets/svgs/icons/profile/Logout'
 
-import CustomButton from '../components/common/CustomButton'
-import CustomTextField from '../components/common/CustomTextField'
+import CustomButton from '../components/buttons/CustomButton'
+import CustomTextField from '../components/input-controllers/CustomTextField'
 // colors
 import { colors } from '../lib/colors'
 
@@ -43,7 +43,8 @@ const details = {
         {
             name: 'Rohit Sharma',
             image:
-                'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
+                'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+            // 'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
             place: 'Hyderabad',
         },
     ],
@@ -67,7 +68,7 @@ class ProfileScreen extends Component<IProps, Istate> {
                         (item, index) => {
                             const { name, image, place } = item
                             return (
-                                <View style={styles.container}>
+                                <View style={styles.container} key={index}>
                                     <View style={styles.imageandbackicon}>
                                         <Image
                                             style={styles.profileimage}
@@ -77,13 +78,18 @@ class ProfileScreen extends Component<IProps, Istate> {
                                             }}
                                         />
                                         <Pressable
+                                            // style={{ backgroundColor: 'cyan' }}
                                             onPress={() =>
                                                 this.props.navigation.navigate(
                                                     'profile'
                                                 )
                                             }
                                         >
-                                            <ForwardIcon />
+                                            <ForwardIcon
+                                                paddingTop={wp('20%')}
+                                                width={wp('2.92%')}
+                                                height={hp('2.86%')}
+                                            />
                                         </Pressable>
                                     </View>
                                     <View style={styles.nameandplace}>
@@ -100,7 +106,10 @@ class ProfileScreen extends Component<IProps, Istate> {
                 </View>
                 <View style={styles.optionscontainer}>
                     <View style={styles.optioncontainer}>
-                        <Notifications />
+                        <Notifications
+                            width={wp('5.86%')}
+                            height={hp('2.89%')}
+                        />
                         <Text style={styles.optionstext}>Notifications</Text>
                         <View style={styles.notificationcount}>
                             <Text
@@ -108,6 +117,7 @@ class ProfileScreen extends Component<IProps, Istate> {
                                     alignSelf: 'center',
                                     alignItems: 'center',
                                     color: colors.white,
+                                    fontSize: wp('3%'),
                                 }}
                             >
                                 3
@@ -116,25 +126,34 @@ class ProfileScreen extends Component<IProps, Istate> {
                         </View>
                     </View>
                     <View style={styles.optioncontainer}>
-                        <Search />
+                        <Search width={wp('5.86%')} height={hp('2.89%')} />
                         <Text style={styles.optionstext}>Search</Text>
                     </View>
                     <View style={styles.optioncontainer}>
-                        <Share />
+                        <Share width={wp('5.86%')} height={hp('2.89%')} />
                         <Text style={styles.optionstext}>
                             Share with your friends
                         </Text>
                     </View>
                     <View style={styles.optioncontainer}>
-                        <Social />
+                        <Social width={wp('5.86%')} height={hp('2.89%')} />
                         <Text style={styles.optionstext}>Social</Text>
                     </View>
+                    <Pressable
+                        onPress={() =>
+                            this.props.navigation.navigate('accountSettings')
+                        }
+                    >
+                        <View style={styles.optioncontainer}>
+                            <Settings
+                                width={wp('5.86%')}
+                                height={hp('2.89%')}
+                            />
+                            <Text style={styles.optionstext}>Settings</Text>
+                        </View>
+                    </Pressable>
                     <View style={styles.optioncontainer}>
-                        <Settings />
-                        <Text style={styles.optionstext}>Settings</Text>
-                    </View>
-                    <View style={styles.optioncontainer}>
-                        <Logout />
+                        <Logout width={wp('5.86%')} height={hp('2.89%')} />
                         <Text style={styles.optionstext}>Logout</Text>
                     </View>
                 </View>
@@ -164,12 +183,16 @@ const styles = StyleSheet.create({
     imageandbackicon: {
         display: 'flex',
         flexDirection: 'row',
+        // width:wp(""),
+        // height: wp('12.368%'),
         paddingRight: wp('12.8%'),
         justifyContent: 'space-between',
+        // backgroundColor: 'yellow',
     },
     profileimage: {
         width: wp('25.006%'),
-        height: wp('12.368%'),
+        height: wp('20.368%'),
+        borderRadius: wp('2%'),
     },
     name: {
         fontFamily: 'ArchivoRegular',
@@ -216,13 +239,11 @@ const styles = StyleSheet.create({
         paddingLeft: wp('13.33%'),
     },
     notificationcount: {
-        // display: 'flex',
-        // flex: 1,
         width: wp('7.2%'),
-        height: hp('3.55%'),
+        height: wp('7.2%'),
         marginLeft: wp('25.33%'),
         backgroundColor: colors.orange,
-        borderRadius: hp('1.77%'),
+        borderRadius: wp('3.6%'),
         justifyContent: 'center',
     },
 })

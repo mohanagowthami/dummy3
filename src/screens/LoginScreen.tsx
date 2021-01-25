@@ -19,8 +19,8 @@ import {
 // Modal
 import Modal from 'react-native-modal'
 // components
-import CustomButton from '../components/common/CustomButton'
-import CustomTextField from '../components/common/CustomTextField'
+import CustomButton from '../components/buttons/CustomButton'
+import CustomTextField from '../components/input-controllers/CustomTextField'
 // colors
 import { colors } from '../lib/colors'
 // Svgs

@@ -20,7 +20,7 @@ import {
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
 // common component
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../components/buttons/CustomButton'
 //colors
 import { colors } from '../lib/colors'
 // Svgs

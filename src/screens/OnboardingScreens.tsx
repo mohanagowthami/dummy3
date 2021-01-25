@@ -250,22 +250,20 @@ class OnboardingScreens extends React.Component<Props, State> {
         const currentObject = this
 
         return (
-            <SafeAreaView style={{ flex: 1 }}>
-                <Carousel
-                    layout={'default'}
-                    ref={(ref: any) => (this.carousel = ref)}
-                    data={this.state.carouselItems}
-                    sliderWidth={wp('100%')}
-                    itemWidth={wp('100%')}
-                    renderItem={this._renderItem.bind(this)}
-                    onSnapToItem={(index: number) => {
-                        currentObject.setState({
-                            ...currentObject.state,
-                            activeIndex: index,
-                        })
-                    }}
-                />
-            </SafeAreaView>
+            <Carousel
+                layout={'default'}
+                ref={(ref: any) => (this.carousel = ref)}
+                data={this.state.carouselItems}
+                sliderWidth={wp('100%')}
+                itemWidth={wp('100%')}
+                renderItem={this._renderItem.bind(this)}
+                onSnapToItem={(index: number) => {
+                    currentObject.setState({
+                        ...currentObject.state,
+                        activeIndex: index,
+                    })
+                }}
+            />
         )
     }
 }

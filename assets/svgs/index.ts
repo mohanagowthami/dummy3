@@ -1,5 +1,7 @@
 import CalendarSvg from './CalendarSvg'
 import CheckedSvg from './CheckedSvg'
+import ClockIcon from './ClockIcon'
+
 import HappySvg from './HappySvg'
 import HomeSvg from './HomeSvg'
 import UncheckedSvg from './UncheckedSvg'
@@ -13,6 +15,7 @@ import UnfilledStar from './UnfilledStar'
 export {
     CalendarSvg,
     CheckedSvg,
+    ClockIcon,
     HappySvg,
     HomeSvg,
     UncheckedSvg,

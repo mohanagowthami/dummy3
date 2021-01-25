@@ -198,6 +198,9 @@ class LocalFavourites extends Component<IProps, IState> {
                     <TextInput
                         placeholder="Search Restaurants"
                         style={styles.searchInput}
+                        onChange={() =>
+                            this.props.navigation.navigate('searchFoodResults')
+                        }
                     />
                 </View>
                 {this.renderLocalFavouritesList()}

@@ -1,5 +1,6 @@
 export const colors = {
     lightBlack: '#7A869A',
+    greyishBlack: '#010F07',
     orange: '#FF6C65',
     darkBlack: '#010101',
     white: '#FFFFFF',
@@ -21,4 +22,6 @@ export const colors = {
     optionsblack: '#352C2D',
     lightGreyFive: '#979797',
     greyTwo: '#77838F',
+    borderbottomcolor: '#787878',
+    transparent: 'transparent',
 }

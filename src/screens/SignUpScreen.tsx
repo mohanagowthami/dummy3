@@ -24,12 +24,12 @@ import GoogleSvg from '../../assets/svgs/GoogleSvg'
 import TwitterSvg from '../../assets/svgs/TwitterSvg'
 import WelcomeSvg from '../../assets/svgs/WelcomeSvg'
 // SignUp Form
-import SignUpForm from '../forms/SignUpForm'
+import SignUpForm from '../components/forms/SignUpForm'
 // colors
 import { colors } from '../lib/colors'
 
 // Custom Button & Custom TextField
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../components/buttons/CustomButton'
 
 //interface for signup screen
 interface ISignUpScreen {

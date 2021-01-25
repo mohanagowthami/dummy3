@@ -8,6 +8,7 @@ import {
     Switch,
     ScrollView,
     SafeAreaView,
+    Pressable,
 } from 'react-native'
 // react-native-responsive-screen
 import {
@@ -29,7 +30,9 @@ import { Rating } from '../../assets/svgs'
 import Logout from '../../assets/svgs/icons/profile/Logout'
 import FAQ from '../../assets/svgs/icons/profile/FrequentlyAskedQuestions'
 
-interface IProps {}
+interface IProps {
+    navigation: any
+}
 
 interface IState {
     switchArray: Array<{
@@ -101,7 +104,7 @@ const moreList = [
 ]
 
 class AccountSettings extends Component<IProps, IState> {
-    constructor(props: IState) {
+    constructor(props: IProps) {
         super(props)
         this.state = {
             switchArray: [
@@ -332,6 +335,11 @@ class AccountSettings extends Component<IProps, IState> {
         )
     }
 
+    onPressSettings = (name: string) => {
+        if (name === 'Profile Information')
+            this.props.navigation.navigate('profile')
+    }
+
     renderAccountSettings = () => {
         return (
             <View style={{ marginVertical: wp('5%') }}>
@@ -344,7 +352,10 @@ class AccountSettings extends Component<IProps, IState> {
                     } = element
 
                     return (
-                        <View key={index}>
+                        <Pressable
+                            key={index}
+                            onPress={() => this.onPressSettings(title)}
+                        >
                             <View
                                 style={{
                                     display: 'flex',
@@ -424,7 +435,7 @@ class AccountSettings extends Component<IProps, IState> {
                                     marginLeft: wp('12%'),
                                 }}
                             ></View>
-                        </View>
+                        </Pressable>
                     )
                 })}
             </View>

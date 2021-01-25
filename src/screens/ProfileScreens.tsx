@@ -14,6 +14,11 @@ class ProfileScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
+                    name="profileScreen"
+                    component={ProfileScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="accountSettings"
                     component={AccountSettings}
                     options={{
@@ -21,22 +26,17 @@ class ProfileScreens extends Component {
                         // headerTitleStyle: { color: 'white' },
                     }}
                 />
-                <Stack.Screen
-                    name="profileScreen"
-                    component={ProfileScreen}
-                    options={{ headerShown: false }}
-                />
+
                 <Stack.Screen
                     name="profile"
                     component={Profile}
                     options={{ headerShown: false }}
                 />
-
-                {/* <Stack.Screen
+                <Stack.Screen
                     name="profileSettings"
                     component={ProfileSettings}
                     options={{ headerShown: false }}
-                /> */}
+                />
             </Stack.Navigator>
         )
     }

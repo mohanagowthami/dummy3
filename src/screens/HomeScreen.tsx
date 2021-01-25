@@ -27,7 +27,7 @@ import {
     SearchIcon,
 } from '../../assets/svgs'
 // components
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
 // endpoints
@@ -535,6 +535,11 @@ class HomeScreen extends Component<IProps, Istate> {
                         <TextInput
                             placeholder="Explore spots near you"
                             style={styles.searchInput}
+                            onChange={() =>
+                                this.props.navigation.navigate(
+                                    'searchFoodResults'
+                                )
+                            }
                         />
                     </View>
                     <View style={styles.buttonsContainer}>

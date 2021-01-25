@@ -8,6 +8,7 @@ import ItemInDetailScreen from './ItemInDetailScreen'
 import LocalFavourites from './LocalFavourites'
 import ReviewsAndRating from './ReviewsAndRating'
 import FeedBackScreen from './FeedBackScreen'
+import FoodSearchResults from './FoodResults'
 
 const Stack = createStackNavigator()
 class HomeScreens extends Component {
@@ -40,6 +41,11 @@ class HomeScreens extends Component {
                 <Stack.Screen
                     name="localFavourites"
                     component={LocalFavourites}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="searchFoodResults"
+                    component={FoodSearchResults}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

@@ -22,8 +22,8 @@ import * as ImagePicker from 'expo-image-picker'
 // react native modal
 import Modal from 'react-native-modal'
 // common components
-import CustomButton from '../components/common/CustomButton'
-import CustomStarRating from '../components/common/CustomStarRating'
+import CustomButton from '../components/buttons/CustomButton'
+import CustomStarRating from '../components/star-rating/CustomStarRating'
 // colors
 import { colors } from '../lib/colors'
 

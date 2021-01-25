@@ -13,7 +13,10 @@ import SignUpScreen from './src/screens/SignUpScreen'
 import OnboardingScreens from './src/screens/OnboardingScreens'
 import PickYourChoice from './src/screens/PickYourChoice'
 // components
-import BottomTab from './src/components/BottomTab'
+import BottomTab from './src/components/elements/BottomTab'
+import FoodSearchResults from './src/screens/FoodResults'
+import FrappyPlannerCards from './src/screens/FrappyPlannerCards'
+import FrappyPlannerCalendar from './src/screens/FrappyPlannerCalendar'
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -35,8 +38,8 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
-                    name="bottomTab"
-                    component={BottomTab}
+                    name="onBoarding"
+                    component={OnboardingScreens}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -46,8 +49,8 @@ export default function App() {
                 />
 
                 <Stack.Screen
-                    name="onBoarding"
-                    component={OnboardingScreens}
+                    name="bottomTab"
+                    component={BottomTab}
                     options={{ headerShown: false }}
                 />
 

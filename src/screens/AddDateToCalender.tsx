@@ -24,11 +24,13 @@ import { colors } from '../lib/colors'
 // icons
 import { BellIcon } from '../../assets/svgs'
 import Clock from '../../assets/svgs/Clock'
-import CustomTextField from '../components/common/CustomTextField'
+import CustomTextField from '../components/input-controllers/CustomTextField'
 // custom Button
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../components/buttons/CustomButton'
 
-interface IProps {}
+interface IProps {
+    navigation: any
+}
 
 interface IState {
     date: any
@@ -215,14 +217,20 @@ class AddDateToCalender extends Component<IProps, IState> {
                         >
                             <CustomButton
                                 onPressButton={() =>
-                                    this.onPressButton('cancel')
+                                    this.props.navigation.navigate(
+                                        'frappyCalender'
+                                    )
                                 }
                                 buttonStyles={styles.buttonStyles}
                                 title="Cancel"
                                 buttonTextStyles={styles.buttonTextStyles}
                             ></CustomButton>
                             <CustomButton
-                                onPressButton={() => this.onPressButton('save')}
+                                onPressButton={() =>
+                                    this.props.navigation.navigate(
+                                        'frappyCalender'
+                                    )
+                                }
                                 buttonStyles={[
                                     styles.buttonStyles,
                                     {

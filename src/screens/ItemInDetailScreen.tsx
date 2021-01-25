@@ -16,7 +16,7 @@ import {
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
 // components
-import CustomButton from '../components/common/CustomButton'
+import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
 
