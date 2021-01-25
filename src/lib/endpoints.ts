@@ -6,3 +6,6 @@ export const FAVORITE_RESTAURANTS = `${BACKEND_API}api/favorites/food/restaurant
 
 export const FAVORITE_SHOPPINGMALL = `${BACKEND_API}api/favorites/shopping/malls/`
 export const FAVORITE_TRAVELPLACES = `${BACKEND_API}api/favorites/travel/places/`
+
+export const REVIEWS_SPECIFIC_RESTAURANTS = (id: number) =>
+    `${BACKEND_API}api/restaurant/reviews/?restaurant=${id}`

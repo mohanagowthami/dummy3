@@ -131,10 +131,11 @@ class AccountSettings extends Component<IProps, IState> {
         dummySwitchArray[index].isEnabled = !dummySwitchArray[index].isEnabled
         this.setState({ switchArray: dummySwitchArray })
     }
-    renderNotifications = () => {
+
+    renderSettings = (list: any) => {
         return (
             <View style={{ marginVertical: wp('5%') }}>
-                {notificationsList.map((element, index) => {
+                {list.map((element: any, index: number) => {
                     const {
                         representationSvg: RepresentationSvg,
                         title,
@@ -173,116 +174,7 @@ class AccountSettings extends Component<IProps, IState> {
                                         <RepresentationSvg
                                             width={wp('7%')}
                                             height={wp('7%')}
-                                        />
-                                    </View>
-                                    <View>
-                                        <Text
-                                            style={{
-                                                fontFamily: 'ArchivoRegular',
-                                                fontSize: wp('4.2%'),
-                                                color: colors.darkBlack,
-                                                lineHeight: wp('4.2%'),
-                                                letterSpacing: 0.28,
-                                                fontWeight: '400',
-                                                marginBottom: wp('3%'),
-                                            }}
-                                        >
-                                            {title}
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                fontFamily: 'AirbnbCerealBook',
-                                                fontSize: wp('3.8%'),
-                                                lineHeight: wp('4.2%'),
-                                                color: colors.grey,
-                                                letterSpacing: 0.28,
-                                            }}
-                                        >
-                                            {description}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <ActionIcon
-                                    trackColor={{
-                                        false: colors.lightGreyThree,
-                                        true: 'green',
-                                    }}
-                                    thumbColor={colors.white}
-                                    ios_backgroundColor={Colors.grey}
-                                    onValueChange={() =>
-                                        this.toggleSwitch(index)
-                                    }
-                                    value={
-                                        this.state.switchArray[index].isEnabled
-                                    }
-                                    style={{
-                                        transform: [
-                                            { scaleX: wp('0.4%') },
-                                            { scaleY: wp('0.4%') },
-                                        ],
-                                    }}
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    width: '100%',
-                                    height: wp('0.05%'),
-                                    backgroundColor: colors.lightGreyFive,
-                                    marginLeft: wp('12%'),
-                                }}
-                            ></View>
-                        </View>
-                    )
-                })}
-            </View>
-        )
-    }
-
-    renderMoreList = () => {
-        return (
-            <View style={{ marginVertical: wp('5%') }}>
-                {moreList.map((element, index) => {
-                    const {
-                        representationSvg: RepresentationSvg,
-                        title,
-                        description,
-                        actionIcon: ActionIcon,
-                    } = element
-
-                    return (
-                        <View key={index}>
-                            <View
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    paddingVertical: description
-                                        ? wp('5%')
-                                        : wp('10%'),
-                                    paddingRight: wp('4%'),
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            width: wp('10%'),
-                                            marginRight: wp('2%'),
-                                            display: 'flex',
-                                            justifyContent: 'flex-start',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <RepresentationSvg
-                                            width={wp('4.6%')}
-                                            height={wp('4.6%')}
-                                            color={colors.grey}
+                                            color={colors.greyTwo}
                                         />
                                     </View>
                                     <View>
@@ -298,7 +190,7 @@ class AccountSettings extends Component<IProps, IState> {
                                         >
                                             {title}
                                         </Text>
-                                        {description && (
+                                        {title !== 'Logout' && (
                                             <Text
                                                 style={{
                                                     fontFamily:
@@ -315,12 +207,39 @@ class AccountSettings extends Component<IProps, IState> {
                                         )}
                                     </View>
                                 </View>
-                                <ActionIcon
-                                    width={wp('4%')}
-                                    height={wp('4%')}
-                                />
+
+                                {list === notificationsList ? (
+                                    <ActionIcon
+                                        trackColor={{
+                                            false: colors.lightGreyThree,
+                                            true: 'green',
+                                        }}
+                                        thumbColor={colors.white}
+                                        ios_backgroundColor={Colors.grey}
+                                        onValueChange={() =>
+                                            this.toggleSwitch(index)
+                                        }
+                                        value={
+                                            this.state.switchArray[index]
+                                                .isEnabled
+                                        }
+                                        style={{
+                                            transform: [
+                                                { scaleX: wp('0.4%') },
+                                                { scaleY: wp('0.4%') },
+                                            ],
+                                        }}
+                                    />
+                                ) : (
+                                    <ActionIcon
+                                        width={wp('4%')}
+                                        height={wp('4%')}
+                                    />
+                                )}
                             </View>
-                            {description && (
+                            {description !=
+                                (accountList[2].description &&
+                                    moreList[2].description) && (
                                 <View
                                     style={{
                                         width: '100%',
@@ -328,7 +247,7 @@ class AccountSettings extends Component<IProps, IState> {
                                         backgroundColor: colors.lightGreyFive,
                                         marginLeft: wp('12%'),
                                     }}
-                                ></View>
+                                />
                             )}
                         </View>
                     )
@@ -337,112 +256,6 @@ class AccountSettings extends Component<IProps, IState> {
         )
     }
 
-    onPressSettings = (name: string) => {
-        if (name === 'Profile Information')
-            this.props.navigation.navigate('profile')
-    }
-
-    renderAccountSettings = () => {
-        return (
-            <View style={{ marginVertical: wp('5%') }}>
-                {accountList.map((element, index) => {
-                    const {
-                        representationSvg: RepresentationSvg,
-                        title,
-                        description,
-                        actionIcon: ActionIcon,
-                    } = element
-
-                    return (
-                        <Pressable
-                            key={index}
-                            onPress={() => this.onPressSettings(title)}
-                        >
-                            <View
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    paddingVertical: wp('5%'),
-                                    paddingRight: wp('5%'),
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            width: wp('10%'),
-                                            marginRight: wp('2%'),
-                                            display: 'flex',
-                                            justifyContent: 'flex-start',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <RepresentationSvg
-                                            width={
-                                                index === 0
-                                                    ? wp('4%')
-                                                    : wp('7%')
-                                            }
-                                            height={
-                                                index === 0
-                                                    ? wp('4%')
-                                                    : wp('7%')
-                                            }
-                                        />
-                                    </View>
-                                    <View>
-                                        <Text
-                                            style={{
-                                                fontFamily: 'ArchivoRegular',
-                                                fontSize: wp('4.2%'),
-                                                color: colors.darkBlack,
-                                                lineHeight: wp('4.2%'),
-                                                letterSpacing: 0.28,
-                                                fontWeight: '400',
-                                                marginBottom: wp('3%'),
-                                            }}
-                                        >
-                                            {title}
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                fontFamily: 'AirbnbCerealBook',
-                                                fontSize: wp('3.8%'),
-                                                lineHeight: wp('4.2%'),
-                                                color: colors.grey,
-                                                letterSpacing: 0.28,
-                                            }}
-                                        >
-                                            {description}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <ActionIcon
-                                    width={wp('4%')}
-                                    height={wp('4%')}
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    width: '100%',
-                                    height: wp('0.05%'),
-                                    backgroundColor: colors.lightGreyFive,
-                                    marginLeft: wp('12%'),
-                                }}
-                            ></View>
-                        </Pressable>
-                    )
-                })}
-            </View>
-        )
-    }
     render() {
         return (
             <ScrollView>
@@ -452,7 +265,7 @@ class AccountSettings extends Component<IProps, IState> {
                         Update your settings like notifications,
                         {'\n'}payments, profile edit etc.
                     </Text>
-                    {this.renderAccountSettings()}
+                    {this.renderSettings(accountList)}
                     <Text
                         style={{
                             fontFamily: 'ArchivoRegular',
@@ -465,7 +278,7 @@ class AccountSettings extends Component<IProps, IState> {
                     >
                         NOTIFICATIONS
                     </Text>
-                    {this.renderNotifications()}
+                    {this.renderSettings(notificationsList)}
                     <Text
                         style={{
                             fontFamily: 'ArchivoRegular',
@@ -478,7 +291,7 @@ class AccountSettings extends Component<IProps, IState> {
                     >
                         MORE
                     </Text>
-                    {this.renderMoreList()}
+                    {this.renderSettings(moreList)}
                 </View>
             </ScrollView>
         )

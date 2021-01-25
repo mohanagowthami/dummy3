@@ -11,5 +11,14 @@ class RestaurantService extends APIService {
                 throw error.response.data
             })
     }
+    fetcher(url: string): Promise<any> {
+        return this.get(url)
+            .then((response: any) => {
+                return response.data
+            })
+            .catch((error: any) => {
+                throw error.response.data
+            })
+    }
 }
 export default RestaurantService

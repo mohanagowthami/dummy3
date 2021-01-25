@@ -29,16 +29,19 @@ import { BackIcon, RightArrow } from '../../assets/svgs/icons/icons-directions'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
+import { REVIEWS_SPECIFIC_RESTAURANTS } from '../lib/endpoints'
+import RestaurantService from '../services/restaurants.service'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
 interface IProps {
     navigation: any
+    route: any
 }
 
 interface IListType {
     photos: Array<any>
-    RatingAndReview: Array<any>
+    ratingAndReview: Array<any>
 }
 interface Istate {
     category: string
@@ -54,7 +57,7 @@ const ItemContent = {
         'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
         'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
     ],
-    RatingAndReview: [
+    ratingAndReview: [
         {
             id: 1,
             photo:
@@ -90,6 +93,8 @@ const ItemContent = {
         },
     ],
 }
+
+const restaurantService = new RestaurantService()
 class ItemInDetailScreen extends Component<IProps, Istate> {
     constructor(props: IProps) {
         super(props)
@@ -110,6 +115,20 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     }
     _renderRatingsAndReviews({ item, index }: any) {
         return <View></View>
+    }
+
+    async componentDidMount() {
+        const { id } = this.props.route.params
+        let stateData = { ...this.state }
+
+        try {
+            const response: any = await restaurantService.get(
+                REVIEWS_SPECIFIC_RESTAURANTS(id)
+            )
+            stateData.categoryData.ratingAndReview = response
+        } catch (error) {
+            console.log(error, 'error in rating and review in item in detail')
+        }
     }
     render() {
         return (
@@ -397,7 +416,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                 paddingLeft: hp('2%'),
                             }}
                         >
-                            {this.state.categoryData.RatingAndReview.map(
+                            {this.state.categoryData.ratingAndReview.map(
                                 (item, index) => {
                                     const { id, photo } = item
                                     return (

@@ -2,10 +2,23 @@
 import React, { Component } from 'react'
 // react-native
 import { View, StyleSheet } from 'react-native'
+<<<<<<< Updated upstream
 // react-native-responsive-screen
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 // formik
 import { Formik } from 'formik'
+=======
+// formik
+import { Formik } from 'formik'
+// react-native-responsive-screen
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as loc,
+    removeOrientationListener as rol,
+} from 'react-native-responsive-screen'
+
+>>>>>>> Stashed changes
 // components
 import CustomButton from '../buttons/CustomButton'
 import CustomTextField from '../input-controllers/CustomTextField'

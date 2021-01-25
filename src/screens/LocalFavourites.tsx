@@ -107,11 +107,19 @@ class LocalFavourites extends Component<IProps, IState> {
         return (
             <ScrollView>
                 {localFavourites.map((ele: any, index: number) => {
-                    const { menu_images, overall_rating, name, cuisines } = ele
+                    const {
+                        menu_images,
+                        overall_rating,
+                        name,
+                        cuisines,
+                        id,
+                    } = ele
                     return (
                         <Pressable
                             onPress={() =>
-                                this.props.navigation.navigate('itemInDetail')
+                                this.props.navigation.navigate('itemInDetail', {
+                                    id: id,
+                                })
                             }
                             key={index}
                         >
