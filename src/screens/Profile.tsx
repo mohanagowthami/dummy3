@@ -1,15 +1,18 @@
-import React, { Component } from 'react'
-import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
+// react-native-gesture-handler
 import { ScrollView } from 'react-native-gesture-handler'
+// react
+import React, { Component } from 'react'
+// react-native
+import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-import BackIcon from '../../assets/svgs/icons/BackIcon'
-import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
-import Camera from '../../assets/svgs/icons/profile/Camera'
+// icons
+import { BackIcon } from '../../assets/svgs/icons/icons-directions'
+import { Camera } from '../../assets/svgs/icons/icons-profile'
+// colors
 import { colors } from '../lib/colors'
 
 interface IProps {

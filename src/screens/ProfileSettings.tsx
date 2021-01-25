@@ -1,15 +1,19 @@
+// react
 import React, { Component } from 'react'
+// react-native
 import { Text, View, StyleSheet, Pressable } from 'react-native'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
     listenOrientationChange as loc,
     removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-
+// components
 import CustomButton from '../components/buttons/CustomButton'
 import CustomTextField from '../components/input-controllers/CustomTextField'
-import BackIcon from '../../assets/svgs/icons/BackIcon'
+// icons
+import { BackIcon } from '../../assets/svgs/icons/icons-directions'
 
 interface IProps {
     navigation: any

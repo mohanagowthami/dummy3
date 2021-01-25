@@ -8,28 +8,26 @@ import {
     ScrollView,
     TextInput,
     SafeAreaView,
+    Image,
 } from 'react-native'
-// Modal
+// react-native-modal
 import Modal from 'react-native-modal'
-// react native responsive screen
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-// SVGs
-import FacebookSvg from '../../assets/svgs/FacebookSvg'
-import GoogleSvg from '../../assets/svgs/GoogleSvg'
-import TwitterSvg from '../../assets/svgs/TwitterSvg'
-import WelcomeSvg from '../../assets/svgs/WelcomeSvg'
-// SignUp Form
+// icons
+import {
+    FacebookSvg,
+    TwitterSvg,
+    GoogleSvg,
+} from '../../assets/svgs/icons/icons-login'
+// components
 import SignUpForm from '../components/forms/SignUpForm'
+import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-
-// Custom Button & Custom TextField
-import CustomButton from '../components/buttons/CustomButton'
 
 //interface for signup screen
 interface ISignUpScreen {
@@ -40,8 +38,8 @@ interface State {
     modalVisible: any
 }
 //Main Class
+const Welcome = require('../../assets/images/welcome.png')
 class SignUpScreen extends React.Component<ISignUpScreen, State> {
-    _isMounted = false
     inputRef: any
     constructor(props: ISignUpScreen) {
         super(props)
@@ -49,15 +47,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
             modalVisible: false,
         }
         this.inputRef = Array(4).fill(React.createRef())
-    }
-    // check mounting of component
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
     }
     // Verify & Continue Function
     onPressVerifyAndContinue = () => {
@@ -191,10 +180,9 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // Modal enabling function => True or False
     setModalVisible = () => {
-        this._isMounted &&
-            this.setState((prevState, props) => ({
-                modalVisible: !prevState.modalVisible,
-            }))
+        this.setState((prevState, props) => ({
+            modalVisible: !prevState.modalVisible,
+        }))
     }
     // Get OTP button sets the modal to true from initial false state
     onPressGetOTP = () => {
@@ -283,9 +271,13 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                     )}
                     <ScrollView keyboardShouldPersistTaps="always">
                         <View style={styles.container}>
-                            <WelcomeSvg
-                                width={wp('66.35%')}
-                                height={hp('19.90%')}
+                            <Image
+                                style={{
+                                    width: wp('66.35%'),
+                                    height: hp('23.25%'),
+                                }}
+                                resizeMode="contain"
+                                source={Welcome}
                             />
                             <Text style={styles.loginText}>SignUp</Text>
                             <SignUpForm onPressGetOTP={this.onPressGetOTP} />

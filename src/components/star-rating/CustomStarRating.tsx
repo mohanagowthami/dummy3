@@ -2,8 +2,8 @@
 import React, { Component } from 'react'
 // react-native
 import { Pressable, View } from 'react-native'
-// svgs
-import { Rating, UnfilledStar } from '../../../assets/svgs'
+// icons
+import { Rating, UnfilledStar } from '../../../assets/svgs/icons'
 
 interface IProps {
     width: number

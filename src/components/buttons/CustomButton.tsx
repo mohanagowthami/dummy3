@@ -1,12 +1,15 @@
-import React, { Component, ReactNode } from 'react'
+// react
+import React, { Component } from 'react'
+// react-native
 import { Pressable, View, StyleSheet, Text } from 'react-native'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+// colors
 import { colors } from '../../lib/colors'
+
 interface ICustomButtonProps {
     title?: string
     onPressButton: () => void

@@ -14,21 +14,23 @@ import {
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+// react-native / NewAppScreen
+import { Colors } from 'react-native/Libraries/NewAppScreen'
+// icons
+import { ForwardIcon } from '../../assets/svgs/icons/icons-directions'
+import {
+    Profile,
+    Facebook,
+    Refer,
+    NotificationsTwo,
+    Logout,
+    FAQ,
+    Rating,
+} from '../../assets/svgs/icons/icons-profile'
+
 // colors
 import { colors } from '../lib/colors'
-// icons
-import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
-import ProfileIcon from '../../assets/svgs/icons/profile/Profile'
-import FacebookIcon from '../../assets/svgs/icons/profile/Facebook'
-import ShareIcon from '../../assets/svgs/icons/profile/ShareTwo'
-import Notifications from '../../assets/svgs/icons/profile/NotificationsTwo'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
-import { Rating } from '../../assets/svgs'
-import Logout from '../../assets/svgs/icons/profile/Logout'
-import FAQ from '../../assets/svgs/icons/profile/FrequentlyAskedQuestions'
 
 interface IProps {
     navigation: any
@@ -43,19 +45,19 @@ interface IState {
 
 const accountList = [
     {
-        representationSvg: ProfileIcon,
+        representationSvg: Profile,
         title: 'Profile Information',
         description: 'Change your account information',
         actionIcon: ForwardIcon,
     },
     {
-        representationSvg: FacebookIcon,
+        representationSvg: Facebook,
         title: 'Add Social Account',
         description: 'Add Facebook, Twitter etc ',
         actionIcon: ForwardIcon,
     },
     {
-        representationSvg: ShareIcon,
+        representationSvg: Refer,
         title: 'Refer to Friends',
         description: 'Get $10 for reffering friends',
         actionIcon: ForwardIcon,
@@ -64,19 +66,19 @@ const accountList = [
 
 const notificationsList = [
     {
-        representationSvg: Notifications,
+        representationSvg: NotificationsTwo,
         title: 'Push Notifications',
         description: 'For daily update you will get it',
         actionIcon: Switch,
     },
     {
-        representationSvg: Notifications,
+        representationSvg: NotificationsTwo,
         title: 'SMS Notifications',
         description: 'For daily update you will get it',
         actionIcon: Switch,
     },
     {
-        representationSvg: Notifications,
+        representationSvg: NotificationsTwo,
         title: 'Promotional Notifications',
         description: 'For daily update you will get it',
         actionIcon: Switch,

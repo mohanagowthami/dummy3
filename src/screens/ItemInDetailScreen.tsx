@@ -15,20 +15,20 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+// icons
+import {
+    BookmarkIcon,
+    PhotoIcon,
+    RatingIcon,
+    ReadMore,
+    Loading,
+    Profile,
+} from '../../assets/svgs/icons'
+import { BackIcon, RightArrow } from '../../assets/svgs/icons/icons-directions'
 // components
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-
-// icons
-import RightArrow from '../../assets/svgs/RightArrow'
-import BookmarkIcon from '../../assets/svgs/icons/BookmarkIcon'
-import PhotoIcon from '../../assets/svgs/icons/PhotoIcon'
-import RatingIcon from '../../assets/svgs/icons/RatingIcon'
-import ReadMore from '../../assets/svgs/icons/ReadMore'
-import Loading from '../../assets/svgs/icons/Loading'
-import Profile from '../../assets/svgs/icons/Profile'
-import BackIcon from '../../assets/svgs/icons/BackIcon'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
@@ -122,7 +122,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                     <View
                         style={{
                             paddingLeft: wp('5.6%'),
-                            // paddingTop: hp('4.07%'),
+                            paddingTop: hp('4.07%'),
                         }}
                     >
                         <Pressable

@@ -1,40 +1,19 @@
+// react-native-gesture-handler
 import { ScrollView } from 'react-native-gesture-handler'
+// react
 import React, { Component } from 'react'
-import {
-    Text,
-    View,
-    StyleSheet,
-    TextInput,
-    Image,
-    Pressable,
-} from 'react-native'
-
-import BackIcon from '../../assets/svgs/icons/BackIcon'
-import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
-//icons
-import Notifications from '../../assets/svgs/icons/profile/Notifications'
-import FavoriteIcon from '../../assets/svgs/icons/profile/FavouriteIcon'
-import AddIcon from '../../assets/svgs/icons/AddIcon'
-import Search from '../../assets/svgs/icons/profile/Search'
-import Share from '../../assets/svgs/icons/profile/Share'
-import Social from '../../assets/svgs/icons/profile/Social'
-import Settings from '../../assets/svgs/icons/profile/Settings'
-import Logout from '../../assets/svgs/icons/profile/Logout'
-
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
-import { colors } from '../lib/colors'
-
+// react-native
+import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-import Carousel, { Pagination } from 'react-native-snap-carousel'
-import { NavigationIcon, Rating } from '../../assets/svgs'
-import { ClockIcon } from '../../assets/svgs'
-import { SearchIcon } from '../../assets/svgs'
+// icons
+import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
+import { SearchIcon, AddIcon } from '../../assets/svgs/icons'
+// colors
+import { colors } from '../lib/colors'
 
 interface IProps {
     navigation: any

@@ -1,28 +1,24 @@
+// react-native-gesture-handler
 import { ScrollView } from 'react-native-gesture-handler'
+// react
 import React, { Component } from 'react'
+// react-native
 import { Text, View, StyleSheet, Image, Pressable } from 'react-native'
-
-import BackIcon from '../../assets/svgs/icons/BackIcon'
-import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
-//icons
-import Notifications from '../../assets/svgs/icons/profile/Notifications'
-import Search from '../../assets/svgs/icons/profile/Search'
-import Share from '../../assets/svgs/icons/profile/Share'
-import Social from '../../assets/svgs/icons/profile/Social'
-import Settings from '../../assets/svgs/icons/profile/Settings'
-import Logout from '../../assets/svgs/icons/profile/Logout'
-
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
-// colors
-import { colors } from '../lib/colors'
-
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+//icons
+import { ForwardIcon } from '../../assets/svgs/icons/icons-directions'
+import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
+import Search from '../../assets/svgs/icons/icons-profile/Search'
+import Share from '../../assets/svgs/icons/icons-profile/Share'
+import Social from '../../assets/svgs/icons/icons-profile/Social'
+import Settings from '../../assets/svgs/icons/icons-profile/Settings'
+import Logout from '../../assets/svgs/icons/icons-profile/Logout'
+// colors
+import { colors } from '../lib/colors'
 
 interface IProps {
     navigation: any

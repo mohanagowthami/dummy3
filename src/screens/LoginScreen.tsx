@@ -1,33 +1,32 @@
-// React
+// react
 import React from 'react'
-// React native
+// react native
 import {
     ScrollView,
     TextInput,
     View,
+    Image,
     Text,
     StyleSheet,
-    SafeAreaView,
 } from 'react-native'
-// React native responsive screen
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-// Modal
+// modal
 import Modal from 'react-native-modal'
+// icons
+import {
+    FacebookSvg,
+    TwitterSvg,
+    GoogleSvg,
+} from '../../assets/svgs/icons/icons-login'
 // components
 import CustomButton from '../components/buttons/CustomButton'
 import CustomTextField from '../components/input-controllers/CustomTextField'
 // colors
 import { colors } from '../lib/colors'
-// Svgs
-import WelcomeSvg from '../../assets/svgs/WelcomeSvg'
-import FacebookSvg from '../../assets/svgs/FacebookSvg'
-import TwitterSvg from '../../assets/svgs/TwitterSvg'
-import GoogleSvg from '../../assets/svgs/GoogleSvg'
 
 // props for login screen
 interface ILoginScreen {
@@ -37,8 +36,8 @@ interface ILoginScreen {
 interface State {
     modalVisible: any
 }
+const Welcome = require('../../assets/images/welcome.png')
 class LoginScreen extends React.Component<ILoginScreen, State> {
-    _isMounted: boolean
     inputRef: any
     constructor(props: ILoginScreen) {
         super(props)
@@ -46,16 +45,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             modalVisible: false,
         }
         this.inputRef = Array(4).fill(React.createRef())
-        this._isMounted = false
-    }
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
     }
     onChangeOtp = (index: number) => {
         this.inputRef[index].focus()
@@ -195,10 +184,9 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     }
     // Modal enabling function => True or False
     setModalVisible = () => {
-        this._isMounted &&
-            this.setState((prevState, props) => ({
-                modalVisible: !prevState.modalVisible,
-            }))
+        this.setState((prevState, props) => ({
+            modalVisible: !prevState.modalVisible,
+        }))
     }
     // Get OTP Button function
     onPressOTPButton = () => {
@@ -296,12 +284,14 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                     </View>
                 )}
                 <View style={styles.container}>
-                    <WelcomeSvg
+                    <Image
                         style={{
-                            marginTop: hp('9.47%'),
+                            marginTop: hp('6.47%'),
                             width: wp('66.35%'),
                             height: hp('23.25%'),
                         }}
+                        resizeMode="contain"
+                        source={Welcome}
                     />
                     <Text style={styles.loginText}>Login</Text>
                     <CustomTextField

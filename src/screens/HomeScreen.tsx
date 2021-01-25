@@ -9,23 +9,17 @@ import {
     Pressable,
     ScrollView,
     TextInput,
-    SafeAreaView,
 } from 'react-native'
 // react-native-responsive-screen
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 // react-native-snap-carousel
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-// svgs
+// icons
 import {
-    BellIcon,
     NavigationIcon,
-    Rating,
     RightArrow,
-    SearchIcon,
-} from '../../assets/svgs'
+} from '../../assets/svgs/icons/icons-directions'
+import { BellIcon, Rating, SearchIcon } from '../../assets/svgs/icons'
 // components
 import CustomButton from '../components/buttons/CustomButton'
 // colors

@@ -1,7 +1,9 @@
+// react
 import React, { Component } from 'react'
-
-import { View, StyleSheet, ImageBackground, Text } from 'react-native'
-import NextSvg from '../../../assets/svgs/NextSvg'
+// react-native
+import { View, StyleSheet, Text } from 'react-native'
+// icons
+import { NextSvg } from '../../../assets/svgs/icons'
 
 interface IOnBoardComponent {
     SVG: any

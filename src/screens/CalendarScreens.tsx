@@ -3,15 +3,22 @@ import React, { Component } from 'react'
 // react-navigation
 import { createStackNavigator } from '@react-navigation/stack'
 // screens
-import ReviewsAndRating from './ReviewsAndRating'
 import AddDateToCalender from './AddDateToCalender'
 import FrappyPlannerCalendar from './FrappyPlannerCalendar'
+import FrappyPlannerCards from './FrappyPlannerCards'
 
+// creating stack for navigation screens
 const Stack = createStackNavigator()
+
 class CalenderScreens extends Component {
     render() {
         return (
             <Stack.Navigator>
+                {/* <Stack.Screen
+                    name="frappyCards"
+                    component={FrappyPlannerCards}
+                    options={{ headerShown: false }}
+                /> */}
                 <Stack.Screen
                     name="frappyCalender"
                     component={FrappyPlannerCalendar}

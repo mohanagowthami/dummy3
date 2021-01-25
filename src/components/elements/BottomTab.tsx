@@ -6,36 +6,28 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-// svgs
-import ProfileSvg from '../../../assets/svgs/ProfileSvg'
-import CalenderSvg from '../../../assets/svgs/CalendarSvg'
-import HappySvg from '../../../assets/svgs/HappySvg'
-import HomeSvg from '../../../assets/svgs/HomeSvg'
-import DirectionSvg from '../../../assets/svgs/DirectionSvg'
+// icons
+import {
+    ProfileSvg,
+    CalenderSvg,
+    HappySvg,
+    HomeSvg,
+    ExploreSvg,
+} from '../../../assets/svgs/icons/icons-bottomTab'
 // screens
-
 import ExploreScreen from '../../screens/ExploreScreen'
 import LuckyCardsScreen from '../../screens/LuckyCardsScreen'
-import CalenderScreen from '../../screens/AddDateToCalender'
-import ProfileScreen from '../../screens/ProfileScreen'
 import HomeScreens from '../../screens/HomeScreens'
-// colors
-import { colors } from '../../lib/colors'
 import ProfileScreens from '../../screens/ProfileScreens'
 import CalenderScreens from '../../screens/CalendarScreens'
+// colors
+import { colors } from '../../lib/colors'
 
+// creating bottom tab navigator
 const Tab = createBottomTabNavigator()
+
 class BottomTab extends React.Component<{}, {}> {
-    // check mounting of component
-    componentDidMount() {
-        loc(this)
-    }
-    componentWillUnMount() {
-        rol()
-    }
     render() {
         return (
             <Tab.Navigator
@@ -66,7 +58,7 @@ class BottomTab extends React.Component<{}, {}> {
                     options={{
                         tabBarLabel: 'Explore',
                         tabBarIcon: ({ color }) => (
-                            <DirectionSvg
+                            <ExploreSvg
                                 name="explore"
                                 fill={color}
                                 width={wp('5.2%')}

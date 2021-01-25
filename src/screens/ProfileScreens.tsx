@@ -1,14 +1,16 @@
 // react
 import React, { Component } from 'react'
 // react-navigation
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 // screens
 import Profile from './Profile'
 import ProfileSettings from './ProfileSettings'
 import AccountSettings from './AccountSettings'
 import ProfileScreen from './ProfileScreen'
 
+// creating stack for navigation
 const Stack = createStackNavigator()
+
 class ProfileScreens extends Component {
     render() {
         return (

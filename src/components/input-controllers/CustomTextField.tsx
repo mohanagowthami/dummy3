@@ -1,13 +1,15 @@
+// react
 import React, { Component } from 'react'
+// react-native
 import { TextInput, StyleSheet } from 'react-native'
-
+// react-native-responsive
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+// colors
 import { colors } from '../../lib/colors'
+
 interface ICustomTextFieldProps {
     onCallBack?: (value: any) => void
     autoFocus?: boolean
@@ -33,16 +35,6 @@ class CustomTextField extends Component<
     constructor(props: any) {
         super(props)
         this.state = { text: '' }
-    }
-    _isMounted = false
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
     }
     handleChange = (text: string) => {
         console

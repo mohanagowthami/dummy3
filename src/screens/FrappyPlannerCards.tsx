@@ -1,39 +1,20 @@
+// react-native-gesture-handler
 import { ScrollView } from 'react-native-gesture-handler'
+// react
 import React, { Component } from 'react'
-import {
-    Text,
-    View,
-    StyleSheet,
-    TextInput,
-    Image,
-    Pressable,
-} from 'react-native'
-
-import BackIcon from '../../assets/svgs/icons/BackIcon'
-import ForwardIcon from '../../assets/svgs/icons/ForwardIcon'
+// react-native
+import { Text, View, StyleSheet, TextInput, Image } from 'react-native'
 //icons
-import Notifications from '../../assets/svgs/icons/profile/Notifications'
-import FavoriteIcon from '../../assets/svgs/icons/profile/FavouriteIcon'
-import Search from '../../assets/svgs/icons/profile/Search'
-import Share from '../../assets/svgs/icons/profile/Share'
-import Social from '../../assets/svgs/icons/profile/Social'
-import Settings from '../../assets/svgs/icons/profile/Settings'
-import Logout from '../../assets/svgs/icons/profile/Logout'
-
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
+import { Notifications } from '../../assets/svgs/icons/icons-profile'
+import { NavigationIcon } from '../../assets/svgs/icons/icons-directions'
+import { Rating, SearchIcon } from '../../assets/svgs/icons'
+// colors
 import { colors } from '../lib/colors'
-
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-import Carousel, { Pagination } from 'react-native-snap-carousel'
-import { NavigationIcon, Rating } from '../../assets/svgs'
-import { ClockIcon } from '../../assets/svgs'
-import { SearchIcon } from '../../assets/svgs'
 
 interface IProps {
     navigation: any
@@ -209,23 +190,23 @@ class FrappyPlannerCards extends Component<IProps, Istate> {
                                             // marginTop: hp('2%'),
                                         }}
                                     >
-                                        <FavoriteIcon
+                                        <Rating
                                             width={wp('4.26%%')}
                                             height={hp('2.10%')}
                                         />
-                                        <FavoriteIcon
+                                        <Rating
                                             width={wp('4.26%%')}
                                             height={hp('2.10%')}
                                         />
-                                        <FavoriteIcon
+                                        <Rating
                                             width={wp('4.26%%')}
                                             height={hp('2.10%')}
                                         />
-                                        <FavoriteIcon
+                                        <Rating
                                             width={wp('4.26%%')}
                                             height={hp('2.10%')}
                                         />
-                                        <FavoriteIcon
+                                        <Rating
                                             width={wp('4.26%%')}
                                             height={hp('2.10%')}
                                         />

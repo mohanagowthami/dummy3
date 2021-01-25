@@ -11,22 +11,16 @@ import {
     ScrollView,
 } from 'react-native'
 // react-native-responsive-screen
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
-} from 'react-native-responsive-screen'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 // DateTimePicker
 import DateTimePicker from '@react-native-community/datetimepicker'
+// icons
+import { BellIcon, Clock } from '../../assets/svgs/icons'
+// components
+import CustomTextField from '../components/input-controllers/CustomTextField'
+import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-// icons
-import { BellIcon } from '../../assets/svgs'
-import Clock from '../../assets/svgs/Clock'
-import CustomTextField from '../components/input-controllers/CustomTextField'
-// custom Button
-import CustomButton from '../components/buttons/CustomButton'
 
 interface IProps {
     navigation: any

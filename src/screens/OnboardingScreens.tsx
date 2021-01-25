@@ -1,28 +1,20 @@
+// react
 import * as React from 'react'
-import {
-    Text,
-    View,
-    SafeAreaView,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    Image,
-    ImageBackground,
-} from 'react-native'
-
+// react-native
+import { Text, View, StyleSheet, Pressable, Image } from 'react-native'
+// react-native-snap-carousel
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-import NextSvg from '../../assets/svgs/NextSvg'
-import OnBoardOneSvg from '../../assets/svgs/OnBoardOneSvg'
-import OnBoardTwoSvg from '../../assets/svgs/OnBoardTwoSvg'
-import OnBoardThreeSvg from '../../assets/svgs/OnBoardThreeSvg'
-import { colors } from '../lib/colors'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
+// icons
+import { NextSvg } from '../../assets/svgs/icons'
+// colors
+import { colors } from '../lib/colors'
 
+// onboarding images
 const onboarding1 = require('../../assets/images/onboarding/onboardingone.png')
 const onboarding2 = require('../../assets/images/onboarding/onboardingtwo.png')
 const onboarding3 = require('../../assets/images/onboarding/onboardingthree.png')
@@ -76,20 +68,8 @@ class OnboardingScreens extends React.Component<Props, State> {
             ],
         }
     }
-    _isMounted = false
-    // check mounting of component
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
-    }
-
     get pagination() {
         const { activeIndex, carouselItems } = this.state
-
         return (
             <Pagination
                 dotsLength={carouselItems.length}

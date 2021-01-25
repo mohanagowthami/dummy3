@@ -17,11 +17,11 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
-// expo image picker
+// expo-image-picker
 import * as ImagePicker from 'expo-image-picker'
-// react native modal
+// react-native-modal
 import Modal from 'react-native-modal'
-// common components
+// components
 import CustomButton from '../components/buttons/CustomButton'
 import CustomStarRating from '../components/star-rating/CustomStarRating'
 // colors

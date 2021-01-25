@@ -1,16 +1,24 @@
+// react-native-gesture-handler
+import { ScrollView } from 'react-native-gesture-handler'
+// react
 import React, { Component } from 'react'
+// react-native
 import { View, Text, StyleSheet, Image } from 'react-native'
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
+// react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
-import { colors } from '../lib/colors'
-import { ScrollView } from 'react-native-gesture-handler'
-import { SafeAreaView } from 'react-native-safe-area-context'
-// react native modal
+// react-native-modal
 import Modal from 'react-native-modal'
+// react-native-safe-area-context
+import { SafeAreaView } from 'react-native-safe-area-context'
+// components
+import CustomButton from '../components/buttons/CustomButton'
+import CustomTextField from '../components/input-controllers/CustomTextField'
+// colors
+import { colors } from '../lib/colors'
+
 interface IProps {}
 interface IState {
     showModal: boolean

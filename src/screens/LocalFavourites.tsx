@@ -15,8 +15,9 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
-// svgs
-import { BellIcon, NavigationIcon, SearchIcon } from '../../assets/svgs'
+// icons
+import { NavigationIcon } from '../../assets/svgs/icons/icons-directions'
+import { BellIcon, SearchIcon } from '../../assets/svgs/icons'
 // colors
 import { colors } from '../lib/colors'
 

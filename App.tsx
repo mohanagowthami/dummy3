@@ -1,11 +1,11 @@
-// React
+// react
 import React from 'react'
-// React native
+// react native
 import { Text } from 'react-native'
-// React navigation
+// react navigation
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-// expo
+// expo-font
 import * as Font from 'expo-font'
 // Screens
 import LoginScreen from './src/screens/LoginScreen'
@@ -14,9 +14,6 @@ import OnboardingScreens from './src/screens/OnboardingScreens'
 import PickYourChoice from './src/screens/PickYourChoice'
 // components
 import BottomTab from './src/components/elements/BottomTab'
-import FoodSearchResults from './src/screens/FoodResults'
-import FrappyPlannerCards from './src/screens/FrappyPlannerCards'
-import FrappyPlannerCalendar from './src/screens/FrappyPlannerCalendar'
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -30,7 +27,7 @@ export default function App() {
         ArchivoBold: require('./assets/fonts/ArchivoBold.ttf'),
     })
 
-    // conditioning to load fonts
+    // conditioning to check loaded fonts
     if (!loaded) {
         return <Text>Loading</Text>
     }

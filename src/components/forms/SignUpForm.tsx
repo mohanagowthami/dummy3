@@ -1,30 +1,20 @@
+// react
 import React, { Component } from 'react'
-
-import { Formik } from 'formik'
-import CustomButton from '../buttons/CustomButton'
+// react-native
 import { View, StyleSheet } from 'react-native'
+// react-native-responsive-screen
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+// formik
+import { Formik } from 'formik'
+// components
+import CustomButton from '../buttons/CustomButton'
 import CustomTextField from '../input-controllers/CustomTextField'
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
-} from 'react-native-responsive-screen'
+
 interface ISignUpFormProps {
     onPressGetOTP: () => void
 }
 
 class SignUpForm extends Component<ISignUpFormProps, {}> {
-    _isMounted = false
-    // check mounting of component
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
-    }
     render() {
         const styles = StyleSheet.create({
             container: {

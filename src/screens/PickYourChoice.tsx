@@ -1,3 +1,4 @@
+// react-native-gesture-handler
 import { ScrollView } from 'react-native-gesture-handler'
 // react
 import React, { Component } from 'react'
@@ -16,15 +17,13 @@ import {
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
 } from 'react-native-responsive-screen'
-// common component
+// icons
+import { CheckedSvg, UncheckedSvg } from '../../assets/svgs/icons/index'
+// components
 import CustomButton from '../components/buttons/CustomButton'
-//colors
+// colors
 import { colors } from '../lib/colors'
-// Svgs
-import { CheckedSvg, UncheckedSvg, HappySvg } from '../../assets/svgs/index'
 // service
 import FavoriteService from '../services/favorites.service'
 // endpoints
@@ -130,7 +129,6 @@ export const shoppingList = [
 
 const favoriteService = new FavoriteService()
 class PickYourChoice extends Component<IProps, IState> {
-    _isMounted = false
     constructor(props: IProps) {
         super(props)
         this.state = {
@@ -140,16 +138,6 @@ class PickYourChoice extends Component<IProps, IState> {
             foodTypesList: foodTypesList,
             isLoading: false,
         }
-    }
-
-    componentDidMount() {
-        this._isMounted = true
-        loc(this)
-    }
-
-    componentWillUnMount() {
-        this._isMounted = false
-        rol()
     }
 
     onPressButton = (type: string) => {

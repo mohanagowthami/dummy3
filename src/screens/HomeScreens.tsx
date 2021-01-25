@@ -1,7 +1,7 @@
 // react
 import React, { Component } from 'react'
 // react-navigation
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 // screens
 import HomeScreen from './HomeScreen'
 import ItemInDetailScreen from './ItemInDetailScreen'
@@ -10,7 +10,9 @@ import ReviewsAndRating from './ReviewsAndRating'
 import FeedBackScreen from './FeedBackScreen'
 import FoodSearchResults from './FoodResults'
 
+// creating stack for navigation screens
 const Stack = createStackNavigator()
+
 class HomeScreens extends Component {
     render() {
         return (
