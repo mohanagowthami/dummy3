@@ -18,17 +18,18 @@ class HomeScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
                     name="itemInDetail"
                     component={ItemInDetailScreen}
                     options={{
                         headerShown: false,
                     }}
                 />
+                <Stack.Screen
+                    name="home"
+                    component={HomeScreen}
+                    options={{ headerShown: false }}
+                />
+
                 <Stack.Screen
                     name="feedBack"
                     component={FeedBackScreen}

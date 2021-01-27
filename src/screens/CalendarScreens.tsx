@@ -14,16 +14,18 @@ class CalenderScreens extends Component {
     render() {
         return (
             <Stack.Navigator>
-                {/* <Stack.Screen
+                <Stack.Screen
                     name="frappyCards"
                     component={FrappyPlannerCards}
                     options={{ headerShown: false }}
-                /> */}
+                />
+
                 <Stack.Screen
                     name="frappyCalender"
                     component={FrappyPlannerCalendar}
                     options={{ headerShown: false }}
                 />
+
                 <Stack.Screen
                     name="addDateToCalender"
                     component={AddDateToCalender}

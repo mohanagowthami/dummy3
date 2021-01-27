@@ -9,11 +9,15 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+// DateTimePicker
+import DateTimePicker from '@react-native-community/datetimepicker'
 // icons
 import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
 import { SearchIcon, AddIcon } from '../../assets/svgs/icons'
 // colors
 import { colors } from '../lib/colors'
+
+import { getFormatedDate } from '../lib/helper'
 
 interface IProps {
     navigation: any
@@ -25,10 +29,8 @@ interface IDetailsType {
 }
 // state - data
 interface Istate {
-    keyWord: string
-    categoryData: IDetailsType
-    activeIndex: number
-    resultsCount: number
+    selectedDate: any
+    isModalOpen: boolean
 }
 // data
 const details = {
@@ -98,16 +100,29 @@ const details = {
 }
 
 class FrappyPlannerCalendar extends Component<IProps, Istate> {
-    carousel: any
     constructor(props: IProps) {
         super(props)
         this.state = {
-            keyWord: 'Biryani',
-            categoryData: details,
-            activeIndex: 0,
-            resultsCount: 80,
+            selectedDate: new Date(),
+            isModalOpen: false,
         }
     }
+
+    onChangePicker = (event: any, selectedDate: any) => {
+        console.log(selectedDate, 'selectedDate')
+        this.setState({
+            ...this.state,
+            isModalOpen: false,
+            selectedDate: selectedDate,
+        })
+    }
+
+    setModalStatus = () => {
+        this.setState((prevState) => ({
+            isModalOpen: !prevState.isModalOpen,
+        }))
+    }
+
     render() {
         return (
             <View
@@ -130,7 +145,26 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             style={styles.searchInput}
                         />
                     </View>
-                    {/*Calendar View*/}
+                    <Text
+                        style={{
+                            fontFamily: 'ArchivoRegular',
+                            fontSize: wp('3.73'),
+                            color: colors.darkBlack,
+                            paddingHorizontal: wp('6%'),
+                        }}
+                        onPress={this.setModalStatus}
+                    >
+                        Select Date
+                    </Text>
+                    <Text
+                        style={{
+                            paddingLeft: wp('6%'),
+                            paddingTop: wp('2%'),
+                            color: colors.greyTwo,
+                        }}
+                    >
+                        {getFormatedDate(this.state.selectedDate)}
+                    </Text>
                     <View style={styles.bottomTab}>
                         <Text
                             style={{
@@ -285,6 +319,15 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                         <AddIcon width={wp('13.06%')} height={hp('6.44%')} />
                     </Pressable>
                 </View>
+                {this.state.isModalOpen && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={this.state.selectedDate}
+                        mode="date"
+                        display="default"
+                        onChange={this.onChangePicker}
+                    />
+                )}
             </View>
         )
     }

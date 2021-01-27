@@ -17,12 +17,15 @@ import {
 } from 'react-native-responsive-screen'
 // react-native-snap-carousel
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-// svgs
 import {
+    BellIcon,
     NavigationIcon,
+    Rating,
     RightArrow,
-} from '../../assets/svgs/icons/icons-directions'
-import { BellIcon, SearchIcon, Rating } from '../../assets/svgs/icons'
+    SearchIcon,
+} from '../../assets/svgs/icons'
+// svgs
+
 // components
 import CustomButton from '../components/buttons/CustomButton'
 // colors
