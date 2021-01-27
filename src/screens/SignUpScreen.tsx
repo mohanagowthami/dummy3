@@ -28,7 +28,6 @@ import SignUpForm from '../components/forms/SignUpForm'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-
 //interface for signup screen
 interface ISignUpScreen {
     navigation: any
@@ -37,8 +36,9 @@ interface ISignUpScreen {
 interface State {
     modalVisible: any
 }
-//Main Class
+
 const Welcome = require('../../assets/images/welcome.png')
+//Main Class
 class SignUpScreen extends React.Component<ISignUpScreen, State> {
     inputRef: any
     constructor(props: ISignUpScreen) {
@@ -60,77 +60,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
 
     // Modal function for pop up
     renderModalContent = () => {
-        const styles = StyleSheet.create({
-            modalContainer: {
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: colors.white,
-                padding: '5%',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: {
-                    width: 0,
-                    height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-                width: wp('90%'),
-            },
-            modalTitle: {
-                fontSize: wp('4%'),
-                fontStyle: 'normal',
-                fontFamily: 'AirbnbCerealBold',
-            },
-            modalDescription: {
-                fontSize: wp('3%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.grey,
-                fontWeight: '400',
-                margin: wp('3%'),
-            },
-            phonenumber: {
-                fontSize: wp('3%'),
-                fontFamily: 'AirbnbCerealBold',
-                color: colors.grey,
-                fontWeight: 'bold',
-                margin: wp('3%'),
-                textAlign: 'center',
-                marginTop: 0,
-            },
-            codeText: {
-                fontSize: wp('3%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.grey,
-                fontWeight: '400',
-                margin: wp('3%'),
-            },
-            resendOTP: {
-                fontSize: wp('3%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.orange,
-                fontWeight: '400',
-                margin: wp('4%'),
-            },
-            otpFieldContainer: {
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '90%',
-                marginVertical: '3%',
-                marginTop: 0,
-            },
-            customTextFieldStyles: {
-                width: wp('13.33%'),
-                borderBottomColor: colors.darkGrey,
-                padding: '2%',
-                borderBottomWidth: 2,
-                textAlign: 'center',
-                fontFamily: 'AirbnbCerealBook',
-                fontSize: hp('2%'),
-            },
-        })
-
         return (
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
@@ -169,6 +98,10 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                 <CustomButton
                     title="Verify and Continue"
                     buttonStyles={{ width: wp('69.33%') }}
+                    buttonTextStyles={{
+                        fontFamily: 'ArchivoBold',
+                        fontSize: wp('4%'),
+                    }}
                     onPressButton={this.onPressVerifyAndContinue}
                 />
                 <Text style={styles.codeText}>
@@ -190,58 +123,6 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // render
     render() {
-        const styles = StyleSheet.create({
-            container: {
-                display: 'flex',
-                flex: 1,
-                alignItems: 'center',
-                paddingTop: hp('6%'),
-                paddingRight: wp('7.4%'),
-                paddingLeft: wp('7.2%'),
-                paddingBottom: hp('5.52%'),
-            },
-            loginText: {
-                color: colors.darkBlack,
-                margin: '1%',
-                fontSize: wp('9%'),
-                fontFamily: 'AirbnbCerealBold',
-            },
-            loginBottom: {
-                display: 'flex',
-                width: wp('100%'),
-                height: hp('25%'),
-                backgroundColor: '#fff',
-                marginBottom: '7%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-            },
-            loginButtonBox: {
-                marginTop: '7%',
-                marginBottom: '7%',
-            },
-            loginWith: {
-                fontSize: wp('4%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.lightBlack,
-            },
-            haveAnAccount: {
-                fontSize: wp('3.73%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.lightBlack,
-            },
-            signIn: {
-                fontSize: wp('3.73%'),
-                fontFamily: 'AirbnbCerealBook',
-                color: colors.orange,
-            },
-            socialIconsContainer: {
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '60%',
-            },
-        })
         return (
             <SafeAreaView>
                 <View
@@ -256,13 +137,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                                 backdropColor={colors.white}
                                 backdropOpacity={0.9}
                             >
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
+                                <View style={styles.modalView}>
                                     {/* This call renders the modal*/}
                                     {this.renderModalContent()}
                                 </View>
@@ -322,4 +197,129 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         )
     }
 }
+const styles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        flex: 1,
+        alignItems: 'center',
+        paddingTop: hp('6%'),
+        paddingRight: wp('7.4%'),
+        paddingLeft: wp('7.2%'),
+        paddingBottom: hp('5.52%'),
+    },
+    loginText: {
+        color: colors.darkBlack,
+        margin: '1%',
+        fontSize: wp('9%'),
+        fontFamily: 'AirbnbCerealBold',
+    },
+    loginBottom: {
+        display: 'flex',
+        width: wp('100%'),
+        height: hp('25%'),
+        backgroundColor: '#fff',
+        marginBottom: '7%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    loginButtonBox: {
+        marginTop: '7%',
+        marginBottom: '7%',
+    },
+    loginWith: {
+        fontSize: wp('4%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.lightBlack,
+    },
+    haveAnAccount: {
+        fontSize: wp('3.73%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.lightBlack,
+    },
+    signIn: {
+        fontSize: wp('3.73%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.orange,
+    },
+    socialIconsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '60%',
+    },
+    modalView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: colors.white,
+        padding: '5%',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        width: wp('90%'),
+    },
+    modalTitle: {
+        fontSize: wp('4%'),
+        fontStyle: 'normal',
+        fontFamily: 'AirbnbCerealBold',
+    },
+    modalDescription: {
+        fontSize: wp('3%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.grey,
+        fontWeight: '400',
+        margin: wp('3%'),
+    },
+    phonenumber: {
+        fontSize: wp('3%'),
+        fontFamily: 'AirbnbCerealBold',
+        color: colors.grey,
+        fontWeight: 'bold',
+        margin: wp('3%'),
+        textAlign: 'center',
+        marginTop: 0,
+    },
+    codeText: {
+        fontSize: wp('3%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.grey,
+        fontWeight: '400',
+        margin: wp('3%'),
+    },
+    resendOTP: {
+        fontSize: wp('3%'),
+        fontFamily: 'AirbnbCerealBook',
+        color: colors.orange,
+        fontWeight: '400',
+        margin: wp('4%'),
+    },
+    otpFieldContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '90%',
+        marginVertical: '3%',
+        marginTop: 0,
+    },
+    customTextFieldStyles: {
+        width: wp('13.33%'),
+        borderBottomColor: colors.darkGrey,
+        padding: '2%',
+        borderBottomWidth: 2,
+        textAlign: 'center',
+        fontFamily: 'AirbnbCerealBook',
+        fontSize: hp('2%'),
+    },
+})
 export default SignUpScreen

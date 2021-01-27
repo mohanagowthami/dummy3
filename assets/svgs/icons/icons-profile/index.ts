@@ -11,6 +11,7 @@ import FAQ from './FrequentlyAskedQuestions'
 import NotificationsTwo from './NotificationsTwo'
 import Refer from './ShareTwo'
 import Rating from './Rating'
+import RatingGreen from './RatingGreen'
 
 export {
     Notifications,
@@ -26,4 +27,5 @@ export {
     FAQ,
     Refer,
     Rating,
+    RatingGreen,
 }

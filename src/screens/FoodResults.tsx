@@ -119,9 +119,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
             <>
                 <View style={styles.backicon}>
                     <Pressable
-                        onPress={() =>
-                            this.props.navigation.navigate('onBoarding')
-                        }
+                        onPress={() => this.props.navigation.navigate('home')}
                     >
                         <BackIcon width={wp('3.13%')} height={hp('2.84%')} />
                     </Pressable>

@@ -18,6 +18,8 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+//
+import Modal from 'react-native-modal'
 // icons
 import { CheckedSvg, UncheckedSvg } from '../../assets/svgs/icons/index'
 // components
@@ -48,6 +50,7 @@ const malls = require('../../assets/images/pickyourchoice/shopping/malls.png')
 const localmarkets = require('../../assets/images/pickyourchoice/shopping/localmarkets.png')
 const handicrafts = require('../../assets/images/pickyourchoice/shopping/handicraft.png')
 
+const thankYou = require('../../assets/images/pickyourchoice/thankyou.png')
 interface IProps {
     navigation: any
 }
@@ -63,6 +66,7 @@ interface IState {
     shoppingList: Array<Item>
     foodTypesList: Array<Item>
     isLoading: boolean
+    modalVisible: any
 }
 
 export const travelList = [
@@ -128,6 +132,7 @@ export const shoppingList = [
 ]
 
 const favoriteService = new FavoriteService()
+
 class PickYourChoice extends Component<IProps, IState> {
     constructor(props: IProps) {
         super(props)
@@ -137,6 +142,7 @@ class PickYourChoice extends Component<IProps, IState> {
             shoppingList: shoppingList,
             foodTypesList: foodTypesList,
             isLoading: false,
+            modalVisible: false,
         }
     }
 
@@ -154,9 +160,10 @@ class PickYourChoice extends Component<IProps, IState> {
 
     onPressNext = async () => {
         const { category } = this.state
-        if (category === 'food')
-            this.setState({ ...this.state, category: 'travel' })
-        else if (category === 'travel')
+        if (category === 'food') {
+            this.setModalVisible()
+            // this.setState({ ...this.state, category: 'travel' })
+        } else if (category === 'travel')
             this.setState({ ...this.state, category: 'shopping' })
         else {
             this.setState({
@@ -190,6 +197,11 @@ class PickYourChoice extends Component<IProps, IState> {
                 })
         }
     }
+    setModalVisible = () => {
+        this.setState((prevState, props) => ({
+            modalVisible: !prevState.modalVisible,
+        }))
+    }
     onPressCheckItem = (type: string, index: number) => {
         let mutatedState = { ...this.state }
         if (type === 'travel') {
@@ -205,80 +217,45 @@ class PickYourChoice extends Component<IProps, IState> {
         }
         this.setState({ ...mutatedState })
     }
-
+    renderModalContent = () => {
+        return (
+            <View
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: wp('10%'),
+                    borderRadius: wp('3.2%'),
+                    backgroundColor: colors.white,
+                }}
+            >
+                <Image source={thankYou} />
+                <Text
+                    style={{
+                        fontFamily: 'AirbnbCerealBook',
+                        fontSize: wp('6.4%'),
+                        fontWeight: 'bold',
+                        color: colors.namecolor,
+                    }}
+                >
+                    {' '}
+                    Thank You
+                </Text>
+                <Text
+                    style={{
+                        fontFamily: 'AirbnbCerealBook',
+                        fontSize: wp('4.33%'),
+                        color: colors.lightBlack,
+                        paddingTop: hp('1.84%'),
+                    }}
+                >
+                    You have successfully {'\n'} picked your choices.
+                </Text>
+            </View>
+        )
+    }
     render() {
-        const styles = StyleSheet.create({
-            container: {
-                display: 'flex',
-                flex: 1,
-                backgroundColor: colors.white,
-                paddingHorizontal: wp('3%'),
-                paddingVertical: wp('3%'),
-                alignContent: 'center',
-                paddingTop: wp('7%'),
-            },
-            titleText: {
-                fontFamily: 'ArchivoRegular',
-                // fontWeight: '400',
-                fontWeight: 'normal',
-                fontSize: wp('6%'),
-                lineHeight: wp('6%'),
-            },
-            buttonsContainer: {
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-            },
-            smallButton: {
-                width: wp('30%'),
-                borderRadius: wp('5.6%'), //3.3%
-                marginTop: wp('5.3%'),
-                paddingVertical: wp('3.5%'),
-                borderWidth: wp('0.3%'),
-            },
-            buttonTitle: {
-                fontFamily: 'AirbnbCerealBold',
-                fontSize: wp('4%'),
-                lineHeight: wp('5%'),
-            },
-            TravelListContainer: {
-                display: 'flex',
-                flex: 1,
-                backgroundColor: colors.white,
-            },
-            Item: {
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginVertical: wp('3%'),
-            },
-            ItemText: {
-                color: colors.grey,
-                fontSize: wp('4.8%'),
-                lineHeight: hp('3.2%'),
-                fontFamily: 'ArchivoRegular',
-                marginLeft: hp('4%'),
-            },
-            EvenItem: {
-                marginVertical: wp('1%'),
-            },
-            oddItem: {
-                marginVertical: wp('1%'),
-                marginRight: wp('1%'),
-            },
-            buttonTextStyles: {
-                fontFamily: 'AirbnbCerealBook',
-                fontSize: wp('4%'),
-                lineHeight: wp('5%'),
-            },
-            overlay: {
-                flex: 1,
-            },
-        })
         const { category, travelList, shoppingList, isLoading } = this.state
-
         return (
             <>
                 {isLoading ? (
@@ -297,11 +274,25 @@ class PickYourChoice extends Component<IProps, IState> {
                         style={{
                             display: 'flex',
                             flex: 1,
-                            paddingTop: hp('3.15%'),
+                            // paddingTop: hp('3.15%'),
                             backgroundColor: colors.white,
                         }}
                     >
-                        <SafeAreaView style={styles.container}>
+                        {this.state.modalVisible && (
+                            <View>
+                                <Modal
+                                    isVisible={this.state.modalVisible}
+                                    backdropColor={colors.white}
+                                    backdropOpacity={0.9}
+                                >
+                                    <View style={styles.modalView}>
+                                        {/* This call renders the modal*/}
+                                        {this.renderModalContent()}
+                                    </View>
+                                </Modal>
+                            </View>
+                        )}
+                        <View style={styles.container}>
                             {/* Title for pick your choice */}
                             <Text style={styles.titleText}>
                                 {this.state.category === 'food'
@@ -395,14 +386,7 @@ class PickYourChoice extends Component<IProps, IState> {
                             </View>
                             <ScrollView showsVerticalScrollIndicator={false}>
                                 {category === 'food' ? (
-                                    <View
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            flexWrap: 'wrap',
-                                            justifyContent: 'space-between',
-                                        }}
-                                    >
+                                    <View style={styles.typeContainer}>
                                         {this.state.foodTypesList.map(
                                             (element: any, index: number) => {
                                                 const { Svg, name } = element
@@ -417,24 +401,18 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         }
                                                     >
                                                         <View
-                                                            style={{
-                                                                borderWidth: wp(
-                                                                    '1%'
-                                                                ),
-                                                                borderColor: this
-                                                                    .state
-                                                                    .foodTypesList[
-                                                                    index
-                                                                ].checked
-                                                                    ? colors.darkyellow
-                                                                    : colors.white,
-                                                                marginBottom: hp(
-                                                                    '2%'
-                                                                ),
-                                                                borderRadius: wp(
-                                                                    '2%'
-                                                                ),
-                                                            }}
+                                                            style={[
+                                                                styles.typeImageConatiner,
+                                                                {
+                                                                    borderColor: this
+                                                                        .state
+                                                                        .foodTypesList[
+                                                                        index
+                                                                    ].checked
+                                                                        ? colors.darkyellow
+                                                                        : colors.white,
+                                                                },
+                                                            ]}
                                                         >
                                                             <ImageBackground
                                                                 style={{
@@ -442,41 +420,22 @@ class PickYourChoice extends Component<IProps, IState> {
                                                                     width: wp(
                                                                         '44%'
                                                                     ),
-                                                                    height: hp(
-                                                                        '23%'
+                                                                    height: wp(
+                                                                        '44%'
                                                                     ),
                                                                 }}
                                                                 source={Svg}
                                                                 resizeMode="cover"
                                                             >
                                                                 <View
-                                                                    style={{
-                                                                        flex: 1,
-                                                                        display:
-                                                                            'flex',
-                                                                        flexDirection:
-                                                                            'row',
-                                                                        alignItems:
-                                                                            'flex-end',
-                                                                        justifyContent:
-                                                                            'center',
-                                                                    }}
+                                                                    style={
+                                                                        styles.imageOverleaf
+                                                                    }
                                                                 >
                                                                     <Text
-                                                                        style={{
-                                                                            color:
-                                                                                colors.white,
-                                                                            marginBottom: wp(
-                                                                                '5%'
-                                                                            ),
-                                                                            fontFamily:
-                                                                                'ArchivoRegular',
-                                                                            fontWeight:
-                                                                                '500',
-                                                                            fontSize: wp(
-                                                                                '4.5%'
-                                                                            ),
-                                                                        }}
+                                                                        style={
+                                                                            styles.typeText
+                                                                        }
                                                                     >
                                                                         {name}
                                                                     </Text>
@@ -491,8 +450,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                 ) : category === 'travel' ? (
                                     <View style={styles.TravelListContainer}>
                                         {travelList.map(
-                                            (ele: Item, index: number) => {
-                                                const { Svg } = ele
+                                            (element: Item, index: number) => {
+                                                const { Svg } = element
 
                                                 return (
                                                     <View
@@ -509,18 +468,20 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }}
                                                         >
                                                             <Image
+                                                                width={wp(
+                                                                    '23.46%'
+                                                                )}
+                                                                height={hp(
+                                                                    '11.57%'
+                                                                )}
                                                                 source={Svg}
                                                             />
-                                                            {/* <Svg
-                                                    width={wp('24%')}
-                                                    height={wp('24%')}
-                                                /> */}
                                                             <Text
                                                                 style={
                                                                     styles.ItemText
                                                                 }
                                                             >
-                                                                {ele.name}
+                                                                {element.name}
                                                             </Text>
                                                         </View>
 
@@ -532,7 +493,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                                 )
                                                             }
                                                         >
-                                                            {ele.checked ? (
+                                                            {element.checked ? (
                                                                 <CheckedSvg />
                                                             ) : (
                                                                 <UncheckedSvg />
@@ -546,8 +507,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                 ) : (
                                     <View style={styles.TravelListContainer}>
                                         {shoppingList.map(
-                                            (ele: Item, index: number) => {
-                                                const { Svg } = ele
+                                            (element: Item, index: number) => {
+                                                const { Svg } = element
                                                 return (
                                                     <View
                                                         style={styles.Item}
@@ -563,18 +524,20 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }}
                                                         >
                                                             <Image
+                                                                width={wp(
+                                                                    '23.46%'
+                                                                )}
+                                                                height={hp(
+                                                                    '11.57%'
+                                                                )}
                                                                 source={Svg}
                                                             />
-                                                            {/* <Svg
-                                                        width={wp('24%')}
-                                                        height={wp('24%')}
-                                                    /> */}
                                                             <Text
                                                                 style={
                                                                     styles.ItemText
                                                                 }
                                                             >
-                                                                {ele.name}
+                                                                {element.name}
                                                             </Text>
                                                         </View>
                                                         <Pressable
@@ -585,7 +548,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                                 )
                                                             }
                                                         >
-                                                            {ele.checked ? (
+                                                            {element.checked ? (
                                                                 <CheckedSvg />
                                                             ) : (
                                                                 <UncheckedSvg />
@@ -598,28 +561,129 @@ class PickYourChoice extends Component<IProps, IState> {
                                     </View>
                                 )}
                             </ScrollView>
-
-                            <CustomButton
-                                onPressButton={this.onPressNext}
-                                title="Next"
-                                buttonStyles={{
-                                    display: 'flex',
-                                    width: '100%',
-                                    alignContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                                buttonTextStyles={[
-                                    {
-                                        fontFamily: 'ArchivoBold',
-                                        fontSize: wp('4%'),
-                                    },
-                                ]}
-                            />
-                        </SafeAreaView>
+                            <View style={{ paddingBottom: hp('0.2%') }}>
+                                <CustomButton
+                                    onPressButton={this.onPressNext}
+                                    title="Next"
+                                    buttonStyles={{
+                                        // display: 'flex',
+                                        width: '100%',
+                                        padding: wp('4%'),
+                                        margin: '1%',
+                                    }}
+                                    buttonTextStyles={[
+                                        {
+                                            fontFamily: 'ArchivoBold',
+                                            fontSize: wp('4%'),
+                                        },
+                                    ]}
+                                />
+                            </View>
+                        </View>
                     </View>
                 )}
             </>
         )
     }
 }
+const styles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        flex: 1,
+        backgroundColor: colors.white,
+        paddingHorizontal: wp('3%'),
+        // paddingVertical: hp('2%'),
+        alignContent: 'center',
+        paddingTop: hp('5%'),
+    },
+    titleText: {
+        fontFamily: 'ArchivoRegular',
+        // fontWeight: '400',
+        fontWeight: 'normal',
+        fontSize: wp('6%'),
+        lineHeight: wp('6%'),
+    },
+    buttonsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        // alignItems: 'center',
+    },
+    smallButton: {
+        width: wp('30%'),
+        borderRadius: wp('5.6%'), //3.3%
+        // marginTop: wp('5.3%'),
+        // paddingVertical: wp('3.5%'),
+        borderWidth: wp('0.3%'),
+    },
+    buttonTitle: {
+        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp('4%'),
+        lineHeight: wp('5%'),
+    },
+    TravelListContainer: {
+        display: 'flex',
+        flex: 1,
+        backgroundColor: colors.white,
+    },
+    Item: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: wp('3%'),
+    },
+    ItemText: {
+        color: colors.grey,
+        fontSize: wp('4.8%'),
+        lineHeight: hp('3.2%'),
+        fontFamily: 'ArchivoRegular',
+        marginLeft: hp('4%'),
+    },
+    EvenItem: {
+        marginVertical: wp('1%'),
+    },
+    oddItem: {
+        marginVertical: wp('1%'),
+        marginRight: wp('1%'),
+    },
+    buttonTextStyles: {
+        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp('4%'),
+        lineHeight: wp('5%'),
+    },
+    overlay: {
+        flex: 1,
+    },
+    modalView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    imageOverleaf: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+    },
+    typeText: {
+        color: colors.white,
+        marginBottom: wp('5%'),
+        fontFamily: 'ArchivoRegular',
+        fontWeight: '500',
+        fontSize: wp('4.5%'),
+    },
+    typeContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    typeImageConatiner: {
+        borderWidth: wp('1%'),
+        marginBottom: hp('1%'),
+        borderRadius: wp('2%'),
+    },
+})
 export default PickYourChoice

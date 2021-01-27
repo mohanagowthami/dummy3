@@ -35,11 +35,6 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
-                    name="bottomTab"
-                    component={BottomTab}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
                     name="onBoarding"
                     component={OnboardingScreens}
                     options={{ headerShown: false }}
@@ -59,6 +54,11 @@ export default function App() {
                 <Stack.Screen
                     name="login"
                     component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="bottomTab"
+                    component={BottomTab}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

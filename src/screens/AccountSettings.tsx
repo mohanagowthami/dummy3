@@ -27,8 +27,8 @@ import {
     Logout,
     FAQ,
     Rating,
+    RatingGreen,
 } from '../../assets/svgs/icons/icons-profile'
-
 // colors
 import { colors } from '../lib/colors'
 
@@ -87,7 +87,7 @@ const notificationsList = [
 
 const moreList = [
     {
-        representationSvg: Rating,
+        representationSvg: RatingGreen,
         title: 'Rate Us',
         description: 'Rate us playstore, appstor',
         actionIcon: ForwardIcon,
@@ -172,8 +172,8 @@ class AccountSettings extends Component<IProps, IState> {
                                         }}
                                     >
                                         <RepresentationSvg
-                                            width={wp('7%')}
-                                            height={wp('7%')}
+                                            width={wp('4%')}
+                                            height={hp('3%')}
                                             color={colors.greyTwo}
                                         />
                                     </View>
@@ -233,7 +233,7 @@ class AccountSettings extends Component<IProps, IState> {
                                 ) : (
                                     <ActionIcon
                                         width={wp('4%')}
-                                        height={wp('4%')}
+                                        height={hp('2.3%')}
                                     />
                                 )}
                             </View>
@@ -266,31 +266,9 @@ class AccountSettings extends Component<IProps, IState> {
                         {'\n'}payments, profile edit etc.
                     </Text>
                     {this.renderSettings(accountList)}
-                    <Text
-                        style={{
-                            fontFamily: 'ArchivoRegular',
-                            fontSize: wp('4.2%'),
-                            color: colors.darkBlack,
-                            lineHeight: wp('7.5%'),
-                            fontWeight: '500',
-                            letterSpacing: wp('0.05%'),
-                        }}
-                    >
-                        NOTIFICATIONS
-                    </Text>
+                    <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
                     {this.renderSettings(notificationsList)}
-                    <Text
-                        style={{
-                            fontFamily: 'ArchivoRegular',
-                            fontSize: wp('4.2%'),
-                            color: colors.darkBlack,
-                            lineHeight: wp('7.5%'),
-                            fontWeight: '500',
-                            letterSpacing: wp('0.05%'),
-                        }}
-                    >
-                        MORE
-                    </Text>
+                    <Text style={styles.settingsHeading}>MORE</Text>
                     {this.renderSettings(moreList)}
                 </View>
             </ScrollView>
@@ -318,6 +296,14 @@ const styles = StyleSheet.create({
         lineHeight: wp('7.8%'),
         letterSpacing: -0.4,
         color: colors.grey,
+    },
+    settingsHeading: {
+        fontFamily: 'ArchivoRegular',
+        fontSize: wp('4.2%'),
+        color: colors.darkBlack,
+        lineHeight: wp('7.5%'),
+        fontWeight: '500',
+        letterSpacing: wp('0.05%'),
     },
 })
 

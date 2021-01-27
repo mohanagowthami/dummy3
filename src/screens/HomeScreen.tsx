@@ -19,12 +19,10 @@ import {
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 // svgs
 import {
-    BellIcon,
     NavigationIcon,
-    Rating,
     RightArrow,
-    SearchIcon,
-} from '../../assets/svgs'
+} from '../../assets/svgs/icons/icons-directions'
+import { BellIcon, SearchIcon, Rating } from '../../assets/svgs/icons'
 // components
 import CustomButton from '../components/buttons/CustomButton'
 // colors
@@ -56,7 +54,7 @@ interface Istate {
 
 const colorsList = [
     '#FFEA75',
-    'FFE8E7',
+    '#FFE8E7',
     '#C3F4FF',
     '#E2F0FF',
     '#FFE2F5',
