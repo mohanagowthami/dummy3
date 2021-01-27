@@ -102,6 +102,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 <CustomButton
                     title="Verify and Continue"
                     buttonStyles={{ width: wp('69.33%') }}
+                    buttonTextStyles={{
+                        fontFamily: 'ArchivoBold',
+                        fontSize: wp('4%'),
+                    }}
                     onPressButton={this.onPressVerifyAndContinue}
                 />
                 <Text style={styles.codeText}>
@@ -161,11 +165,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                         placeholder="Mobile Number"
                         style={styles.inputBox}
                     />
-                    <View style={styles.loginButtonBox}>
+                    <View>
                         <CustomButton
                             title="Get OTP"
                             onPressButton={this.onPressOTPButton}
-                            // buttonStyles={styles.loginButtonBox}
                             buttonTextStyles={[
                                 {
                                     fontFamily: 'ArchivoBold',
