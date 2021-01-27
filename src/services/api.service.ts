@@ -1,17 +1,30 @@
 // axios
 import axios, { AxiosPromise } from 'axios'
 
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 abstract class APIService {
-    getAxiosHeaders(): any {
+    //Passing bearer for all api calls
+    async getAxiosHeaders(): Promise<any> {
+        const token = await AsyncStorage.getItem('accessToken')
         return {
-            Authorization: '',
+            Authorization: token ? `Bearer ${token}` : '',
             'Content-Type': 'application/json',
         }
+    }
+    // Setting access token
+    async setAccessToken(value: string): Promise<any> {
+        await AsyncStorage.setItem('accessToken', value)
+    }
+
+    // Setting refresh token
+    async setRefreshToken(value: string): Promise<any> {
+        await AsyncStorage.setItem('refreshToken', value)
     }
 
     // Axios get method
     get(url: string): AxiosPromise<any> {
-        return axios({ method: 'GET', url, headers: this.getAxiosHeaders() })
+        return axios({ method: 'GET', url })
     }
 
     post(url: string, data = {}): AxiosPromise<any> {

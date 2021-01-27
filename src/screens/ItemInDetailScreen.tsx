@@ -29,7 +29,7 @@ import { BackIcon, RightArrow } from '../../assets/svgs/icons/icons-directions'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-import { REVIEWS_SPECIFIC_RESTAURANTS } from '../lib/endpoints'
+import { BACKEND_API, REVIEWS_SPECIFIC_RESTAURANTS } from '../lib/endpoints'
 import RestaurantService from '../services/restaurants.service'
 
 const image1 =
@@ -118,13 +118,14 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     }
 
     async componentDidMount() {
-        const { id } = this.props.route.params
+        // const { id } = this.props.route.params
         let stateData = { ...this.state }
 
         try {
-            const response: any = await restaurantService.get(
-                REVIEWS_SPECIFIC_RESTAURANTS(id)
+            const response: any = await restaurantService.fetcher(
+                `${BACKEND_API}api/restaurant/reviews/?restaurant=12`
             )
+            console.log(response, 'response in item in detail')
             stateData.categoryData.ratingAndReview = response
         } catch (error) {
             console.log(error, 'error in rating and review in item in detail')

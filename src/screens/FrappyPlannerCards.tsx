@@ -16,6 +16,8 @@ import {
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
 
+import MapView from 'react-native-maps'
+
 interface IProps {
     navigation: any
 }
@@ -128,105 +130,7 @@ class FrappyPlannerCards extends Component<IProps, Istate> {
                         style={styles.searchInput}
                     />
                 </View>
-                <View style={styles.map}>
-                    <Image
-                        style={{ width: wp('100%'), height: hp('30.65%') }}
-                        resizeMode="cover"
-                        source={require('../../assets/images/plannermap.png')}
-                    />
-                    <View
-                        style={{
-                            display: 'flex',
-                            position: 'absolute',
-                            marginLeft: wp('18.66%'),
-                            marginTop: hp('11.97%'),
-                        }}
-                    >
-                        <View style={styles.card}>
-                            <View
-                                style={{
-                                    display: 'flex',
-                                    flex: 1,
-                                    flexDirection: 'row',
-                                }}
-                            >
-                                <Image
-                                    style={{
-                                        marginTop: hp('1%'),
-                                        marginRight: wp('1%'),
-                                    }}
-                                    resizeMode="contain"
-                                    source={require('../../assets/images/cardphoto.png')}
-                                />
-                                <View
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            fontFamily: 'ArchivoRegular',
-                                            fontSize: wp('4.53%'),
-                                            color: '#262628',
-                                        }}
-                                    >
-                                        Pizza Hut Hyderabad
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontFamily: 'ArchivoRegular',
-                                            fontSize: wp('3.46%'),
-                                            color: colors.grey,
-                                        }}
-                                    >
-                                        Ameerpet, Hyderabad
-                                    </Text>
-                                    <View
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            // paddingTop: hp('2%'),
-                                            // marginTop: hp('2%'),
-                                        }}
-                                    >
-                                        <Rating
-                                            width={wp('4.26%%')}
-                                            height={hp('2.10%')}
-                                        />
-                                        <Rating
-                                            width={wp('4.26%%')}
-                                            height={hp('2.10%')}
-                                        />
-                                        <Rating
-                                            width={wp('4.26%%')}
-                                            height={hp('2.10%')}
-                                        />
-                                        <Rating
-                                            width={wp('4.26%%')}
-                                            height={hp('2.10%')}
-                                        />
-                                        <Rating
-                                            width={wp('4.26%%')}
-                                            height={hp('2.10%')}
-                                        />
-                                        <View
-                                            style={{
-                                                display: 'flex',
-                                                paddingLeft: wp('18.4%'),
-                                            }}
-                                        >
-                                            <NavigationIcon
-                                                width={wp('7.46%')}
-                                                height={hp('3.68%')}
-                                            />
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
+                <MapView style={{ width: wp('100%'), height: hp('40%') }} />
                 <View style={styles.bottomTab}>
                     <Text
                         style={{

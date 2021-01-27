@@ -21,6 +21,7 @@ import CustomTextField from '../components/input-controllers/CustomTextField'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
+import { getFormatedDate } from '../lib/helper'
 
 interface IProps {
     navigation: any
@@ -80,6 +81,7 @@ class AddDateToCalender extends Component<IProps, IState> {
         this.setState({
             ...this.state,
             date: selectedDate,
+            show: false,
         })
     }
 
@@ -148,6 +150,10 @@ class AddDateToCalender extends Component<IProps, IState> {
                             onPress={() => this.showPicker('Date')}
                         >
                             Select Date
+                        </Text>
+                        <Text style={styles.timeText}>
+                            {this.state.date &&
+                                getFormatedDate(this.state.date)}
                         </Text>
                         <Text
                             style={styles.selectDate}
