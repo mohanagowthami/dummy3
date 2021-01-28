@@ -14,12 +14,22 @@ abstract class APIService {
     }
     // Setting access token
     async setAccessToken(value: string): Promise<any> {
-        await AsyncStorage.setItem('accessToken', value)
+        try {
+            const jsonValue = JSON.stringify(value)
+            await AsyncStorage.setItem('accessToken', jsonValue)
+        } catch (e) {
+            console.log(e, 'error in saving accessToken')
+        }
     }
 
     // Setting refresh token
     async setRefreshToken(value: string): Promise<any> {
-        await AsyncStorage.setItem('refreshToken', value)
+        try {
+            const jsonValue = JSON.stringify(value)
+            await AsyncStorage.setItem('refreshToken', jsonValue)
+        } catch (e) {
+            console.log(e, 'error in saving refreshToken')
+        }
     }
 
     // Axios get method

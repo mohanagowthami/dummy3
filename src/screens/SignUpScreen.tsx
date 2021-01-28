@@ -28,6 +28,8 @@ import SignUpForm from '../components/forms/SignUpForm'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
+// services
+import UserService from '../services/user.service'
 //interface for signup screen
 interface ISignUpScreen {
     navigation: any
@@ -39,6 +41,7 @@ interface State {
 
 const Welcome = require('../../assets/images/welcome.png')
 //Main Class
+const userService = new UserService()
 class SignUpScreen extends React.Component<ISignUpScreen, State> {
     inputRef: any
     constructor(props: ISignUpScreen) {
@@ -118,8 +121,10 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         }))
     }
     // Get OTP button sets the modal to true from initial false state
-    onPressGetOTP = () => {
-        this.setModalVisible()
+    onPressGetOTP = async () => {
+        // this.setModalVisible()
+        const token = await userService.getAccessToken()
+        if (token) this.props.navigation.navigate('pickYourChoice')
     }
     // render
     render() {

@@ -9,3 +9,9 @@ export const FAVORITE_TRAVELPLACES = `${BACKEND_API}api/favorites/travel/places/
 
 export const REVIEWS_SPECIFIC_RESTAURANTS = (id: number) =>
     `${BACKEND_API}api/restaurant/reviews/?restaurant=${id}`
+
+export const LOGIN = `${BACKEND_API}api/token/`
+
+export const SIGN_UP = `${BACKEND_API}api/users/`
+
+export const LOGOUT = `${BACKEND_API}api/logout/`

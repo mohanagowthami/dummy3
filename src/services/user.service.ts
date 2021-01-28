@@ -6,12 +6,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 class UserService extends APIService {
     // Getting access token
     async getAccessToken(): Promise<any> {
-        return await AsyncStorage.getItem('accessToken')
+        try {
+            const value = await AsyncStorage.getItem('accessToken')
+            if (value !== null) {
+                return value
+            }
+        } catch (e) {
+            return e
+        }
     }
 
     // Getting refresh token
     async getRefreshToken(): Promise<any> {
-        return await AsyncStorage.getItem('refreshToken')
+        try {
+            const value = await AsyncStorage.getItem('refreshToken')
+            if (value !== null) {
+                return value
+            }
+        } catch (e) {
+            return e
+        }
     }
 }
 

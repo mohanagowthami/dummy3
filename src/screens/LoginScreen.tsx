@@ -8,6 +8,7 @@ import {
     Image,
     Text,
     StyleSheet,
+    ActivityIndicator,
 } from 'react-native'
 // react-native-responsive-screen
 import {
@@ -27,6 +28,8 @@ import CustomButton from '../components/buttons/CustomButton'
 import CustomTextField from '../components/input-controllers/CustomTextField'
 // colors
 import { colors } from '../lib/colors'
+// services
+import AuthService from '../services/auth.service'
 
 // props for login screen
 interface ILoginScreen {
@@ -35,16 +38,21 @@ interface ILoginScreen {
 // LoginScreen class definition
 interface State {
     modalVisible: any
+    isLoading: boolean
 }
 const Welcome = require('../../assets/images/welcome.png')
+const authService = new AuthService()
 class LoginScreen extends React.Component<ILoginScreen, State> {
     inputRef: any
+    values: any
     constructor(props: ILoginScreen) {
         super(props)
         this.state = {
             modalVisible: false,
+            isLoading: false,
         }
         this.inputRef = Array(4).fill(React.createRef())
+        this.values = {}
     }
     onChangeOtp = (index: number) => {
         this.inputRef[index].focus()
@@ -123,91 +131,140 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     }
     // Get OTP Button function
     onPressOTPButton = () => {
-        this.setModalVisible()
+        // this.setModalVisible()
+        // this.setState({
+        //     ...this.state,
+        //     isLoading: true,
+        // })
+        console.log(this.values, 'values')
+        authService
+            .logIn(this.values)
+            .then((response) => {
+                console.log(response)
+                authService.authenticateUser(response.access, response.refresh)
+            })
+            .then(() => {
+                this.props.navigation.navigate('pickYourChoice')
+            })
+            .catch((error) => {
+                console.log(error, 'error')
+                alert(error)
+            })
     }
+
+    onChange = (name: string, value: string) => {
+        this.values[name] = value
+    }
+
     render() {
         // navigation as prop
         const { navigation } = this.props
+        const { isLoading } = this.state
         return (
-            <ScrollView
-                style={{ backgroundColor: colors.white }}
-                keyboardShouldPersistTaps="always"
-            >
-                {this.state.modalVisible && (
-                    <View>
-                        <Modal
-                            isVisible={this.state.modalVisible}
-                            backdropColor={colors.white}
-                            backdropOpacity={0.9}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                {/* This call, renders the modal*/}
-                                {this.renderModalContent()}
+            <>
+                {isLoading ? (
+                    <View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <ActivityIndicator />
+                    </View>
+                ) : (
+                    <ScrollView
+                        style={{ backgroundColor: colors.white }}
+                        keyboardShouldPersistTaps="always"
+                    >
+                        {this.state.modalVisible && (
+                            <View>
+                                <Modal
+                                    isVisible={this.state.modalVisible}
+                                    backdropColor={colors.white}
+                                    backdropOpacity={0.9}
+                                >
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {/* This call, renders the modal*/}
+                                        {this.renderModalContent()}
+                                    </View>
+                                </Modal>
                             </View>
-                        </Modal>
-                    </View>
-                )}
-                <View style={styles.container}>
-                    <Image
-                        style={styles.welcome}
-                        resizeMode="contain"
-                        source={Welcome}
-                    />
-                    <Text style={styles.loginText}>Login</Text>
-                    <CustomTextField
-                        onCallBack={this.callBack}
-                        placeholder="Mobile Number"
-                        style={styles.inputBox}
-                    />
-                    <View>
-                        <CustomButton
-                            title="Get OTP"
-                            onPressButton={this.onPressOTPButton}
-                            buttonTextStyles={[
-                                {
-                                    fontFamily: 'ArchivoBold',
-                                    fontSize: wp('4%'),
-                                },
-                            ]}
-                        />
-                    </View>
+                        )}
+                        <View style={styles.container}>
+                            <Image
+                                style={styles.welcome}
+                                resizeMode="contain"
+                                source={Welcome}
+                            />
+                            <Text style={styles.loginText}>Login</Text>
+                            <CustomTextField
+                                onChange={(value) =>
+                                    this.onChange('email', value)
+                                }
+                                placeholder="enter email"
+                                style={styles.inputBox}
+                            />
+                            <CustomTextField
+                                onChange={(value) =>
+                                    this.onChange('password', value)
+                                }
+                                placeholder="enter password"
+                                style={styles.inputBox}
+                            />
+                            <View>
+                                <CustomButton
+                                    title="Get OTP"
+                                    onPressButton={this.onPressOTPButton}
+                                    buttonTextStyles={[
+                                        {
+                                            fontFamily: 'ArchivoBold',
+                                            fontSize: wp('4%'),
+                                        },
+                                    ]}
+                                />
+                            </View>
 
-                    <View style={styles.loginBottom}>
-                        <Text style={styles.loginWith}>Or Login with...</Text>
-                        <View style={styles.socialIconsContainer}>
-                            <FacebookSvg
-                                width={wp('14.66%')}
-                                height={hp('7.23%')}
-                            />
-                            <TwitterSvg
-                                width={wp('14.66%')}
-                                height={hp('7.23%')}
-                            />
-                            <GoogleSvg
-                                width={wp('14.66%')}
-                                height={hp('7.23%')}
-                            />
+                            <View style={styles.loginBottom}>
+                                <Text style={styles.loginWith}>
+                                    Or Login with...
+                                </Text>
+                                <View style={styles.socialIconsContainer}>
+                                    <FacebookSvg
+                                        width={wp('14.66%')}
+                                        height={hp('7.23%')}
+                                    />
+                                    <TwitterSvg
+                                        width={wp('14.66%')}
+                                        height={hp('7.23%')}
+                                    />
+                                    <GoogleSvg
+                                        width={wp('14.66%')}
+                                        height={hp('7.23%')}
+                                    />
+                                </View>
+                                <Text style={{ marginTop: hp('4.73%') }}>
+                                    <Text style={styles.newToFrappy}>
+                                        New to Frappy?{' '}
+                                    </Text>
+                                    <Text
+                                        style={styles.signUp}
+                                        onPress={this.handleNavigation}
+                                    >
+                                        Sign up
+                                    </Text>
+                                </Text>
+                            </View>
                         </View>
-                        <Text style={{ marginTop: hp('4.73%') }}>
-                            <Text style={styles.newToFrappy}>
-                                New to Frappy?{' '}
-                            </Text>
-                            <Text
-                                style={styles.signUp}
-                                onPress={this.handleNavigation}
-                            >
-                                Sign up
-                            </Text>
-                        </Text>
-                    </View>
-                </View>
-            </ScrollView>
+                    </ScrollView>
+                )}
+            </>
         )
     }
 }
