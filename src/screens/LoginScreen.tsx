@@ -208,14 +208,14 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                 onChange={(value) =>
                                     this.onChange('email', value)
                                 }
-                                placeholder="enter email"
+                                placeholder="Enter Email id"
                                 style={styles.inputBox}
                             />
                             <CustomTextField
                                 onChange={(value) =>
                                     this.onChange('password', value)
                                 }
-                                placeholder="enter password"
+                                placeholder="Enter password"
                                 style={styles.inputBox}
                             />
                             <View>

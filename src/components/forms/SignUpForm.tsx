@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         width: wp('85.33%'),
         margin: '3%',
         marginLeft: wp('0%'),
-        // fontSize: hp("1.576%"),
+        fontSize: wp('3%'),
         marginRight: wp('0%'),
         padding: wp('2%'),
         borderBottomWidth: 2,
