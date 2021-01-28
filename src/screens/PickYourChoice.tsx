@@ -8,7 +8,6 @@ import {
     StyleSheet,
     Text,
     Pressable,
-    SafeAreaView,
     Image,
     ImageBackground,
     ActivityIndicator,
@@ -51,6 +50,7 @@ const localmarkets = require('../../assets/images/pickyourchoice/shopping/localm
 const handicrafts = require('../../assets/images/pickyourchoice/shopping/handicraft.png')
 
 const thankYou = require('../../assets/images/pickyourchoice/thankyou.png')
+
 interface IProps {
     navigation: any
 }
@@ -161,8 +161,8 @@ class PickYourChoice extends Component<IProps, IState> {
     onPressNext = async () => {
         const { category } = this.state
         if (category === 'food') {
-            this.setModalVisible()
-            // this.setState({ ...this.state, category: 'travel' })
+            // this.setModalVisible()
+            this.setState({ ...this.state, category: 'travel' })
         } else if (category === 'travel')
             this.setState({ ...this.state, category: 'shopping' })
         else {
@@ -468,12 +468,18 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }}
                                                         >
                                                             <Image
-                                                                width={wp(
-                                                                    '23.46%'
-                                                                )}
-                                                                height={hp(
-                                                                    '11.57%'
-                                                                )}
+                                                                style={{
+                                                                    width: wp(
+                                                                        '23.46%'
+                                                                    ),
+                                                                    height: hp(
+                                                                        '11.57%'
+                                                                    ),
+                                                                    borderRadius: wp(
+                                                                        '1%'
+                                                                    ),
+                                                                }}
+                                                                resizeMode="cover"
                                                                 source={Svg}
                                                             />
                                                             <Text
@@ -494,9 +500,23 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }
                                                         >
                                                             {element.checked ? (
-                                                                <CheckedSvg />
+                                                                <CheckedSvg
+                                                                    width={wp(
+                                                                        '6.4%'
+                                                                    )}
+                                                                    height={hp(
+                                                                        '3.15%'
+                                                                    )}
+                                                                />
                                                             ) : (
-                                                                <UncheckedSvg />
+                                                                <UncheckedSvg
+                                                                    width={wp(
+                                                                        '6.4%'
+                                                                    )}
+                                                                    height={hp(
+                                                                        '3.15%'
+                                                                    )}
+                                                                />
                                                             )}
                                                         </Pressable>
                                                     </View>
@@ -524,12 +544,18 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }}
                                                         >
                                                             <Image
-                                                                width={wp(
-                                                                    '23.46%'
-                                                                )}
-                                                                height={hp(
-                                                                    '11.57%'
-                                                                )}
+                                                                style={{
+                                                                    width: wp(
+                                                                        '23.46%'
+                                                                    ),
+                                                                    height: hp(
+                                                                        '11.57%'
+                                                                    ),
+                                                                    borderRadius: wp(
+                                                                        '1%'
+                                                                    ),
+                                                                }}
+                                                                resizeMode="cover"
                                                                 source={Svg}
                                                             />
                                                             <Text
@@ -549,9 +575,23 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             }
                                                         >
                                                             {element.checked ? (
-                                                                <CheckedSvg />
+                                                                <CheckedSvg
+                                                                    width={wp(
+                                                                        '6.4%'
+                                                                    )}
+                                                                    height={hp(
+                                                                        '3.15%'
+                                                                    )}
+                                                                />
                                                             ) : (
-                                                                <UncheckedSvg />
+                                                                <UncheckedSvg
+                                                                    width={wp(
+                                                                        '6.4%'
+                                                                    )}
+                                                                    height={hp(
+                                                                        '3.15%'
+                                                                    )}
+                                                                />
                                                             )}
                                                         </Pressable>
                                                     </View>

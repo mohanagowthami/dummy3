@@ -57,7 +57,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                 },
                 {
                     SVG: onboarding2,
-                    title: content.onBoarding.onBoardingTitleThree,
+                    title: content.onBoarding.onBoardingTitleTwo,
                     subHeading: content.onBoarding.onBoardingSubHeadingTwo,
                     backgroundColor: colors.orange,
                 },
@@ -129,7 +129,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                     <View style={styles.wrapper}>
                         {this.pagination}
                         {/* Next Button*/}
-                        <View style={{ paddingLeft: wp('2%') }}>
+                        <View>
                             <NextSvg
                                 width={wp('14.66%')}
                                 height={hp('8.23%')}
@@ -189,7 +189,8 @@ const styles = StyleSheet.create({
         fontFamily: 'AirbnbCerealBold',
         color: colors.white,
         fontSize: wp('4.8%'),
-        paddingLeft: wp('10%'),
+        // paddingLeft: wp('10%'),
+        paddingRight: wp('4%'),
         lineHeight: wp('5%'),
     },
     titleContainer: {},
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
     bottomContainer: {
         flex: 1,
         justifyContent: 'flex-end',
-        paddingRight: wp('9.75%'),
+        // paddingRight: wp('9.75%'),
         paddingBottom: hp('2%'),
     },
     wrapper: {
