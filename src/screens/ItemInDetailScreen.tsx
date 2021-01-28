@@ -29,8 +29,9 @@ import { BackIcon, RightArrow } from '../../assets/svgs/icons/icons-directions'
 import CustomButton from '../components/buttons/CustomButton'
 // colors
 import { colors } from '../lib/colors'
-import { BACKEND_API, REVIEWS_SPECIFIC_RESTAURANTS } from '../lib/endpoints'
+// services
 import RestaurantService from '../services/restaurants.service'
+import UserService from '../services/user.service'
 
 const image1 =
     'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
@@ -95,6 +96,7 @@ const ItemContent = {
 }
 
 const restaurantService = new RestaurantService()
+const userService = new UserService()
 class ItemInDetailScreen extends Component<IProps, Istate> {
     constructor(props: IProps) {
         super(props)
@@ -120,16 +122,19 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     async componentDidMount() {
         // const { id } = this.props.route.params
         let stateData = { ...this.state }
+        let accessToken = await userService.getAccessToken()
+        let refreshToken = await userService.getRefreshToken()
+        console.log(accessToken, refreshToken, 'access,refresh')
 
-        try {
-            const response: any = await restaurantService.fetcher(
-                `${BACKEND_API}api/restaurant/reviews/?restaurant=12`
-            )
-            console.log(response, 'response in item in detail')
-            stateData.categoryData.ratingAndReview = response
-        } catch (error) {
-            console.log(error, 'error in rating and review in item in detail')
-        }
+        // try {
+        //     const response: any = await restaurantService.fetcher(
+        //         `${BACKEND_API}api/restaurant/reviews/?restaurant=12`
+        //     )
+        //     console.log(response, 'response in item in detail')
+        //     stateData.categoryData.ratingAndReview = response
+        // } catch (error) {
+        //     console.log(error, 'error in rating and review in item in detail')
+        // }
     }
     render() {
         return (

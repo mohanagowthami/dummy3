@@ -11,7 +11,7 @@ import {
 import { colors } from '../../lib/colors'
 
 interface ICustomTextFieldProps {
-    onCallBack?: (value: any) => void
+    onChange: (value: any) => void
     autoFocus?: boolean
     placeholder?: string
     style?: any
@@ -37,14 +37,10 @@ class CustomTextField extends Component<
         this.state = { text: '' }
     }
     handleChange = (text: string) => {
-        console
+        this.props.onChange(text)
         this.setState({
             text: text,
         })
-    }
-
-    handleBlur = () => {
-        this.props.onCallBack && this.props.onCallBack(this.state.text)
     }
     render() {
         const styles = StyleSheet.create({
@@ -66,7 +62,6 @@ class CustomTextField extends Component<
                 style={[styles.textInput, style]}
                 onChangeText={handleChange ? handleChange : this.handleChange}
                 value={value ? value : this.state.text}
-                onBlur={this.handleBlur}
             />
         )
     }

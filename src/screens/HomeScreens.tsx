@@ -25,14 +25,14 @@ class HomeScreens extends Component {
                     }}
                 />
                 <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
+                    name="feedBack"
+                    component={FeedBackScreen}
                     options={{ headerShown: false }}
                 />
 
                 <Stack.Screen
-                    name="feedBack"
-                    component={FeedBackScreen}
+                    name="home"
+                    component={HomeScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

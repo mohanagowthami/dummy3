@@ -166,35 +166,28 @@ class PickYourChoice extends Component<IProps, IState> {
         } else if (category === 'travel')
             this.setState({ ...this.state, category: 'shopping' })
         else {
-            this.setState({
-                ...this.state,
-                isLoading: true,
-            })
-            const selectedTravelist = this.filterByChecked(
-                this.state.travelList
-            )
-            const selectedFoodList = this.filterByChecked(
-                this.state.foodTypesList
-            )
-            const selectedShoppingList = this.filterByChecked(
-                this.state.shoppingList
-            )
-            const response = await favoriteService.pusher(FAVORITES, {
-                username: 'dorababu',
-                food_category: selectedFoodList,
-                travel_category: selectedTravelist,
-                shopping_category: selectedShoppingList,
-            })
-            console.log(response, 'response')
-            if (response)
-                this.props.navigation.navigate('bottomTab', {
-                    screen: 'home',
-                    params: {
-                        food_category: selectedFoodList,
-                        travel_category: selectedTravelist,
-                        shopping_category: selectedShoppingList,
-                    },
-                })
+            // this.setState({
+            //     ...this.state,
+            //     isLoading: true,
+            // })
+            // const selectedTravelist = this.filterByChecked(
+            //     this.state.travelList
+            // )
+            // const selectedFoodList = this.filterByChecked(
+            //     this.state.foodTypesList
+            // )
+            // const selectedShoppingList = this.filterByChecked(
+            //     this.state.shoppingList
+            // )
+            // const response = await favoriteService.pusher(FAVORITES, {
+            //     username: 'dorababu',
+            //     food_category: selectedFoodList,
+            //     travel_category: selectedTravelist,
+            //     shopping_category: selectedShoppingList,
+            // })
+            // console.log(response, 'response')
+            // if (response)
+            this.props.navigation.navigate('bottomTab')
         }
     }
     setModalVisible = () => {

@@ -1,7 +1,7 @@
 // react
 import React, { Component } from 'react'
 // react-native
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, TextInput } from 'react-native'
 // formik
 import { Formik } from 'formik'
 // react-native-responsive-screen
@@ -15,38 +15,56 @@ import {
 // components
 import CustomButton from '../buttons/CustomButton'
 import CustomTextField from '../input-controllers/CustomTextField'
+// services
+import AuthService from '../../services/auth.service'
 
 interface ISignUpFormProps {
     onPressGetOTP: () => void
 }
 
+const authService = new AuthService()
 class SignUpForm extends Component<ISignUpFormProps, {}> {
+    onSubmitValues = (values: any) => {
+        console.log(values, 'values in sign up')
+        authService
+            .register(values)
+            .then((response) => {
+                authService.authenticateUser(response.access, response.refresh)
+            })
+            .then(() => {
+                this.props.onPressGetOTP()
+            })
+            .catch((error) => {
+                console.log(error, 'error in sign up')
+                this.props.onPressGetOTP()
+            })
+    }
     render() {
         return (
             <Formik
-                initialValues={{ mobileNumber: '', fullName: '', email: '' }}
+                initialValues={{ username: '', email: '', password: '' }}
                 onSubmit={(values) => {
-                    this.props.onPressGetOTP()
+                    this.onSubmitValues(values)
                 }}
             >
                 {({ handleChange, handleBlur, handleSubmit, values }) => (
                     <View style={styles.container}>
-                        <CustomTextField
-                            placeholder="Mobile Number"
-                            onCallBack={handleChange('mobileNumber')}
-                            value={values.mobileNumber}
+                        <TextInput
+                            placeholder="User Name"
+                            onChangeText={handleChange('username')}
+                            value={values.username}
                             style={styles.inputBox}
                         />
-                        <CustomTextField
-                            placeholder="Full Name"
-                            onCallBack={handleChange('fullName')}
-                            value={values.mobileNumber}
-                            style={styles.inputBox}
-                        />
-                        <CustomTextField
+                        <TextInput
                             placeholder="Email ID"
-                            onCallBack={handleChange('email')}
+                            onChangeText={handleChange('email')}
                             value={values.email}
+                            style={styles.inputBox}
+                        />
+                        <TextInput
+                            placeholder="Password"
+                            onChangeText={handleChange('password')}
+                            value={values.password}
                             style={styles.inputBox}
                         />
                         <View style={styles.getOTPButton}>
@@ -81,10 +99,14 @@ const styles = StyleSheet.create({
     },
     inputBox: {
         width: wp('85.33%'),
-        margin: '7%',
+        margin: '3%',
         marginLeft: wp('0%'),
         // fontSize: hp("1.576%"),
         marginRight: wp('0%'),
+        padding: wp('2%'),
+        borderBottomWidth: 2,
+        paddingLeft: 0,
+        borderBottomColor: '#DFE1E6',
         // borderRadius: wp("2.66%"),
     },
 })
