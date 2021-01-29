@@ -132,10 +132,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     // Get OTP Button function
     onPressOTPButton = () => {
         // this.setModalVisible()
-        // this.setState({
-        //     ...this.state,
-        //     isLoading: true,
-        // })
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
         console.log(this.values, 'values')
         authService
             .logIn(this.values)
@@ -149,6 +149,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             .catch((error) => {
                 console.log(error, 'error')
                 alert(error)
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                })
             })
     }
 
