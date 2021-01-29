@@ -123,13 +123,6 @@ class FrappyPlannerCards extends Component<IProps, Istate> {
                         />
                     </View>
                 </View>
-                <View style={styles.searchButton}>
-                    <SearchIcon width={wp('5%')} height={wp('5%')} />
-                    <TextInput
-                        placeholder="Search"
-                        style={styles.searchInput}
-                    />
-                </View>
                 <MapView style={{ width: wp('100%'), height: hp('40%') }} />
                 <View style={styles.bottomTab}>
                     <Text

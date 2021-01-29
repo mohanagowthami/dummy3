@@ -319,7 +319,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     >
                         {item.description}
                     </Text>
-                    <NavigationIcon width={wp('7.8')} height={wp('7.8%')} />
+                    <NavigationIcon width={wp('7.8')} height={hp('3.68%')} />
                 </View>
 
                 <Image
@@ -508,7 +508,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                         </View>
                                         <NavigationIcon
                                             width={wp('7.8%')}
-                                            height={wp('7.8%')}
+                                            height={hp('3.68%')}
                                         />
                                     </View>
                                 </View>
@@ -537,7 +537,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             style={styles.searchInput}
                             onChange={() =>
                                 this.props.navigation.navigate(
-                                    'searchFoodResults'
+                                    'restaurantsNearYou'
                                 )
                             }
                         />
@@ -643,7 +643,10 @@ class HomeScreen extends Component<IProps, Istate> {
                         >
                             <View style={styles.sectionHeaderWrapper}>
                                 <Text style={styles.showAllText}>Show all</Text>
-                                <RightArrow />
+                                <RightArrow
+                                    width={wp('1.59%')}
+                                    height={hp('1.10%')}
+                                />
                             </View>
                         </Pressable>
                     </View>
@@ -654,7 +657,10 @@ class HomeScreen extends Component<IProps, Istate> {
                         <Text style={styles.frappyText}>Recap</Text>
                         <View style={styles.sectionHeaderWrapper}>
                             <Text style={styles.showAllText}>Show all</Text>
-                            <RightArrow />
+                            <RightArrow
+                                width={wp('1.59%')}
+                                height={hp('1.10%')}
+                            />
                         </View>
                     </View>
                     <View>
@@ -746,7 +752,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                 >
                                                     <NavigationIcon
                                                         width={wp('7.8%')}
-                                                        height={wp('7.8%')}
+                                                        height={hp('3.68%')}
                                                     />
                                                 </View>
                                             </View>
@@ -767,7 +773,10 @@ class HomeScreen extends Component<IProps, Istate> {
                         <Text style={styles.frappyText}>Hall of Fame</Text>
                         <View style={styles.sectionHeaderWrapper}>
                             <Text style={styles.showAllText}>Show all</Text>
-                            <RightArrow />
+                            <RightArrow
+                                width={wp('1.59%')}
+                                height={hp('1.10%')}
+                            />
                         </View>
                     </View>
                     <View

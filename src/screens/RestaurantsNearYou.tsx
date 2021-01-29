@@ -19,12 +19,8 @@ import {
 // react-native-maps
 import MapView from 'react-native-maps'
 // svgs
-import {
-    CurrentLocation,
-    LocationIcon,
-    MyLocation,
-    SearchIcon,
-} from '../../assets/svgs/icons'
+import { LocationIcon, MyLocation, SearchIcon } from '../../assets/svgs/icons'
+import { CurrentLocation } from '../../assets/svgs/icons/icons-profile'
 //icons
 import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
 // components

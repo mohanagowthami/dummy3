@@ -17,6 +17,7 @@ interface ICustomTextFieldProps {
     style?: any
     value?: string
     handleChange?: () => void
+    onCallBack?: (value: any) => void
     maxLength?: number
     textAlign?: any
     multiline?: boolean

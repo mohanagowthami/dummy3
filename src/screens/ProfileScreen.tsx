@@ -19,6 +19,7 @@ import Settings from '../../assets/svgs/icons/icons-profile/Settings'
 import Logout from '../../assets/svgs/icons/icons-profile/Logout'
 // colors
 import { colors } from '../lib/colors'
+import { Edit } from '../../assets/svgs/icons/icons-profile'
 
 interface IProps {
     navigation: any
@@ -73,20 +74,55 @@ class ProfileScreen extends Component<IProps, Istate> {
                                                 uri: image,
                                             }}
                                         />
-                                        <Pressable
-                                            // style={{ backgroundColor: 'cyan' }}
-                                            onPress={() =>
-                                                this.props.navigation.navigate(
-                                                    'profile'
-                                                )
-                                            }
-                                        >
-                                            <ForwardIcon
-                                                paddingTop={wp('20%')}
-                                                width={wp('2.92%')}
-                                                height={hp('2.86%')}
-                                            />
-                                        </Pressable>
+                                        <View style={{ alignSelf: 'center' }}>
+                                            <Pressable
+                                                onPress={() =>
+                                                    this.props.navigation.navigate(
+                                                        'profile'
+                                                    )
+                                                }
+                                            >
+                                                <View
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        borderWidth: 2,
+                                                        justifyContent:
+                                                            'center',
+                                                        padding: '5%',
+                                                        borderColor: '#77838F',
+                                                        borderRadius: 7,
+                                                    }}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontFamily:
+                                                                'ArchivoRegular',
+                                                            fontSize: wp(
+                                                                '4.8%'
+                                                            ),
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </Text>
+                                                    <View
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignSelf: 'center',
+                                                            marginLeft: wp(
+                                                                '1%'
+                                                            ),
+                                                        }}
+                                                    >
+                                                        <Edit
+                                                            width={wp('4.53%')}
+                                                            height={hp('2.10%')}
+                                                        />
+                                                    </View>
+                                                </View>
+                                            </Pressable>
+                                        </View>
                                     </View>
                                     <View style={styles.nameandplace}>
                                         <Text style={styles.name}>{name}</Text>
@@ -120,10 +156,6 @@ class ProfileScreen extends Component<IProps, Istate> {
                                 {/* <Text>{this.state.notificationsCount}</Text> */}
                             </Text>
                         </View>
-                    </View>
-                    <View style={styles.optioncontainer}>
-                        <Search width={wp('5.86%')} height={hp('2.89%')} />
-                        <Text style={styles.optionstext}>Search</Text>
                     </View>
                     <View style={styles.optioncontainer}>
                         <Share width={wp('5.86%')} height={hp('2.89%')} />
@@ -173,13 +205,12 @@ const styles = StyleSheet.create({
     },
     profilecontainer: {
         display: 'flex',
-        flex: 1,
+        // flex: 1,
         paddingTop: hp('0.5%'),
     },
     imageandbackicon: {
         display: 'flex',
         flexDirection: 'row',
-        // width:wp(""),
         // height: wp('12.368%'),
         paddingRight: wp('12.8%'),
         justifyContent: 'space-between',

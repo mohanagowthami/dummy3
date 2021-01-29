@@ -74,7 +74,7 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                                 buttonTextStyles={[
                                     {
                                         fontFamily: 'ArchivoBold',
-                                        fontSize: wp('3%'),
+                                        fontSize: wp('4%'),
                                     },
                                 ]}
                             />

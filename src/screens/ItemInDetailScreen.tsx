@@ -23,6 +23,7 @@ import {
     ReadMore,
     Loading,
     Profile,
+    LoveIcon,
 } from '../../assets/svgs/icons'
 import { BackIcon, RightArrow } from '../../assets/svgs/icons/icons-directions'
 // components
@@ -157,7 +158,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                 )
                             }
                         >
-                            <BackIcon />
+                            <BackIcon
+                                width={wp('2.62%')}
+                                height={hp('2.26%')}
+                            />
                         </Pressable>
                     </View>
                     <Image
@@ -168,6 +172,9 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         // resizeMode="contain"
                         source={{ uri: image1 }}
                     />
+                    <View style={{ paddingLeft: wp('3.6%') }}>
+                        <LoveIcon width={wp('7.46%')} height={hp('3.015%')} />
+                    </View>
                 </View>
                 <View style={styles.details}>
                     <Text style={styles.restaurantname}>Baker's King</Text>
@@ -190,14 +197,20 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         </View>
                     </View>
                     <View style={{ display: 'flex' }}>
-                        <Text style={{ fontFamily: 'AirbnbCerealBook' }}>
+                        <Text
+                            style={{
+                                fontFamily: 'AirbnbCerealBook',
+                                fontSize: wp('3.466%'),
+                                color: '#333A4D',
+                            }}
+                        >
                             33 min <View style={styles.line} /> 4.8 miles
                         </Text>
                     </View>
                 </View>
                 {/* grey container,ratings,bookmarks,photos,Description */}
                 <View style={styles.greycontainer}>
-                    <RatingIcon />
+                    <RatingIcon width={wp('10.13%')} height={hp('5%')} />
                     <View
                         style={{
                             display: 'flex',
@@ -210,7 +223,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                     </View>
 
                     <View style={[styles.line, { height: hp('4.34%') }]} />
-                    <BookmarkIcon />
+                    <BookmarkIcon width={wp('10.13%')} height={hp('5%')} />
                     <View
                         style={{
                             display: 'flex',
@@ -219,10 +232,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         }}
                     >
                         <Text style={styles.greyboxtext}>137k</Text>
-                        <Text style={styles.greyboxtext}>Bookmark</Text>
+                        <Text style={styles.greyboxtext}>Likes</Text>
                     </View>
                     <View style={[styles.line, { height: hp('4.34%') }]} />
-                    <PhotoIcon />
+                    <PhotoIcon width={wp('10.13%')} height={hp('5%')} />
                     <View
                         style={{
                             display: 'flex',
@@ -244,7 +257,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                     <Text style={styles.frappyText}>Photos</Text>
                     <View style={styles.sectionHeaderWrapper}>
                         <Text style={styles.showAllText}>Show all</Text>
-                        <RightArrow />
+                        <RightArrow width={wp('1.59%')} height={hp('1.10%')} />
                     </View>
                 </View>
                 <View
@@ -526,7 +539,7 @@ const styles = StyleSheet.create({
         paddingTop: hp('1.10'),
         paddingLeft: wp('2.4%'),
         paddingRight: wp('1%'),
-        lineHeight: hp('2.76%'),
+        // lineHeight: hp('2.76%'),
         paddingBottom: hp('1.10%'),
     },
     line: {

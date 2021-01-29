@@ -38,7 +38,7 @@ export default function App() {
                     name="onBoarding"
                     component={OnboardingScreens}
                     options={{ headerShown: false }}
-                /> */}
+                />
                 <Stack.Screen
                     name="signUp"
                     component={SignUpScreen}
@@ -53,7 +53,7 @@ export default function App() {
                     name="pickYourChoice"
                     component={PickYourChoice}
                     options={{ headerShown: false }}
-                />
+                /> */}
 
                 <Stack.Screen
                     name="bottomTab"

@@ -140,6 +140,9 @@ class FeedBackScreen extends Component<IProps, IState> {
                                             onCallBack={(review) =>
                                                 this.onBlur(element, review)
                                             }
+                                            onChange={() => {
+                                                console.log('changed')
+                                            }}
                                             textAlign={'left'}
                                             multiline={true}
                                             textAlignVertical={'top'}
@@ -158,7 +161,14 @@ class FeedBackScreen extends Component<IProps, IState> {
                                 <CustomButton
                                     title="Submit"
                                     onPressButton={this.onPressSubmit}
-                                    buttonStyles={{ width: wp('90%') }}
+                                    buttonStyles={{
+                                        width: wp('90%'),
+                                        padding: '3%',
+                                    }}
+                                    buttonTextStyles={{
+                                        fontFamily: 'AirbnbCerealBook',
+                                        fontSize: wp('4%'),
+                                    }}
                                 />
                             </View>
                         </View>

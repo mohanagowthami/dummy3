@@ -1,27 +1,22 @@
 import * as React from 'react'
-import Svg, { SvgProps, G, Rect, Path, Defs } from 'react-native-svg'
-/* SVGR has dropped some elements not supported by react-native-svg: filter */
+import Svg, { SvgProps, Path } from 'react-native-svg'
 
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg
-            width={64}
-            height={64}
-            viewBox="0 0 64 64"
+            width={13}
+            height={16}
+            viewBox="0 0 13 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
-            <G filter="url(#prefix__filter0_d)">
-                <Rect x={10} y={5} width={44} height={44} rx={22} fill="#fff" />
-            </G>
             <Path
                 fillRule="evenodd"
                 clipRule="evenodd"
-                d="M40.94 26A8.994 8.994 0 0033 18.06V16h-2v2.06A8.994 8.994 0 0023.06 26H21v2h2.06A8.994 8.994 0 0031 35.94V38h2v-2.06A8.994 8.994 0 0040.94 28H43v-2h-2.06zM32 23c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm-7 4c0 3.87 3.13 7 7 7s7-3.13 7-7-3.13-7-7-7-7 3.13-7 7z"
-                fill="#010101"
+                d="M.167 6.75C.167 3 2.667.5 6.417.5s6.25 3.125 6.25 6.25c0 1.944-1.814 4.613-5.441 8.008a1.25 1.25 0 01-1.662.042C1.966 11.757.167 9.073.167 6.75zM6.417 8a2.083 2.083 0 100-4.167 2.083 2.083 0 000 4.167z"
+                fill="#7A869A"
             />
-            <Defs></Defs>
         </Svg>
     )
 }

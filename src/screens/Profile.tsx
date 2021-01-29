@@ -1,5 +1,5 @@
 // react-native-gesture-handler
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView, TextInput } from 'react-native-gesture-handler'
 // react
 import React, { Component } from 'react'
 // react-native
@@ -9,12 +9,18 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+// expo-image-picker
+import * as ImagePicker from 'expo-image-picker'
 // icons
 import { BackIcon } from '../../assets/svgs/icons/icons-directions'
 import { Camera } from '../../assets/svgs/icons/icons-profile'
 // colors
 import { colors } from '../lib/colors'
 
+interface IprofileOptions {
+    option: string
+    value: any
+}
 interface IProps {
     navigation: any
 }
@@ -24,9 +30,16 @@ interface IDetailsType {
 }
 // state - data
 interface Istate {
+    selectedImages: Array<string>
     categoryData: IDetailsType
     activeIndex: number
     notificationsCount: number
+    userName: string
+    emailId: string
+    phoneNumber: string
+    gender: string
+    dob: string
+    profileOptions: Array<IprofileOptions>
 }
 const details = {
     profileDetails: [
@@ -43,9 +56,49 @@ class Profile extends Component<IProps, Istate> {
     constructor(props: IProps) {
         super(props)
         this.state = {
+            selectedImages: [
+                'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+            ],
             categoryData: details,
             activeIndex: 0,
             notificationsCount: 0,
+            userName: 'User Name',
+            emailId: 'soul@123',
+            phoneNumber: '9876543210',
+            gender: 'M',
+            dob: '17/10/1998',
+            profileOptions: [
+                { option: 'User Name', value: 'User Name' },
+                { option: 'Email', value: 'emailId' },
+                { option: 'Phone', value: '9876543210' },
+                { option: 'Gender', value: 'M' },
+                { option: 'Date of Birth', value: '17/10/1998' },
+            ],
+        }
+    }
+    handleChange = (value: string, name: any) => {
+        let stateData: any = { ...this.state }
+        stateData[name] = value
+        this.setState(stateData)
+        // console.log(stateData[name])
+    }
+    captureImage = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync()
+        if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!')
+        }
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        })
+        console.log(result, 'image')
+        if (!result.cancelled) {
+            const mutatedImages = [...this.state.selectedImages]
+            mutatedImages.push(result.uri)
+            this.setState({ selectedImages: mutatedImages })
+            console.log(this.state.selectedImages)
         }
     }
     _renderinfo = () => {
@@ -65,7 +118,7 @@ class Profile extends Component<IProps, Istate> {
                                     <Pressable
                                         onPress={() =>
                                             this.props.navigation.navigate(
-                                                'accountSettings'
+                                                'profileScreen'
                                             )
                                         }
                                     >
@@ -77,21 +130,38 @@ class Profile extends Component<IProps, Istate> {
                                 </View>
                                 <View style={styles.imageandbackicon}>
                                     <View style={styles.imagecontainer}>
-                                        <Image
-                                            style={styles.profileimage}
-                                            resizeMode="contain"
-                                            source={{
-                                                uri: image,
+                                        <View
+                                            style={{
+                                                position: 'relative',
                                             }}
-                                        />
-                                        <View style={styles.cameraicon}>
-                                            <Camera />
+                                        >
+                                            <Image
+                                                style={styles.profileimage}
+                                                resizeMode="cover"
+                                                source={{
+                                                    uri: this.state
+                                                        .selectedImages[
+                                                        this.state
+                                                            .selectedImages
+                                                            .length - 1
+                                                    ],
+                                                }}
+                                            />
+                                            <View style={styles.cameraicon}>
+                                                <Pressable
+                                                    onPress={this.captureImage}
+                                                >
+                                                    <Camera />
+                                                </Pressable>
+                                            </View>
                                         </View>
                                     </View>
                                 </View>
                             </View>
                             <View style={styles.nameandplace}>
-                                <Text style={styles.name}>{name}</Text>
+                                <Text style={styles.name}>
+                                    {this.state.userName}
+                                </Text>
                                 <Text style={styles.place}>{place}</Text>
                             </View>
                         </View>
@@ -105,27 +175,62 @@ class Profile extends Component<IProps, Istate> {
             <View style={styles.optionscontainer}>
                 <View style={styles.optioncontainer}>
                     <Text style={styles.heading}>Username</Text>
-                    <Text style={styles.details}>UserName</Text>
+                    <TextInput
+                        style={styles.details}
+                        onChangeText={(text) => {
+                            this.handleChange(text, 'userName')
+                        }}
+                    >
+                        {this.state.userName}
+                    </TextInput>
                 </View>
                 <View style={styles.line} />
                 <View style={styles.optioncontainer}>
                     <Text style={styles.heading}>Email</Text>
-                    <Text style={styles.details}>Email</Text>
+                    <TextInput
+                        style={styles.details}
+                        onChangeText={(text) => {
+                            this.handleChange(text, 'emailId')
+                        }}
+                    >
+                        {this.state.emailId}
+                    </TextInput>
                 </View>
                 <View style={styles.line} />
                 <View style={styles.optioncontainer}>
                     <Text style={styles.heading}>Phone</Text>
-                    <Text style={styles.details}>Phone</Text>
+                    <TextInput
+                        style={styles.details}
+                        onChangeText={(text) => {
+                            this.handleChange(text, 'phoneNumber')
+                        }}
+                    >
+                        {this.state.phoneNumber}
+                    </TextInput>
                 </View>
                 <View style={styles.line} />
                 <View style={styles.optioncontainer}>
                     <Text style={styles.heading}>Gender</Text>
-                    <Text style={styles.details}>Gender</Text>
+                    <TextInput
+                        style={styles.details}
+                        onChangeText={(text) => {
+                            this.handleChange(text, 'gender')
+                        }}
+                    >
+                        {this.state.gender}
+                    </TextInput>
                 </View>
                 <View style={styles.line} />
                 <View style={styles.optioncontainer}>
                     <Text style={styles.heading}>Date of Birth</Text>
-                    <Text style={styles.details}>Date of Birth</Text>
+                    <TextInput
+                        style={styles.details}
+                        onChangeText={(text) => {
+                            this.handleChange(text, 'dob')
+                        }}
+                    >
+                        {this.state.dob}
+                    </TextInput>
                 </View>
             </View>
         )
@@ -176,15 +281,16 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginLeft: wp('10%'),
         // paddingLeft: wp('8%'),
-        borderRadius: wp('9.605%'),
+        borderRadius: wp('3.2%'),
     },
     cameraicon: {
         position: 'absolute',
         width: wp('8.66%'),
         height: wp('8.66%'),
-        left: wp('47%'),
-        top: hp('11.3%'),
-        right: wp('3%'),
+        // left: wp('50%'),
+        // top: hp('0%'),
+        right: wp('2%'),
+        bottom: hp('1%'),
         borderRadius: wp('4.33%'),
         backgroundColor: colors.orange,
         justifyContent: 'center',

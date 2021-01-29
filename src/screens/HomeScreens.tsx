@@ -9,6 +9,8 @@ import LocalFavourites from './LocalFavourites'
 import ReviewsAndRating from './ReviewsAndRating'
 import FeedBackScreen from './FeedBackScreen'
 import FoodSearchResults from './FoodResults'
+import RestaurantsNearYou from './RestaurantsNearYou'
+import Navigation from './Navigation'
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()
@@ -49,6 +51,11 @@ class HomeScreens extends Component {
                 <Stack.Screen
                     name="searchFoodResults"
                     component={FoodSearchResults}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="restaurantsNearYou"
+                    component={RestaurantsNearYou}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
