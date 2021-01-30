@@ -11,6 +11,9 @@ import FeedBackScreen from './FeedBackScreen'
 import FoodSearchResults from './FoodResults'
 import RestaurantsNearYou from './RestaurantsNearYou'
 import Navigation from './Navigation'
+import Notifications from './Notifications'
+import Recap from './RecapScreen'
+import HallOfFame from './HallOfFameScreen'
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()
@@ -36,16 +39,35 @@ class HomeScreens extends Component {
                     component={FeedBackScreen}
                     options={{ headerShown: false }}
                 />
-
                 <Stack.Screen
                     name="reviewsAndRating"
                     component={ReviewsAndRating}
                     options={{ headerShown: false }}
                 />
-
+                <Stack.Screen
+                    name="restaurantsNearYou"
+                    component={RestaurantsNearYou}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="navigation"
+                    component={Navigation}
+                    options={{ headerShown: false }}
+                />
                 <Stack.Screen
                     name="localFavourites"
                     component={LocalFavourites}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="recap"
+                    component={Recap}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="hallOfFame"
+                    component={HallOfFame}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -53,9 +75,10 @@ class HomeScreens extends Component {
                     component={FoodSearchResults}
                     options={{ headerShown: false }}
                 />
+
                 <Stack.Screen
-                    name="restaurantsNearYou"
-                    component={RestaurantsNearYou}
+                    name="notifications"
+                    component={Notifications}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

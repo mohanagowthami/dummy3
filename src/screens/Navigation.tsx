@@ -1,7 +1,14 @@
 // react
 import React, { Component } from 'react'
 // react-native
-import { Text, View, StyleSheet, ScrollView, TextInput } from 'react-native'
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    TextInput,
+    Pressable,
+} from 'react-native'
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
@@ -127,10 +134,18 @@ class Navigation extends Component<IProps, Istate> {
                         <View style={styles.heading}>
                             <Text style={styles.title}>Navigation</Text>
                             <View style={styles.notificationIcon}>
-                                <Notifications
-                                    width={wp('5.86%')}
-                                    height={hp('2.89%')}
-                                />
+                                <Pressable
+                                    onPress={() =>
+                                        this.props.navigation.navigate(
+                                            'notifications'
+                                        )
+                                    }
+                                >
+                                    <Notifications
+                                        width={wp('5.86%')}
+                                        height={hp('2.89%')}
+                                    />
+                                </Pressable>
                             </View>
                         </View>
                         <View style={styles.searchButton}>

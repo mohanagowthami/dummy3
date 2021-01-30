@@ -200,7 +200,13 @@ class LocalFavourites extends Component<IProps, IState> {
             <View style={styles.container}>
                 <View style={styles.TitleContainer}>
                     <Text style={styles.titleText}>Local Favourites</Text>
-                    <BellIcon width={wp('6%')} height={wp('6%')} />
+                    <Pressable
+                        onPress={() =>
+                            this.props.navigation.navigate('notifications')
+                        }
+                    >
+                        <BellIcon width={wp('6%')} height={wp('6%')} />
+                    </Pressable>
                 </View>
                 <View style={styles.searchButton}>
                     <SearchIcon width={wp('5%')} height={wp('5%')} />

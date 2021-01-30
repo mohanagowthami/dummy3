@@ -35,7 +35,11 @@ import RestaurantService from '../services/restaurants.service'
 import UserService from '../services/user.service'
 
 const image1 =
-    'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg'
+    'https://pattys-cakes.com/wp-content/uploads/2020/11/colorful-rosette-cake-350x350.jpg'
+const image2 =
+    'https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+const image3 =
+    'https://www.mockofun.com/wp-content/uploads/2019/12/circle-photo.jpg'
 interface IProps {
     navigation: any
     route: any
@@ -108,7 +112,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         }
     }
     onPressGetDirections = () => {
-        console.log('Got Directions')
+        this.props.navigation.navigate('navigation')
     }
     _renderItem({ item, index }: any) {
         return <View></View>
@@ -144,36 +148,49 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 style={styles.maincontainer}
             >
                 {/* Item - back button,image,name,address,time,distance */}
-                <View>
+                <View style={{ display: 'flex' }}>
                     <View
                         style={{
-                            paddingLeft: wp('5.6%'),
-                            paddingTop: hp('4.07%'),
+                            // display: 'flex',
+                            position: 'relative',
+                            flexDirection: 'column',
                         }}
                     >
-                        <Pressable
-                            onPress={() =>
-                                this.props.navigation.navigate(
-                                    'localFavourites'
-                                )
-                            }
+                        <View
+                            style={{
+                                paddingLeft: wp('5.6%'),
+                                paddingTop: hp('6.07%'),
+                            }}
                         >
-                            <BackIcon
-                                width={wp('2.62%')}
-                                height={hp('2.26%')}
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'localFavourites'
+                                    )
+                                }
+                            >
+                                <BackIcon
+                                    width={wp('2.62%')}
+                                    height={hp('2.26%')}
+                                />
+                            </Pressable>
+                            <Image
+                                style={[
+                                    {
+                                        width: wp('35.03%'),
+                                        height: wp('35.03%'),
+                                        alignSelf: 'center',
+                                        borderRadius: wp('17.5%'),
+                                    },
+                                ]}
+                                resizeMode="cover"
+                                source={{ uri: image1 }}
                             />
-                        </Pressable>
-                    </View>
-                    <Image
-                        style={[
-                            styles.hallOfFameImage,
-                            { alignSelf: 'center' },
-                        ]}
-                        // resizeMode="contain"
-                        source={{ uri: image1 }}
-                    />
-                    <View style={{ paddingLeft: wp('3.6%') }}>
-                        <LoveIcon width={wp('7.46%')} height={hp('3.015%')} />
+                            <LoveIcon
+                                width={wp('7.46%')}
+                                height={hp('3.015%')}
+                            />
+                        </View>
                     </View>
                 </View>
                 <View style={styles.details}>
@@ -273,6 +290,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         return (
                             <View key={index}>
                                 <Image
+                                    resizeMode="cover"
                                     style={styles.hallOfFameImage}
                                     source={{
                                         uri: item,
@@ -297,9 +315,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 <View style={styles.reviewcontainer}>
                     <View style={{ display: 'flex', flexDirection: 'column' }}>
                         <Image
-                            resizeMode="contain"
-                            style={{ height: hp('6.3%'), width: wp('12.8%') }}
-                            source={{ uri: image1 }}
+                            resizeMode="cover"
+                            style={{
+                                height: hp('6.6%'),
+                                width: wp('12.8%'),
+                                // borderRadius: wp('50%'),
+                            }}
+                            source={{ uri: image3 }}
                         />
                     </View>
                     <View
@@ -371,9 +393,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 <View style={styles.reviewcontainer}>
                     <View style={{ display: 'flex', flexDirection: 'column' }}>
                         <Image
-                            resizeMode="contain"
-                            style={{ height: hp('6.3%'), width: wp('12.8%') }}
-                            source={{ uri: image1 }}
+                            resizeMode="cover"
+                            style={{
+                                height: hp('6.6%'),
+                                width: wp('12.8%'),
+                                // borderRadius: 100,
+                            }}
+                            source={{ uri: image3 }}
                         />
                     </View>
                     <View
@@ -478,6 +504,16 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                 this.props.navigation.navigate(
                                     'reviewsAndRating'
                                 )
+                            }
+                        />
+                    </View>
+                    <View style={styles.searchButton}>
+                        <Profile width={wp('5%')} height={wp('5%')} />
+                        <TextInput
+                            placeholder="Write feedback"
+                            style={styles.searchInput}
+                            onFocus={() =>
+                                this.props.navigation.navigate('feedBack')
                             }
                         />
                     </View>
@@ -636,6 +672,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'cyan',
         borderRadius: wp('3%'),
         alignItems: 'center',
+        marginBottom: hp('2%'),
     },
     searchInput: {
         flex: 1,

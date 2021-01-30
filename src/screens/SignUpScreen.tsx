@@ -161,7 +161,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                             />
                             <Text style={styles.loginText}>SignUp</Text>
                             <SignUpForm onPressGetOTP={this.onPressGetOTP} />
-                            <View style={[styles.loginBottom]}>
+                            <View style={styles.loginBottom}>
                                 <Text style={styles.loginWith}>
                                     Or Login with...
                                 </Text>
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
         width: wp('100%'),
         height: hp('25%'),
         backgroundColor: '#fff',
-        marginBottom: '7%',
+        // marginBottom: '7%',
+        marginTop: hp('3%'),
         alignItems: 'center',
         justifyContent: 'space-between',
     },

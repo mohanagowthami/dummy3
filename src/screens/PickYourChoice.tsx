@@ -451,39 +451,50 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         style={styles.Item}
                                                         key={index}
                                                     >
-                                                        <View
-                                                            style={{
-                                                                display: 'flex',
-                                                                flexDirection:
-                                                                    'row',
-                                                                alignItems:
-                                                                    'center',
-                                                            }}
+                                                        <Pressable
+                                                            onPress={() =>
+                                                                this.onPressCheckItem(
+                                                                    'travel',
+                                                                    index
+                                                                )
+                                                            }
                                                         >
-                                                            <Image
+                                                            <View
                                                                 style={{
-                                                                    width: wp(
-                                                                        '23.46%'
-                                                                    ),
-                                                                    height: hp(
-                                                                        '11.57%'
-                                                                    ),
-                                                                    borderRadius: wp(
-                                                                        '1%'
-                                                                    ),
+                                                                    display:
+                                                                        'flex',
+                                                                    flexDirection:
+                                                                        'row',
+                                                                    alignItems:
+                                                                        'center',
                                                                 }}
-                                                                resizeMode="cover"
-                                                                source={Svg}
-                                                            />
-                                                            <Text
-                                                                style={
-                                                                    styles.ItemText
-                                                                }
                                                             >
-                                                                {element.name}
-                                                            </Text>
-                                                        </View>
-
+                                                                <Image
+                                                                    style={{
+                                                                        width: wp(
+                                                                            '23.46%'
+                                                                        ),
+                                                                        height: hp(
+                                                                            '11.57%'
+                                                                        ),
+                                                                        borderRadius: wp(
+                                                                            '1%'
+                                                                        ),
+                                                                    }}
+                                                                    resizeMode="cover"
+                                                                    source={Svg}
+                                                                />
+                                                                <Text
+                                                                    style={
+                                                                        styles.ItemText
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        element.name
+                                                                    }
+                                                                </Text>
+                                                            </View>
+                                                        </Pressable>
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
@@ -527,38 +538,50 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         style={styles.Item}
                                                         key={index}
                                                     >
-                                                        <View
-                                                            style={{
-                                                                display: 'flex',
-                                                                flexDirection:
-                                                                    'row',
-                                                                alignItems:
-                                                                    'center',
-                                                            }}
+                                                        <Pressable
+                                                            onPress={() =>
+                                                                this.onPressCheckItem(
+                                                                    'shopping',
+                                                                    index
+                                                                )
+                                                            }
                                                         >
-                                                            <Image
+                                                            <View
                                                                 style={{
-                                                                    width: wp(
-                                                                        '23.46%'
-                                                                    ),
-                                                                    height: hp(
-                                                                        '11.57%'
-                                                                    ),
-                                                                    borderRadius: wp(
-                                                                        '1%'
-                                                                    ),
+                                                                    display:
+                                                                        'flex',
+                                                                    flexDirection:
+                                                                        'row',
+                                                                    alignItems:
+                                                                        'center',
                                                                 }}
-                                                                resizeMode="cover"
-                                                                source={Svg}
-                                                            />
-                                                            <Text
-                                                                style={
-                                                                    styles.ItemText
-                                                                }
                                                             >
-                                                                {element.name}
-                                                            </Text>
-                                                        </View>
+                                                                <Image
+                                                                    style={{
+                                                                        width: wp(
+                                                                            '23.46%'
+                                                                        ),
+                                                                        height: hp(
+                                                                            '11.57%'
+                                                                        ),
+                                                                        borderRadius: wp(
+                                                                            '1%'
+                                                                        ),
+                                                                    }}
+                                                                    resizeMode="cover"
+                                                                    source={Svg}
+                                                                />
+                                                                <Text
+                                                                    style={
+                                                                        styles.ItemText
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        element.name
+                                                                    }
+                                                                </Text>
+                                                            </View>
+                                                        </Pressable>
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
@@ -601,8 +624,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                     buttonStyles={{
                                         // display: 'flex',
                                         width: '100%',
-                                        padding: wp('4%'),
-                                        margin: '1%',
+                                        padding: wp('5%'),
+                                        margin: '2%',
                                     }}
                                     buttonTextStyles={[
                                         {

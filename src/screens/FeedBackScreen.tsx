@@ -44,6 +44,16 @@ class FeedBackScreen extends Component<IProps, IState> {
             showModal: !this.state.showModal,
         })
     }
+    showModal = () => {
+        this.setState({
+            showModal: true,
+        })
+        setTimeout(() => {
+            this.setState({
+                showModal: false,
+            })
+        }, 1500)
+    }
     onBlur = (type: string, review: string) => {
         this.values[type.toLowerCase()] = review
     }
@@ -160,10 +170,10 @@ class FeedBackScreen extends Component<IProps, IState> {
                             >
                                 <CustomButton
                                     title="Submit"
-                                    onPressButton={this.onPressSubmit}
+                                    onPressButton={this.showModal}
                                     buttonStyles={{
                                         width: wp('90%'),
-                                        padding: '3%',
+                                        padding: '4%',
                                     }}
                                     buttonTextStyles={{
                                         fontFamily: 'AirbnbCerealBook',

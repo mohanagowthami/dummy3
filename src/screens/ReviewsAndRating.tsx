@@ -48,6 +48,16 @@ class ReviewsAndRating extends Component<IProps, IState> {
             showModal: !this.state.showModal,
         })
     }
+    showModal = () => {
+        this.setState({
+            showModal: true,
+        })
+        setTimeout(() => {
+            this.setState({
+                showModal: false,
+            })
+        }, 3000)
+    }
 
     async componentDidMount(): Promise<void> {
         if (Platform.OS !== 'web') {
@@ -152,7 +162,6 @@ class ReviewsAndRating extends Component<IProps, IState> {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.showModal && this.renderModal()}
-
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
                         <Text style={styles.titleText}>
@@ -209,7 +218,12 @@ class ReviewsAndRating extends Component<IProps, IState> {
                                 display: 'flex',
                                 flexDirection: 'row',
                                 flexWrap: 'wrap',
-                                justifyContent: 'space-between',
+                                justifyContent:
+                                    this.state.selectedImages.length % 3 ===
+                                        0 &&
+                                    this.state.selectedImages.length !== 0
+                                        ? 'space-between'
+                                        : 'space-around',
                                 marginTop: wp('7%'),
                             }}
                         >
@@ -227,18 +241,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
                                         />
 
                                         <Pressable
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 0,
-                                                backgroundColor: 'red',
-                                                width: wp('4%'),
-                                                height: wp('4%'),
-                                                borderRadius: wp('2%'),
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
+                                            style={styles.removeIcon}
                                             onPress={() =>
                                                 this.removeImage(index)
                                             }
@@ -246,7 +249,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
                                             <Text
                                                 style={{
                                                     color: colors.white,
-                                                    fontSize: wp('2.5%'),
+                                                    fontSize: wp('3.5%'),
                                                     fontWeight: '900',
                                                 }}
                                             >
@@ -259,11 +262,12 @@ class ReviewsAndRating extends Component<IProps, IState> {
                         </View>
                         <CustomButton
                             title="Submit"
-                            onPressButton={this.onPressSubmit}
+                            onPressButton={this.showModal}
                             buttonStyles={{
                                 display: 'flex',
                                 alignSelf: 'center',
                                 width: '100%',
+                                // margin: '0%',
                             }}
                             buttonTextStyles={{
                                 fontFamily: 'AirbnbCerealBold',
@@ -286,7 +290,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
-        paddingVertical: wp('6%'),
+        paddingVertical: hp('6%'),
+        paddingBottom: hp('0%'),
         color: colors.darkBlack,
         paddingHorizontal: wp('3%'),
     },
@@ -328,5 +333,17 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         width: wp('90%'),
+    },
+    removeIcon: {
+        position: 'absolute',
+        top: 2,
+        right: 2,
+        backgroundColor: 'red',
+        width: wp('6%'),
+        height: wp('6%'),
+        borderRadius: wp('3%'),
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

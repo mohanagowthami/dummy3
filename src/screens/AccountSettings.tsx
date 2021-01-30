@@ -155,58 +155,69 @@ class AccountSettings extends Component<IProps, IState> {
                                     paddingRight: wp('4%'),
                                 }}
                             >
-                                <View
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
+                                <Pressable
+                                    onPress={() => {
+                                        if (index == 0) {
+                                            this.props.navigation.navigate(
+                                                'profile'
+                                            )
+                                        }
                                     }}
                                 >
                                     <View
                                         style={{
-                                            width: wp('10%'),
-                                            marginRight: wp('2%'),
                                             display: 'flex',
-                                            justifyContent: 'flex-start',
+                                            flexDirection: 'row',
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <RepresentationSvg
-                                            width={wp('4%')}
-                                            height={hp('3%')}
-                                            color={colors.greyTwo}
-                                        />
-                                    </View>
-                                    <View>
-                                        <Text
+                                        <View
                                             style={{
-                                                fontFamily: 'ArchivoRegular',
-                                                fontSize: wp('4.2%'),
-                                                color: colors.darkBlack,
-                                                lineHeight: wp('4.2%'),
-                                                letterSpacing: 0.28,
-                                                fontWeight: '400',
+                                                width: wp('10%'),
+                                                marginRight: wp('2%'),
+                                                display: 'flex',
+                                                justifyContent: 'flex-start',
+                                                alignItems: 'center',
                                             }}
                                         >
-                                            {title}
-                                        </Text>
-                                        {title !== 'Logout' && (
+                                            <RepresentationSvg
+                                                width={wp('6%')}
+                                                height={hp('3%')}
+                                                color={colors.greyTwo}
+                                            />
+                                        </View>
+                                        <View>
                                             <Text
                                                 style={{
                                                     fontFamily:
-                                                        'AirbnbCerealBook',
-                                                    fontSize: wp('3.8%'),
+                                                        'ArchivoRegular',
+                                                    fontSize: wp('4.2%'),
+                                                    color: colors.darkBlack,
                                                     lineHeight: wp('4.2%'),
-                                                    color: colors.grey,
                                                     letterSpacing: 0.28,
-                                                    marginTop: wp('3%'),
+                                                    fontWeight: '400',
                                                 }}
                                             >
-                                                {description}
+                                                {title}
                                             </Text>
-                                        )}
+                                            {title !== 'Logout' && (
+                                                <Text
+                                                    style={{
+                                                        fontFamily:
+                                                            'AirbnbCerealBook',
+                                                        fontSize: wp('3.8%'),
+                                                        lineHeight: wp('4.2%'),
+                                                        color: colors.grey,
+                                                        letterSpacing: 0.28,
+                                                        marginTop: wp('3%'),
+                                                    }}
+                                                >
+                                                    {description}
+                                                </Text>
+                                            )}
+                                        </View>
                                     </View>
-                                </View>
+                                </Pressable>
 
                                 {list === notificationsList ? (
                                     <ActionIcon

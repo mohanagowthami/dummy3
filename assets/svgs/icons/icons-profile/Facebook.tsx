@@ -4,17 +4,15 @@ import Svg, { SvgProps, Path } from 'react-native-svg'
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg
-            width={24}
-            height={24}
-            viewBox="0 0 24 24"
+            width={10}
+            height={18}
+            viewBox="0 0 10 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
             <Path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M13.155 19v-7h2.07l.275-2.413h-2.345l.003-1.208c0-.63.064-.966 1.033-.966h1.294V5h-2.07c-2.489 0-3.364 1.17-3.364 3.138v1.449H8.5v2.412h1.55V19h3.105z"
+                d="M6 6.111V3.89c0-.613.498-1.111 1.111-1.111h1.111V0H6a3.333 3.333 0 00-3.333 3.333v2.778H.444V8.89h2.223v8.889H6v-8.89h2.222l1.111-2.777H6z"
                 fill="#7A869A"
             />
         </Svg>

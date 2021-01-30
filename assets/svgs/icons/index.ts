@@ -22,6 +22,7 @@ import Profile from './Profile'
 import MyLocation from './MyLocation'
 import LocationIcon from './MyLocation'
 import LoveIcon from './LoveIcon'
+import WavingHand from './WavingHand'
 
 export {
     CalenderSvg,
@@ -48,4 +49,5 @@ export {
     MyLocation,
     LocationIcon,
     LoveIcon,
+    WavingHand,
 }

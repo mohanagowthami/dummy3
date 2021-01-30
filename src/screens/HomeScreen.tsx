@@ -23,6 +23,7 @@ import {
     Rating,
     RightArrow,
     SearchIcon,
+    WavingHand,
 } from '../../assets/svgs/icons'
 // svgs
 
@@ -525,11 +526,30 @@ class HomeScreen extends Component<IProps, Istate> {
         return (
             <ScrollView style={styles.container}>
                 <View>
-                    <View style={styles.TitleContainer}>
+                    <View
+                        style={[styles.TitleContainer, { marginTop: wp('0%') }]}
+                    >
                         <Text style={styles.frappyText}>Frappy morning</Text>
-                        <BellIcon width={wp('6%')} height={wp('6%')} />
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate('notifications')
+                            }
+                        >
+                            <BellIcon width={wp('6%')} height={wp('6%')} />
+                        </Pressable>
                     </View>
-                    <Text style={styles.userName}>User name</Text>
+                    <View
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            paddingVertical: hp('2%'),
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={styles.userName}>User name</Text>
+                        <WavingHand width={wp('5.33%')} height={hp('2.63%')} />
+                    </View>
+
                     <View style={styles.searchButton}>
                         <SearchIcon width={wp('5%')} height={wp('5%')} />
                         <TextInput
@@ -656,11 +676,27 @@ class HomeScreen extends Component<IProps, Istate> {
                     <View style={[styles.TitleContainer]}>
                         <Text style={styles.frappyText}>Recap</Text>
                         <View style={styles.sectionHeaderWrapper}>
-                            <Text style={styles.showAllText}>Show all</Text>
-                            <RightArrow
-                                width={wp('1.59%')}
-                                height={hp('1.10%')}
-                            />
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate('recap')
+                                }
+                            >
+                                <View
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Text style={styles.showAllText}>
+                                        Show all
+                                    </Text>
+                                    <RightArrow
+                                        width={wp('1.59%')}
+                                        height={hp('1.10%')}
+                                    />
+                                </View>
+                            </Pressable>
                         </View>
                     </View>
                     <View>
@@ -772,11 +808,27 @@ class HomeScreen extends Component<IProps, Istate> {
                     <View style={[styles.TitleContainer]}>
                         <Text style={styles.frappyText}>Hall of Fame</Text>
                         <View style={styles.sectionHeaderWrapper}>
-                            <Text style={styles.showAllText}>Show all</Text>
-                            <RightArrow
-                                width={wp('1.59%')}
-                                height={hp('1.10%')}
-                            />
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate('hallOfFame')
+                                }
+                            >
+                                <View
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Text style={styles.showAllText}>
+                                        Show all
+                                    </Text>
+                                    <RightArrow
+                                        width={wp('1.59%')}
+                                        height={hp('1.10%')}
+                                    />
+                                </View>
+                            </Pressable>
                         </View>
                     </View>
                     <View
@@ -823,6 +875,7 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: '5%',
+        paddingTop: '8%',
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
@@ -831,7 +884,8 @@ const styles = StyleSheet.create({
         fontFamily: 'ArchivoRegular',
         color: colors.grey,
         fontSize: wp('4%'),
-        marginVertical: wp('4%'),
+        paddingRight: wp('2.49%%'),
+        // marginVertical: wp('4%'),
     },
     searchButton: {
         display: 'flex',

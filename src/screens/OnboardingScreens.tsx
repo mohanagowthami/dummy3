@@ -81,11 +81,12 @@ class OnboardingScreens extends React.Component<Props, State> {
                 inactiveDotStyle={[
                     styles.inactiveDot,
                     {
-                        backgroundColor:
-                            activeIndex < carouselItems.length
-                                ? this.state.carouselItems[activeIndex]
-                                      .backgroundColor
-                                : colors.white,
+                        backgroundColor: 'transparent',
+                        // backgroundColor:
+                        //     activeIndex < carouselItems.length
+                        //         ? this.state.carouselItems[activeIndex]
+                        //               .backgroundColor
+                        //         : colors.white,
                     },
                 ]}
             />
@@ -129,7 +130,11 @@ class OnboardingScreens extends React.Component<Props, State> {
                     <View style={styles.wrapper}>
                         {this.pagination}
                         {/* Next Button*/}
-                        <View>
+                        <View
+                            style={{
+                                marginRight: wp('10%'),
+                            }}
+                        >
                             <NextSvg
                                 width={wp('14.66%')}
                                 height={hp('8.23%')}
@@ -139,15 +144,13 @@ class OnboardingScreens extends React.Component<Props, State> {
                                     temp.activeIndex <
                                     this.state.carouselItems.length
                                         ? this.carousel.snapToNext()
-                                        : navigation.navigate('signUp')
+                                        : navigation.navigate('login')
                                     this.setState(temp)
                                 }}
                             />
                         </View>
                         {/* Skip */}
-                        <Pressable
-                            onPress={() => navigation.navigate('signUp')}
-                        >
+                        <Pressable onPress={() => navigation.navigate('login')}>
                             <Text style={styles.skipText}>Skip</Text>
                         </Pressable>
                     </View>

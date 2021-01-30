@@ -114,7 +114,7 @@ const details = {
     ],
 }
 
-class Location extends Component<IProps, Istate> {
+class Locations extends Component<IProps, Istate> {
     constructor(props: IProps) {
         super(props)
         this.state = {
@@ -144,12 +144,20 @@ class Location extends Component<IProps, Istate> {
                         }}
                     >
                         <View style={styles.heading}>
-                            <Text style={styles.title}>Locations</Text>
+                            <Text style={styles.title}>Explore</Text>
                             <View style={styles.notificationIcon}>
-                                <Notifications
-                                    width={wp('5.86%')}
-                                    height={hp('2.89%')}
-                                />
+                                <Pressable
+                                    onPress={() =>
+                                        this.props.navigation.navigate(
+                                            'notifications'
+                                        )
+                                    }
+                                >
+                                    <Notifications
+                                        width={wp('5.86%')}
+                                        height={hp('2.89%')}
+                                    />
+                                </Pressable>
                             </View>
                         </View>
                         <View style={styles.searchButton}>
@@ -157,6 +165,11 @@ class Location extends Component<IProps, Istate> {
                             <TextInput
                                 placeholder="Search"
                                 style={styles.searchInput}
+                                onFocus={() =>
+                                    this.props.navigation.navigate(
+                                        'foodSearchResults'
+                                    )
+                                }
                             />
                         </View>
                     </View>
@@ -192,22 +205,21 @@ class Location extends Component<IProps, Istate> {
                                     flex: 1,
                                 }}
                             >
-                                <CustomButton
+                                {/* <CustomButton
                                     title="Get Directions"
                                     buttonStyles={{
                                         width: wp('45.066%'),
-
                                         padding: '4%',
                                         // marginBottom: '2%',
-                                        // marginTop: hp('68.44%'),
-                                        // marginLeft: wp('27.93%'),
+                                        marginTop: hp('66.44%'),
+                                        marginLeft: wp('27.93%'),
                                     }}
                                     buttonTextStyles={{
                                         fontFamily: 'ArchivoBold',
                                         fontSize: wp('4%'),
                                     }}
                                     onPressButton={this.onPressGetDirections}
-                                />
+                                /> */}
                             </View>
                         </View>
                     </View>
@@ -263,4 +275,4 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 })
-export default Location
+export default Locations

@@ -146,8 +146,18 @@ class AddDateToCalender extends Component<IProps, IState> {
                     <View style={styles.container}>
                         <View style={styles.TitleContainer}>
                             <Text style={styles.titleText}>Frappy planner</Text>
-
-                            <BellIcon width={wp('5.9%')} height={wp('5.9%')} />
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'notifications'
+                                    )
+                                }
+                            >
+                                <BellIcon
+                                    width={wp('5.9%')}
+                                    height={wp('5.9%')}
+                                />
+                            </Pressable>
                         </View>
                         <Text
                             style={styles.selectDate}
@@ -202,7 +212,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                         </View>
                         <Text
                             style={styles.selectDate}
-                            onPress={() => this.showPicker('Date')}
+                            // onPress={() => this.showPicker('Date')}
                         >
                             Location
                         </Text>
@@ -219,7 +229,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                                     {this.state.fromText}
                                 </Text>
                                 <Pressable
-                                    onPress={() => this.showPicker('time')}
+                                // onPress={() => this.showPicker('time')}
                                 >
                                     <LocationIcon
                                         width={wp('6.13%')}
@@ -232,7 +242,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                                     {this.state.toText}
                                 </Text>
                                 <Pressable
-                                    onPress={() => this.showPicker('time')}
+                                // onPress={() => this.showPicker('time')}
                                 >
                                     <LocationIcon
                                         width={wp('6.13%')}
@@ -245,7 +255,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                         {this.renderSelectCategorySwitches()}
                         <CustomTextField
                             onChange={() => {
-                                console.log('date changed')
+                                // console.log('date changed')
                             }}
                             // onCallBack={this.onBlurDescription}
                             textAlignVertical="top"
@@ -335,11 +345,11 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
-        paddingTop: wp('3%'),
+        paddingTop: wp('5%'),
     },
     selectDate: {
         fontFamily: 'ArchivoRegular',
-        fontSize: wp('4.2%'),
+        fontSize: wp('4%'),
         color: colors.darkBlack,
         lineHeight: wp('4.5%'),
         marginBottom: wp('4%'),
