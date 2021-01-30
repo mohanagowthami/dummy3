@@ -1,7 +1,7 @@
 // react-native-gesture-handler
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView } from "react-native-gesture-handler"
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
 import {
     View,
@@ -11,45 +11,45 @@ import {
     Image,
     ImageBackground,
     ActivityIndicator,
-} from 'react-native'
+} from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 //
-import Modal from 'react-native-modal'
+import Modal from "react-native-modal"
 // icons
-import { CheckedSvg, UncheckedSvg } from '../../assets/svgs/icons/index'
+import { CheckedSvg, UncheckedSvg } from "../../assets/svgs/icons/index"
 // components
-import CustomButton from '../components/buttons/CustomButton'
+import CustomButton from "../components/buttons/CustomButton"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 // service
-import FavoriteService from '../services/favorites.service'
+import FavoriteService from "../services/favorites.service"
 // endpoints
-import { FAVORITES } from '../lib/endpoints'
+import { FAVORITES } from "../lib/endpoints"
 
 // food images
-const southindian = require('../../assets/images/pickyourchoice/food/southindian.png')
-const northindian = require('../../assets/images/pickyourchoice/food/northindian.png')
-const chinese = require('../../assets/images/pickyourchoice/food/chinese.png')
-const continental = require('../../assets/images/pickyourchoice/food/continental.png')
-const bakery = require('../../assets/images/pickyourchoice/food/bakery.png')
-const localdelicacies = require('../../assets/images/pickyourchoice/food/localdelicacies.png')
+const southindian = require("../../assets/images/pickyourchoice/food/southindian.png")
+const northindian = require("../../assets/images/pickyourchoice/food/northindian.png")
+const chinese = require("../../assets/images/pickyourchoice/food/chinese.png")
+const continental = require("../../assets/images/pickyourchoice/food/continental.png")
+const bakery = require("../../assets/images/pickyourchoice/food/bakery.png")
+const localdelicacies = require("../../assets/images/pickyourchoice/food/localdelicacies.png")
 
 //travel images
-const sightseeing = require('../../assets/images/pickyourchoice/travel/sightseeing.png')
-const hangouts = require('../../assets/images/pickyourchoice/travel/hangouts.png')
-const adventure = require('../../assets/images/pickyourchoice/travel/adventure.png')
-const worship = require('../../assets/images/pickyourchoice/travel/worship.png')
+const sightseeing = require("../../assets/images/pickyourchoice/travel/sightseeing.png")
+const hangouts = require("../../assets/images/pickyourchoice/travel/hangouts.png")
+const adventure = require("../../assets/images/pickyourchoice/travel/adventure.png")
+const worship = require("../../assets/images/pickyourchoice/travel/worship.png")
 
 //shopping images
-const malls = require('../../assets/images/pickyourchoice/shopping/malls.png')
-const localmarkets = require('../../assets/images/pickyourchoice/shopping/localmarkets.png')
-const handicrafts = require('../../assets/images/pickyourchoice/shopping/handicraft.png')
+const malls = require("../../assets/images/pickyourchoice/shopping/malls.png")
+const localmarkets = require("../../assets/images/pickyourchoice/shopping/localmarkets.png")
+const handicrafts = require("../../assets/images/pickyourchoice/shopping/handicraft.png")
 
-const thankYou = require('../../assets/images/pickyourchoice/thankyou.png')
+const thankYou = require("../../assets/images/pickyourchoice/thankyou.png")
 
 interface IProps {
     navigation: any
@@ -71,22 +71,22 @@ interface IState {
 
 export const travelList = [
     {
-        name: 'Sight Seeing',
+        name: "Sight Seeing",
         checked: false,
         Svg: sightseeing,
     },
     {
-        name: 'Hangouts',
+        name: "Hangouts",
         checked: false,
         Svg: hangouts,
     },
     {
-        name: 'Adventure',
+        name: "Adventure",
         checked: false,
         Svg: adventure,
     },
     {
-        name: 'Worship',
+        name: "Worship",
         checked: false,
         Svg: worship,
     },
@@ -95,40 +95,40 @@ export const travelList = [
 export const foodTypesList = [
     {
         Svg: southindian,
-        name: 'South Indian',
+        name: "South Indian",
         checked: false,
     },
     {
         Svg: northindian,
-        name: 'North Indian',
+        name: "North Indian",
         checked: false,
     },
     {
         Svg: chinese,
-        name: 'Chinese',
+        name: "Chinese",
         checked: false,
     },
     {
         Svg: continental,
-        name: 'Continental',
+        name: "Continental",
         checked: false,
     },
     {
         Svg: bakery,
-        name: 'Bakery',
+        name: "Bakery",
         checked: false,
     },
     {
         Svg: localdelicacies,
-        name: 'Local Delicacies',
+        name: "Local Delicacies",
         checked: false,
     },
 ]
 
 export const shoppingList = [
-    { Svg: malls, name: 'Malls', checked: false },
-    { Svg: localmarkets, name: 'Local Markets', checked: false },
-    { Svg: handicrafts, name: 'Handicrafts', checked: false },
+    { Svg: malls, name: "Malls", checked: false },
+    { Svg: localmarkets, name: "Local Markets", checked: false },
+    { Svg: handicrafts, name: "Handicrafts", checked: false },
 ]
 
 const favoriteService = new FavoriteService()
@@ -137,7 +137,7 @@ class PickYourChoice extends Component<IProps, IState> {
     constructor(props: IProps) {
         super(props)
         this.state = {
-            category: 'food',
+            category: "food",
             travelList: travelList,
             shoppingList: shoppingList,
             foodTypesList: foodTypesList,
@@ -160,16 +160,13 @@ class PickYourChoice extends Component<IProps, IState> {
 
     onPressNext = async () => {
         const { category } = this.state
-        if (category === 'food') {
+        if (category === "food") {
             // this.setModalVisible()
-            this.setState({ ...this.state, category: 'travel' })
-        } else if (category === 'travel')
-            this.setState({ ...this.state, category: 'shopping' })
+            this.setState({ ...this.state, category: "travel" })
+        } else if (category === "travel")
+            this.setState({ ...this.state, category: "shopping" })
         else {
-            this.setState({
-                ...this.state,
-                isLoading: true,
-            })
+            this.setModalVisible()
             const selectedTravelist = this.filterByChecked(
                 this.state.travelList
             )
@@ -186,15 +183,13 @@ class PickYourChoice extends Component<IProps, IState> {
                     shopping_category: selectedShoppingList,
                 })
                 .then((response) => {
-                    console.log(response, 'response in pick your choice')
-                    this.props.navigation.navigate('bottomTab')
+                    console.log(response, "response in pick your choice")
+                    this.setModalVisible()
+                    this.props.navigation.navigate("bottomTab")
                 })
                 .catch((error) => {
-                    console.log(error, 'error in pick your choice ')
-                    this.setState({
-                        ...this.state,
-                        isLoading: false,
-                    })
+                    console.log(error, "error in pick your choice ")
+                    this.setModalVisible()
                 })
         }
     }
@@ -205,11 +200,11 @@ class PickYourChoice extends Component<IProps, IState> {
     }
     onPressCheckItem = (type: string, index: number) => {
         let mutatedState = { ...this.state }
-        if (type === 'travel') {
+        if (type === "travel") {
             mutatedState.travelList[index].checked = !mutatedState.travelList[
                 index
             ].checked
-        } else if (type === 'food') {
+        } else if (type === "food") {
             mutatedState.foodTypesList[index].checked = !mutatedState
                 .foodTypesList[index].checked
         } else {
@@ -222,35 +217,35 @@ class PickYourChoice extends Component<IProps, IState> {
         return (
             <View
                 style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: wp('10%'),
-                    borderRadius: wp('3.2%'),
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: wp("10%"),
+                    borderRadius: wp("3.2%"),
                     backgroundColor: colors.white,
                 }}
             >
                 <Image source={thankYou} />
                 <Text
                     style={{
-                        fontFamily: 'AirbnbCerealBook',
-                        fontSize: wp('6.4%'),
-                        fontWeight: 'bold',
+                        fontFamily: "AirbnbCerealBook",
+                        fontSize: wp("6.4%"),
+                        fontWeight: "bold",
                         color: colors.namecolor,
                     }}
                 >
-                    {' '}
+                    {" "}
                     Thank You
                 </Text>
                 <Text
                     style={{
-                        fontFamily: 'AirbnbCerealBook',
-                        fontSize: wp('4.33%'),
+                        fontFamily: "AirbnbCerealBook",
+                        fontSize: wp("4.33%"),
                         color: colors.lightBlack,
-                        paddingTop: hp('1.84%'),
+                        paddingTop: hp("1.84%"),
                     }}
                 >
-                    You have successfully {'\n'} picked your choices.
+                    You have successfully {"\n"} picked your choices.
                 </Text>
             </View>
         )
@@ -262,9 +257,9 @@ class PickYourChoice extends Component<IProps, IState> {
                 {isLoading ? (
                     <View
                         style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                             flex: 1,
                         }}
                     >
@@ -273,7 +268,7 @@ class PickYourChoice extends Component<IProps, IState> {
                 ) : (
                     <View
                         style={{
-                            display: 'flex',
+                            display: "flex",
                             flex: 1,
                             // paddingTop: hp('3.15%'),
                             backgroundColor: colors.white,
@@ -296,25 +291,25 @@ class PickYourChoice extends Component<IProps, IState> {
                         <View style={styles.container}>
                             {/* Title for pick your choice */}
                             <Text style={styles.titleText}>
-                                {this.state.category === 'food'
-                                    ? 'Gourmet'
-                                    : this.state.category === 'travel'
-                                    ? 'Explore'
-                                    : 'Memories'}
+                                {this.state.category === "food"
+                                    ? "Gourmet"
+                                    : this.state.category === "travel"
+                                    ? "Explore"
+                                    : "Memories"}
                             </Text>
                             {/* Choice */}
                             <View style={styles.buttonsContainer}>
                                 <CustomButton
                                     onPressButton={() =>
-                                        this.onPressButton('food')
+                                        this.onPressButton("food")
                                     }
                                     title="Food"
                                     buttonStyles={[
                                         styles.smallButton,
                                         {
                                             backgroundColor:
-                                                this.state.category !== 'food'
-                                                    ? 'rgba(255,108,101,0.2)'
+                                                this.state.category !== "food"
+                                                    ? "rgba(255,108,101,0.2)"
                                                     : colors.orange,
 
                                             borderColor: colors.orange,
@@ -324,7 +319,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                         styles.buttonTextStyles,
                                         {
                                             color:
-                                                this.state.category !== 'food'
+                                                this.state.category !== "food"
                                                     ? colors.orange
                                                     : colors.white,
                                         },
@@ -332,15 +327,15 @@ class PickYourChoice extends Component<IProps, IState> {
                                 />
                                 <CustomButton
                                     onPressButton={() =>
-                                        this.onPressButton('travel')
+                                        this.onPressButton("travel")
                                     }
                                     title="Travel"
                                     buttonStyles={[
                                         styles.smallButton,
                                         {
                                             backgroundColor:
-                                                this.state.category !== 'travel'
-                                                    ? 'rgba(253,210,106,0.2)'
+                                                this.state.category !== "travel"
+                                                    ? "rgba(253,210,106,0.2)"
                                                     : colors.yellow,
 
                                             borderColor: colors.yellow,
@@ -349,7 +344,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                     buttonTextStyles={[
                                         {
                                             color:
-                                                this.state.category !== 'travel'
+                                                this.state.category !== "travel"
                                                     ? colors.yellow
                                                     : colors.white,
                                         },
@@ -358,7 +353,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                 />
                                 <CustomButton
                                     onPressButton={() =>
-                                        this.onPressButton('shopping')
+                                        this.onPressButton("shopping")
                                     }
                                     title="Shopping"
                                     buttonStyles={[
@@ -366,8 +361,8 @@ class PickYourChoice extends Component<IProps, IState> {
                                         {
                                             backgroundColor:
                                                 this.state.category !==
-                                                'shopping'
-                                                    ? 'rgba(102,197,218,0.3)'
+                                                "shopping"
+                                                    ? "rgba(102,197,218,0.3)"
                                                     : colors.skyBlue,
 
                                             borderColor: colors.skyBlue,
@@ -377,7 +372,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                         {
                                             color:
                                                 this.state.category !==
-                                                'shopping'
+                                                "shopping"
                                                     ? colors.skyBlue
                                                     : colors.white,
                                         },
@@ -386,7 +381,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                 />
                             </View>
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                {category === 'food' ? (
+                                {category === "food" ? (
                                     <View style={styles.typeContainer}>
                                         {this.state.foodTypesList.map(
                                             (element: any, index: number) => {
@@ -396,7 +391,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         key={index}
                                                         onPress={() =>
                                                             this.onPressCheckItem(
-                                                                'food',
+                                                                "food",
                                                                 index
                                                             )
                                                         }
@@ -419,10 +414,10 @@ class PickYourChoice extends Component<IProps, IState> {
                                                                 style={{
                                                                     // borderRadius: wp('50%'),
                                                                     width: wp(
-                                                                        '44%'
+                                                                        "44%"
                                                                     ),
                                                                     height: wp(
-                                                                        '44%'
+                                                                        "44%"
                                                                     ),
                                                                 }}
                                                                 source={Svg}
@@ -448,7 +443,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                             }
                                         )}
                                     </View>
-                                ) : category === 'travel' ? (
+                                ) : category === "travel" ? (
                                     <View style={styles.TravelListContainer}>
                                         {travelList.map(
                                             (element: Item, index: number) => {
@@ -462,7 +457,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
-                                                                    'travel',
+                                                                    "travel",
                                                                     index
                                                                 )
                                                             }
@@ -470,23 +465,23 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             <View
                                                                 style={{
                                                                     display:
-                                                                        'flex',
+                                                                        "flex",
                                                                     flexDirection:
-                                                                        'row',
+                                                                        "row",
                                                                     alignItems:
-                                                                        'center',
+                                                                        "center",
                                                                 }}
                                                             >
                                                                 <Image
                                                                     style={{
                                                                         width: wp(
-                                                                            '23.46%'
+                                                                            "23.46%"
                                                                         ),
                                                                         height: hp(
-                                                                            '11.57%'
+                                                                            "11.57%"
                                                                         ),
                                                                         borderRadius: wp(
-                                                                            '1%'
+                                                                            "1%"
                                                                         ),
                                                                     }}
                                                                     resizeMode="cover"
@@ -506,7 +501,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
-                                                                    'travel',
+                                                                    "travel",
                                                                     index
                                                                 )
                                                             }
@@ -514,19 +509,19 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             {element.checked ? (
                                                                 <CheckedSvg
                                                                     width={wp(
-                                                                        '6.4%'
+                                                                        "6.4%"
                                                                     )}
                                                                     height={hp(
-                                                                        '3.15%'
+                                                                        "3.15%"
                                                                     )}
                                                                 />
                                                             ) : (
                                                                 <UncheckedSvg
                                                                     width={wp(
-                                                                        '6.4%'
+                                                                        "6.4%"
                                                                     )}
                                                                     height={hp(
-                                                                        '3.15%'
+                                                                        "3.15%"
                                                                     )}
                                                                 />
                                                             )}
@@ -549,7 +544,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
-                                                                    'shopping',
+                                                                    "shopping",
                                                                     index
                                                                 )
                                                             }
@@ -557,23 +552,23 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             <View
                                                                 style={{
                                                                     display:
-                                                                        'flex',
+                                                                        "flex",
                                                                     flexDirection:
-                                                                        'row',
+                                                                        "row",
                                                                     alignItems:
-                                                                        'center',
+                                                                        "center",
                                                                 }}
                                                             >
                                                                 <Image
                                                                     style={{
                                                                         width: wp(
-                                                                            '23.46%'
+                                                                            "23.46%"
                                                                         ),
                                                                         height: hp(
-                                                                            '11.57%'
+                                                                            "11.57%"
                                                                         ),
                                                                         borderRadius: wp(
-                                                                            '1%'
+                                                                            "1%"
                                                                         ),
                                                                     }}
                                                                     resizeMode="cover"
@@ -593,7 +588,7 @@ class PickYourChoice extends Component<IProps, IState> {
                                                         <Pressable
                                                             onPress={() =>
                                                                 this.onPressCheckItem(
-                                                                    'shopping',
+                                                                    "shopping",
                                                                     index
                                                                 )
                                                             }
@@ -601,19 +596,19 @@ class PickYourChoice extends Component<IProps, IState> {
                                                             {element.checked ? (
                                                                 <CheckedSvg
                                                                     width={wp(
-                                                                        '6.4%'
+                                                                        "6.4%"
                                                                     )}
                                                                     height={hp(
-                                                                        '3.15%'
+                                                                        "3.15%"
                                                                     )}
                                                                 />
                                                             ) : (
                                                                 <UncheckedSvg
                                                                     width={wp(
-                                                                        '6.4%'
+                                                                        "6.4%"
                                                                     )}
                                                                     height={hp(
-                                                                        '3.15%'
+                                                                        "3.15%"
                                                                     )}
                                                                 />
                                                             )}
@@ -625,20 +620,20 @@ class PickYourChoice extends Component<IProps, IState> {
                                     </View>
                                 )}
                             </ScrollView>
-                            <View style={{ paddingBottom: hp('0.2%') }}>
+                            <View style={{ paddingBottom: hp("0.2%") }}>
                                 <CustomButton
                                     onPressButton={this.onPressNext}
                                     title="Next"
                                     buttonStyles={{
                                         // display: 'flex',
-                                        width: '100%',
-                                        padding: wp('5%'),
-                                        margin: '2%',
+                                        width: "100%",
+                                        padding: wp("5%"),
+                                        margin: "2%",
                                     }}
                                     buttonTextStyles={[
                                         {
-                                            fontFamily: 'ArchivoBold',
-                                            fontSize: wp('4%'),
+                                            fontFamily: "ArchivoBold",
+                                            fontSize: wp("4%"),
                                         },
                                     ]}
                                 />
@@ -652,102 +647,102 @@ class PickYourChoice extends Component<IProps, IState> {
 }
 const styles = StyleSheet.create({
     container: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
         backgroundColor: colors.white,
-        paddingHorizontal: wp('3%'),
+        paddingHorizontal: wp("3%"),
         // paddingVertical: hp('2%'),
-        alignContent: 'center',
-        paddingTop: hp('5%'),
+        alignContent: "center",
+        paddingTop: hp("5%"),
     },
     titleText: {
-        fontFamily: 'ArchivoRegular',
+        fontFamily: "ArchivoRegular",
         // fontWeight: '400',
-        fontWeight: 'normal',
-        fontSize: wp('6%'),
-        lineHeight: wp('6%'),
+        fontWeight: "normal",
+        fontSize: wp("6%"),
+        lineHeight: wp("6%"),
     },
     buttonsContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
         // alignItems: 'center',
     },
     smallButton: {
-        width: wp('30%'),
-        borderRadius: wp('5.6%'), //3.3%
+        width: wp("30%"),
+        borderRadius: wp("5.6%"), //3.3%
         // marginTop: wp('5.3%'),
         // paddingVertical: wp('3.5%'),
-        borderWidth: wp('0.3%'),
+        borderWidth: wp("0.3%"),
     },
     buttonTitle: {
-        fontFamily: 'AirbnbCerealBold',
-        fontSize: wp('4%'),
-        lineHeight: wp('5%'),
+        fontFamily: "AirbnbCerealBold",
+        fontSize: wp("4%"),
+        lineHeight: wp("5%"),
     },
     TravelListContainer: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
         backgroundColor: colors.white,
     },
     Item: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: wp('3%'),
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: wp("3%"),
     },
     ItemText: {
         color: colors.grey,
-        fontSize: wp('4.8%'),
-        lineHeight: hp('3.2%'),
-        fontFamily: 'ArchivoRegular',
-        marginLeft: hp('4%'),
+        fontSize: wp("4.8%"),
+        lineHeight: hp("3.2%"),
+        fontFamily: "ArchivoRegular",
+        marginLeft: hp("4%"),
     },
     EvenItem: {
-        marginVertical: wp('1%'),
+        marginVertical: wp("1%"),
     },
     oddItem: {
-        marginVertical: wp('1%'),
-        marginRight: wp('1%'),
+        marginVertical: wp("1%"),
+        marginRight: wp("1%"),
     },
     buttonTextStyles: {
-        fontFamily: 'AirbnbCerealBook',
-        fontSize: wp('4%'),
-        lineHeight: wp('5%'),
+        fontFamily: "AirbnbCerealBook",
+        fontSize: wp("4%"),
+        lineHeight: wp("5%"),
     },
     overlay: {
         flex: 1,
     },
     modalView: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
     },
     imageOverleaf: {
         flex: 1,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "center",
     },
     typeText: {
         color: colors.white,
-        marginBottom: wp('5%'),
-        fontFamily: 'ArchivoRegular',
-        fontWeight: '500',
-        fontSize: wp('4.5%'),
+        marginBottom: wp("5%"),
+        fontFamily: "ArchivoRegular",
+        fontWeight: "500",
+        fontSize: wp("4.5%"),
     },
     typeContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
     },
     typeImageConatiner: {
-        borderWidth: wp('1%'),
-        marginBottom: hp('1%'),
-        borderRadius: wp('2%'),
+        borderWidth: wp("1%"),
+        marginBottom: hp("1%"),
+        borderRadius: wp("2%"),
     },
 })
 export default PickYourChoice

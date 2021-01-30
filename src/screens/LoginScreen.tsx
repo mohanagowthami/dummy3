@@ -1,5 +1,5 @@
 // react
-import React from 'react'
+import React from "react"
 // react native
 import {
     ScrollView,
@@ -9,27 +9,27 @@ import {
     Text,
     StyleSheet,
     ActivityIndicator,
-} from 'react-native'
+} from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // modal
-import Modal from 'react-native-modal'
+import Modal from "react-native-modal"
 // icons
 import {
     FacebookSvg,
     TwitterSvg,
     GoogleSvg,
-} from '../../assets/svgs/icons/icons-login'
+} from "../../assets/svgs/icons/icons-login"
 // components
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
+import CustomButton from "../components/buttons/CustomButton"
+import CustomTextField from "../components/input-controllers/CustomTextField"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 // services
-import AuthService from '../services/auth.service'
+import AuthService from "../services/auth.service"
 
 // props for login screen
 interface ILoginScreen {
@@ -40,7 +40,7 @@ interface State {
     modalVisible: any
     isLoading: boolean
 }
-const Welcome = require('../../assets/images/welcome.png')
+const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
 class LoginScreen extends React.Component<ILoginScreen, State> {
     inputRef: any
@@ -60,7 +60,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
     onPressVerifyAndContinue = () => {
         this.setModalVisible()
-        this.props.navigation.navigate('pickYourChoice')
+        this.props.navigation.navigate("pickYourChoice")
     }
 
     // callBack function
@@ -68,7 +68,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
     // navigate to signUp page
     handleNavigation = () => {
-        this.props.navigation.navigate('signUp')
+        this.props.navigation.navigate("signUp")
     }
 
     renderModalContent = () => {
@@ -76,7 +76,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
                 <Text style={styles.modalDescription}>
-                    Enter the OTP you received to{' '}
+                    Enter the OTP you received to{" "}
                 </Text>
                 <Text style={styles.phonenumber}>+91-9100950567</Text>
                 {/* OTP Section*/}
@@ -109,10 +109,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
                 <CustomButton
                     title="Verify and Continue"
-                    buttonStyles={{ width: wp('69.33%') }}
+                    buttonStyles={{ width: wp("69.33%") }}
                     buttonTextStyles={{
-                        fontFamily: 'ArchivoBold',
-                        fontSize: wp('4%'),
+                        fontFamily: "ArchivoBold",
+                        fontSize: wp("4%"),
                     }}
                     onPressButton={this.onPressVerifyAndContinue}
                 />
@@ -136,11 +136,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             ...this.state,
             isLoading: true,
         })
-<<<<<<< HEAD
-        console.log(this.values, 'values')
-=======
-        // console.log(this.values, 'values')
->>>>>>> edd4c541ee7986fc88da2801ffb4953b21911809
+        console.log(this.values, "values")
         authService
             .logIn(this.values)
             .then((response) => {
@@ -148,10 +144,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 authService.authenticateUser(response.access, response.refresh)
             })
             .then(() => {
-                this.props.navigation.navigate('pickYourChoice')
+                this.props.navigation.navigate("pickYourChoice")
             })
             .catch((error) => {
-                console.log(error, 'error')
+                console.log(error, "error")
                 alert(error)
                 this.setState({
                     ...this.state,
@@ -174,8 +170,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                     <View
                         style={{
                             flex: 1,
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            justifyContent: "center",
+                            alignItems: "center",
                         }}
                     >
                         {/* {this.renderModalContent()} */}
@@ -196,8 +192,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                     <View
                                         style={{
                                             flex: 1,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
+                                            alignItems: "center",
+                                            justifyContent: "center",
                                         }}
                                     >
                                         {/* This call, renders the modal*/}
@@ -215,14 +211,14 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                             <Text style={styles.loginText}>Login</Text>
                             <CustomTextField
                                 onChange={(value) =>
-                                    this.onChange('email', value)
+                                    this.onChange("email", value)
                                 }
                                 placeholder="Enter Email Id"
                                 style={styles.inputBox}
                             />
                             <CustomTextField
                                 onChange={(value) =>
-                                    this.onChange('password', value)
+                                    this.onChange("password", value)
                                 }
                                 placeholder="Enter Password"
                                 style={styles.inputBox}
@@ -233,8 +229,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                     onPressButton={this.onPressOTPButton}
                                     buttonTextStyles={[
                                         {
-                                            fontFamily: 'ArchivoBold',
-                                            fontSize: wp('4%'),
+                                            fontFamily: "ArchivoBold",
+                                            fontSize: wp("4%"),
                                         },
                                     ]}
                                 />
@@ -246,21 +242,21 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                 </Text>
                                 <View style={styles.socialIconsContainer}>
                                     <FacebookSvg
-                                        width={wp('14.66%')}
-                                        height={hp('7.23%')}
+                                        width={wp("14.66%")}
+                                        height={hp("7.23%")}
                                     />
                                     <TwitterSvg
-                                        width={wp('14.66%')}
-                                        height={hp('7.23%')}
+                                        width={wp("14.66%")}
+                                        height={hp("7.23%")}
                                     />
                                     <GoogleSvg
-                                        width={wp('14.66%')}
-                                        height={hp('7.23%')}
+                                        width={wp("14.66%")}
+                                        height={hp("7.23%")}
                                     />
                                 </View>
-                                <Text style={{ marginTop: hp('1.73%') }}>
+                                <Text style={{ marginTop: hp("1.73%") }}>
                                     <Text style={styles.newToFrappy}>
-                                        New to Frappy?{' '}
+                                        New to Frappy?{" "}
                                     </Text>
                                     <Text
                                         style={styles.signUp}
@@ -280,16 +276,16 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 const styles = StyleSheet.create({
     welcome: {
         // marginTop: hp('6.47%'),
-        width: wp('66.35%'),
-        height: hp('23.25%'),
+        width: wp("66.35%"),
+        height: hp("23.25%"),
     },
     modalContainer: {
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         backgroundColor: colors.white,
-        padding: '5%',
+        padding: "5%",
         borderRadius: 10,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -297,123 +293,123 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: wp('90%'),
+        width: wp("90%"),
     },
     modalTitle: {
-        fontSize: wp('4%'),
-        fontStyle: 'normal',
-        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp("4%"),
+        fontStyle: "normal",
+        fontFamily: "AirbnbCerealBold",
     },
     modalDescription: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.grey,
-        fontWeight: '400',
-        margin: wp('3%'),
+        fontWeight: "400",
+        margin: wp("3%"),
     },
     phonenumber: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBold",
         color: colors.grey,
-        fontWeight: 'bold',
-        margin: wp('3%'),
-        textAlign: 'center',
+        fontWeight: "bold",
+        margin: wp("3%"),
+        textAlign: "center",
         marginTop: 0,
     },
     codeText: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.grey,
-        fontWeight: '400',
-        margin: wp('3%'),
+        fontWeight: "400",
+        margin: wp("3%"),
     },
     resendOTP: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.orange,
-        fontWeight: '400',
-        margin: wp('4%'),
+        fontWeight: "400",
+        margin: wp("4%"),
     },
     otpFieldContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '90%',
-        marginVertical: '3%',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "90%",
+        marginVertical: "3%",
         marginTop: 0,
     },
     customTextFieldStyles: {
-        width: wp('13.33%'),
+        width: wp("13.33%"),
         borderBottomColor: colors.darkGrey,
-        padding: '2%',
+        padding: "2%",
         borderBottomWidth: 2,
-        textAlign: 'center',
-        fontFamily: 'AirbnbCerealBook',
-        fontSize: hp('2%'),
+        textAlign: "center",
+        fontFamily: "AirbnbCerealBook",
+        fontSize: hp("2%"),
     },
     container: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
-        alignItems: 'center',
-        paddingTop: hp('4.68%'),
-        paddingRight: wp('7.4%'),
-        paddingLeft: wp('7.2%'),
+        alignItems: "center",
+        paddingTop: hp("4.68%"),
+        paddingRight: wp("7.4%"),
+        paddingLeft: wp("7.2%"),
         // paddingBottom: hp('5.52%'),
         backgroundColor: colors.white,
     },
     tinyLogo: {
-        width: '90%',
-        height: '30%',
+        width: "90%",
+        height: "30%",
     },
     loginText: {
         color: colors.darkBlack,
-        margin: '1%',
+        margin: "1%",
         // marginTop: hp('2.56%'),
-        fontSize: wp('9%'),
-        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp("9%"),
+        fontFamily: "AirbnbCerealBold",
     },
     inputBox: {
         // marginTop: '7%',
-        fontFamily: 'ArchivoRegular',
-        marginTop: hp('3%'),
-        marginBottom: hp('1%'),
-        fontSize: wp('4.2%'),
+        fontFamily: "ArchivoRegular",
+        marginTop: hp("3%"),
+        marginBottom: hp("1%"),
+        fontSize: wp("4.2%"),
     },
     loginBottom: {
-        display: 'flex',
-        width: wp('54.66%'),
-        height: hp('24.41%'),
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: "flex",
+        width: wp("54.66%"),
+        height: hp("24.41%"),
+        alignItems: "center",
+        justifyContent: "space-between",
         // marginBottom: hp('7%'),
     },
     loginButtonBox: {
-        marginTop: '7%',
-        marginBottom: '7%',
+        marginTop: "7%",
+        marginBottom: "7%",
     },
     loginWith: {
-        fontSize: wp('3.7%'),
-        marginTop: hp('2.28%'), //-5
-        marginBottom: hp('2.92%'), //-3
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3.7%"),
+        marginTop: hp("2.28%"), //-5
+        marginBottom: hp("2.92%"), //-3
+        fontFamily: "AirbnbCerealBook",
         color: colors.lightBlack,
     },
     newToFrappy: {
-        fontSize: wp('3.73%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3.73%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.lightBlack,
     },
     signUp: {
-        fontSize: wp('3.73%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3.73%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.orange,
     },
     socialIconsContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: wp('54.66%'),
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: wp("54.66%"),
     },
 })
 export default LoginScreen
