@@ -1,45 +1,45 @@
 // react-native-gesture-handler
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView } from "react-native-gesture-handler"
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image } from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // react-native-modal
-import Modal from 'react-native-modal'
+import Modal from "react-native-modal"
 // react-native-safe-area-context
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView } from "react-native-safe-area-context"
 // components
-import CustomButton from '../components/buttons/CustomButton'
-import CustomTextField from '../components/input-controllers/CustomTextField'
+import CustomButton from "../components/buttons/CustomButton"
+import CustomTextField from "../components/input-controllers/CustomTextField"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 
 interface IProps {}
 interface IState {
     showModal: boolean
 }
 
-const feedBackList = ['Food', 'Travel', 'Shopping']
+const feedBackList = ["Food", "Travel", "Shopping"]
 class FeedBackScreen extends Component<IProps, IState> {
     values: any
     constructor(props: IProps) {
         super(props)
         this.values = {
-            food: '',
-            travel: '',
-            shopping: '',
+            food: "",
+            travel: "",
+            shopping: "",
         }
         this.state = {
             showModal: false,
         }
     }
     onPressSubmit = () => {
-        console.log('values', this.values)
+        console.log("values", this.values)
         this.setState({
             showModal: !this.state.showModal,
         })
@@ -58,19 +58,19 @@ class FeedBackScreen extends Component<IProps, IState> {
                 >
                     <View style={styles.modalContainer}>
                         <Image
-                            source={require('../../assets/images/thankYou.png')}
+                            source={require("../../assets/images/thankYou.png")}
                             style={{
-                                width: wp('60%'),
-                                height: wp('50%'),
+                                width: wp("60%"),
+                                height: wp("50%"),
                             }}
                         />
                         <Text
                             style={{
-                                fontFamily: 'ArchivoBold',
-                                fontSize: wp('6%'),
-                                lineHeight: wp('8%'),
+                                fontFamily: "ArchivoBold",
+                                fontSize: wp("6%"),
+                                lineHeight: wp("8%"),
                                 color: colors.grey,
-                                marginTop: wp('6%'),
+                                marginTop: wp("6%"),
                                 marginBottom: 0,
                             }}
                         >
@@ -78,11 +78,11 @@ class FeedBackScreen extends Component<IProps, IState> {
                         </Text>
                         <Text
                             style={{
-                                fontFamily: 'ArchivoRegular',
-                                fontSize: wp('4.5%'),
-                                lineHeight: wp('6.2%'),
-                                marginVertical: wp('2%'),
-                                textAlign: 'center',
+                                fontFamily: "ArchivoRegular",
+                                fontSize: wp("4.5%"),
+                                lineHeight: wp("6.2%"),
+                                marginVertical: wp("2%"),
+                                textAlign: "center",
                                 color: colors.grey,
                             }}
                         >
@@ -104,27 +104,27 @@ class FeedBackScreen extends Component<IProps, IState> {
                         <View style={styles.container}>
                             <Text
                                 style={{
-                                    fontFamily: 'AirbnbCerealBook',
-                                    fontSize: wp('6.4%'),
-                                    lineHeight: wp('9%'),
-                                    letterSpacing: wp('0.1%'),
+                                    fontFamily: "AirbnbCerealBook",
+                                    fontSize: wp("6.4%"),
+                                    lineHeight: wp("9%"),
+                                    letterSpacing: wp("0.1%"),
                                     color: colors.darkBlack,
-                                    marginBottom: wp('3%'),
-                                    fontWeight: '600',
+                                    marginBottom: wp("3%"),
+                                    fontWeight: "600",
                                 }}
                             >
                                 Feedback
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'AirbnbCerealBook',
-                                    fontSize: wp('4.8%'),
-                                    lineHeight: wp('9%'),
+                                    fontFamily: "AirbnbCerealBook",
+                                    fontSize: wp("4.8%"),
+                                    lineHeight: wp("9%"),
                                     letterSpacing: -0.3,
 
                                     color: colors.darkBlack,
-                                    marginBottom: wp('4%'),
-                                    fontStyle: 'normal',
+                                    marginBottom: wp("4%"),
+                                    fontStyle: "normal",
                                 }}
                             >
                                 Your suggestions matter
@@ -137,12 +137,12 @@ class FeedBackScreen extends Component<IProps, IState> {
                                         </Text>
                                         <CustomTextField
                                             placeholder="Wrire your review here"
-                                            onCallBack={(review) =>
+                                            onChange={(review) =>
                                                 this.onBlur(element, review)
                                             }
-                                            textAlign={'left'}
+                                            textAlign={"left"}
                                             multiline={true}
-                                            textAlignVertical={'top'}
+                                            textAlignVertical={"top"}
                                             style={styles.textInputStyles}
                                             placeholderTextColor={colors.grey}
                                         />
@@ -151,14 +151,14 @@ class FeedBackScreen extends Component<IProps, IState> {
                             })}
                             <View
                                 style={{
-                                    display: 'flex',
-                                    alignSelf: 'center',
+                                    display: "flex",
+                                    alignSelf: "center",
                                 }}
                             >
                                 <CustomButton
                                     title="Submit"
                                     onPressButton={this.onPressSubmit}
-                                    buttonStyles={{ width: wp('90%') }}
+                                    buttonStyles={{ width: wp("90%") }}
                                 />
                             </View>
                         </View>
@@ -172,36 +172,36 @@ export default FeedBackScreen
 
 const styles = StyleSheet.create({
     textInputStyles: {
-        height: hp('17%'),
+        height: hp("17%"),
         backgroundColor: colors.lightGreyFour,
-        marginBottom: wp('5%'),
-        marginTop: wp('2.5%'),
-        borderRadius: wp('3%'),
+        marginBottom: wp("5%"),
+        marginTop: wp("2.5%"),
+        borderRadius: wp("3%"),
         borderBottomWidth: 0,
         color: colors.grey,
-        fontFamily: 'ArchivoRegular',
-        fontWeight: '400',
-        fontSize: wp('4%'),
-        padding: wp('5%'),
+        fontFamily: "ArchivoRegular",
+        fontWeight: "400",
+        fontSize: wp("4%"),
+        padding: wp("5%"),
     },
     container: {
-        padding: wp('5%'),
+        padding: wp("5%"),
         backgroundColor: colors.white,
     },
     subHeading: {
-        fontFamily: 'AirbnbCerealBook',
-        fontSize: wp('4.2%'),
+        fontFamily: "AirbnbCerealBook",
+        fontSize: wp("4.2%"),
         color: colors.darkBlack,
-        lineHeight: wp('6%'),
+        lineHeight: wp("6%"),
         letterSpacing: 0.3,
     },
     modalContainer: {
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         backgroundColor: colors.white,
-        padding: wp('8%'),
+        padding: wp("8%"),
         borderRadius: 10,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: wp('90%'),
+        width: wp("90%"),
     },
 })

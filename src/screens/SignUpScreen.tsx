@@ -9,6 +9,7 @@ import {
     TextInput,
     SafeAreaView,
     Image,
+    ActivityIndicator,
 } from 'react-native'
 // react-native-modal
 import Modal from 'react-native-modal'
@@ -37,6 +38,7 @@ interface ISignUpScreen {
 // interface for modal state
 interface State {
     modalVisible: any
+    isLoading: boolean
 }
 
 const Welcome = require('../../assets/images/welcome.png')
@@ -48,6 +50,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         super(props)
         this.state = {
             modalVisible: false,
+            isLoading: false,
         }
         this.inputRef = Array(4).fill(React.createRef())
     }
@@ -128,76 +131,83 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     }
     // render
     render() {
+        const { isLoading } = this.state
         return (
             <SafeAreaView>
-                <View
-                    style={{
-                        backgroundColor: colors.white,
-                    }}
-                >
-                    {this.state.modalVisible && (
-                        <View>
-                            <Modal
-                                isVisible={this.state.modalVisible}
-                                backdropColor={colors.white}
-                                backdropOpacity={0.9}
-                            >
-                                <View style={styles.modalView}>
-                                    {/* This call renders the modal*/}
-                                    {this.renderModalContent()}
-                                </View>
-                            </Modal>
-                        </View>
-                    )}
-                    <ScrollView keyboardShouldPersistTaps="always">
-                        <View style={styles.container}>
-                            <Image
-                                style={{
-                                    width: wp('66.35%'),
-                                    height: hp('23.25%'),
-                                }}
-                                resizeMode="contain"
-                                source={Welcome}
-                            />
-                            <Text style={styles.loginText}>SignUp</Text>
-                            <SignUpForm onPressGetOTP={this.onPressGetOTP} />
-                            <View style={[styles.loginBottom]}>
-                                <Text style={styles.loginWith}>
-                                    Or Login with...
-                                </Text>
-                                <View style={styles.socialIconsContainer}>
-                                    <FacebookSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                    <TwitterSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                    <GoogleSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                </View>
-                                <Text>
-                                    <Text style={styles.haveAnAccount}>
-                                        Already have an account?{' '}
-                                    </Text>
-                                    <Text
-                                        style={styles.signIn}
-                                        onPress={() =>
-                                            this.props.navigation.navigate(
-                                                'login'
-                                            )
-                                        }
-                                    >
-                                        Sign In
-                                    </Text>
-                                </Text>
+                {isLoading ? (
+                    <ActivityIndicator />
+                ) : (
+                    <View
+                        style={{
+                            backgroundColor: colors.white,
+                        }}
+                    >
+                        {this.state.modalVisible && (
+                            <View>
+                                <Modal
+                                    isVisible={this.state.modalVisible}
+                                    backdropColor={colors.white}
+                                    backdropOpacity={0.9}
+                                >
+                                    <View style={styles.modalView}>
+                                        {/* This call renders the modal*/}
+                                        {this.renderModalContent()}
+                                    </View>
+                                </Modal>
                             </View>
-                        </View>
-                    </ScrollView>
-                </View>
+                        )}
+                        <ScrollView keyboardShouldPersistTaps="always">
+                            <View style={styles.container}>
+                                <Image
+                                    style={{
+                                        width: wp('66.35%'),
+                                        height: hp('23.25%'),
+                                    }}
+                                    resizeMode="contain"
+                                    source={Welcome}
+                                />
+                                <Text style={styles.loginText}>SignUp</Text>
+                                <SignUpForm
+                                    onPressGetOTP={this.onPressGetOTP}
+                                />
+                                <View style={[styles.loginBottom]}>
+                                    <Text style={styles.loginWith}>
+                                        Or Login with...
+                                    </Text>
+                                    <View style={styles.socialIconsContainer}>
+                                        <FacebookSvg
+                                            width={wp('14.66%')}
+                                            height={hp('6.19')}
+                                        />
+                                        <TwitterSvg
+                                            width={wp('14.66%')}
+                                            height={hp('6.19')}
+                                        />
+                                        <GoogleSvg
+                                            width={wp('14.66%')}
+                                            height={hp('6.19')}
+                                        />
+                                    </View>
+                                    <Text>
+                                        <Text style={styles.haveAnAccount}>
+                                            Already have an account?{' '}
+                                        </Text>
+                                        <Text
+                                            style={styles.signIn}
+                                            onPress={() =>
+                                                this.props.navigation.navigate(
+                                                    'login'
+                                                )
+                                            }
+                                        >
+                                            Sign In
+                                        </Text>
+                                    </Text>
+                                </View>
+                            </View>
+                        </ScrollView>
+                    </View>
+                )}
             </SafeAreaView>
         )
     }

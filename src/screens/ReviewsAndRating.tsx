@@ -1,5 +1,5 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
 import {
     View,
@@ -11,29 +11,38 @@ import {
     ScrollView,
     TextInput,
     SafeAreaView,
-} from 'react-native'
+} from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // expo-image-picker
-import * as ImagePicker from 'expo-image-picker'
+import * as ImagePicker from "expo-image-picker"
 // react-native-modal
-import Modal from 'react-native-modal'
+import Modal from "react-native-modal"
 // components
-import CustomButton from '../components/buttons/CustomButton'
-import CustomStarRating from '../components/star-rating/CustomStarRating'
+import CustomButton from "../components/buttons/CustomButton"
+import CustomStarRating from "../components/star-rating/CustomStarRating"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
+import RestaurantService from "../services/restaurants.service"
+import { CATEGORY_LEVEL_REVIEW } from "../lib/endpoints"
+import CustomTextField from "../components/input-controllers/CustomTextField"
 
-interface IProps {}
+interface IProps {
+    navigation: any
+    route: any
+}
 
 interface IState {
     selectedImages: Array<string>
     showModal: boolean
 }
+
+const restaurantService = new RestaurantService()
 class ReviewsAndRating extends Component<IProps, IState> {
+    data: any = {}
     constructor(props: IProps) {
         super(props)
         this.state = {
@@ -47,25 +56,54 @@ class ReviewsAndRating extends Component<IProps, IState> {
             ...this.state,
             showModal: !this.state.showModal,
         })
+        const data = {
+            restaurant_id: this.props.route.params.id,
+            review_images: [...this.state.selectedImages],
+            category: "food",
+            review: this.data.review,
+            user_rating: this.data.user_rating,
+        }
+        console.log(data, "data")
+        restaurantService
+            .pusher(CATEGORY_LEVEL_REVIEW, this.data)
+            .then((response) => {
+                this.setState({
+                    ...this.state,
+                    showModal: !this.state.showModal,
+                })
+                this.props.navigation.navigate("home")
+            })
+            .catch((error) => {
+                console.log(
+                    error,
+                    " in submission in ratings and reviews screen "
+                )
+                this.setState({
+                    ...this.state,
+                    showModal: !this.state.showModal,
+                })
+                this.props.navigation.navigate("home")
+            })
     }
 
     async componentDidMount(): Promise<void> {
-        if (Platform.OS !== 'web') {
+        console.log(this.props.route.params, "params")
+        if (Platform.OS !== "web") {
             const {
                 status,
             } = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
-            if (status !== 'granted') {
+            if (status !== "granted") {
                 alert(
-                    'Sorry, we need files access permissions to make this work!'
+                    "Sorry, we need files access permissions to make this work!"
                 )
             }
         }
     }
     captureImage = async () => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
-        if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!')
+        if (status !== "granted") {
+            alert("Sorry, we need camera roll permissions to make this work!")
         }
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -73,7 +111,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
             aspect: [4, 3],
             quality: 1,
         })
-        console.log(result, 'image')
+        console.log(result, "image")
         if (!result.cancelled) {
             const mutatedImages = [...this.state.selectedImages]
             mutatedImages.push(result.uri)
@@ -88,7 +126,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
             aspect: [4, 3],
             quality: 1,
         })
-        console.log(result, 'image')
+        console.log(result, "image")
         if (!result.cancelled) {
             const mutatedImages = [...this.state.selectedImages]
             mutatedImages.push(result.uri)
@@ -112,19 +150,19 @@ class ReviewsAndRating extends Component<IProps, IState> {
                 >
                     <View style={styles.modalContainer}>
                         <Image
-                            source={require('../../assets/images/thankYou.png')}
+                            source={require("../../assets/images/thankYou.png")}
                             style={{
-                                width: wp('60%'),
-                                height: wp('50%'),
+                                width: wp("60%"),
+                                height: wp("50%"),
                             }}
                         />
                         <Text
                             style={{
-                                fontFamily: 'ArchivoBold',
-                                fontSize: wp('6%'),
-                                lineHeight: wp('8%'),
+                                fontFamily: "ArchivoBold",
+                                fontSize: wp("6%"),
+                                lineHeight: wp("8%"),
                                 color: colors.grey,
-                                marginTop: wp('6%'),
+                                marginTop: wp("6%"),
                                 marginBottom: 0,
                             }}
                         >
@@ -132,11 +170,11 @@ class ReviewsAndRating extends Component<IProps, IState> {
                         </Text>
                         <Text
                             style={{
-                                fontFamily: 'ArchivoRegular',
-                                fontSize: wp('4.5%'),
-                                lineHeight: wp('6.2%'),
-                                marginVertical: wp('2%'),
-                                textAlign: 'center',
+                                fontFamily: "ArchivoRegular",
+                                fontSize: wp("4.5%"),
+                                lineHeight: wp("6.2%"),
+                                marginVertical: wp("2%"),
+                                textAlign: "center",
                                 color: colors.grey,
                             }}
                         >
@@ -147,6 +185,11 @@ class ReviewsAndRating extends Component<IProps, IState> {
                 </Modal>
             </View>
         )
+    }
+
+    onChange = (name: string, value: any) => {
+        this.data[name] = value
+        console.log(this.data[name], " this.data[name]")
     }
     render() {
         return (
@@ -159,10 +202,13 @@ class ReviewsAndRating extends Component<IProps, IState> {
                             Reviews and ratings
                         </Text>
                         <CustomStarRating
-                            width={wp('10.4%')}
-                            height={wp('10.4%')}
-                            style={{ marginVertical: wp('7%') }}
-                            elementStyle={{ marginRight: wp('2%') }}
+                            width={wp("10.4%")}
+                            height={wp("10.4%")}
+                            style={{ marginVertical: wp("7%") }}
+                            elementStyle={{ marginRight: wp("2%") }}
+                            onChange={(value) =>
+                                this.onChange("user_rating", value)
+                            }
                         />
                         <View
                             style={{
@@ -171,20 +217,21 @@ class ReviewsAndRating extends Component<IProps, IState> {
                             }}
                         />
 
-                        <TextInput
+                        <CustomTextField
                             style={styles.commentStyles}
                             placeholder="Wrire your review here"
                             textAlign="left"
                             multiline={true}
-                            textAlignVertical={'top'}
+                            textAlignVertical={"top"}
+                            onChange={(value) => this.onChange("review", value)}
                         />
 
                         <View
                             style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                marginVertical: wp('8%'),
-                                alignItems: 'center',
+                                display: "flex",
+                                flexDirection: "row",
+                                marginVertical: wp("8%"),
+                                alignItems: "center",
                                 marginBottom: 0,
                             }}
                         >
@@ -195,8 +242,8 @@ class ReviewsAndRating extends Component<IProps, IState> {
                             </Pressable>
                             <Text
                                 style={{
-                                    fontFamily: 'AirbnbCerealBook',
-                                    fontSize: wp('4.2%'),
+                                    fontFamily: "AirbnbCerealBook",
+                                    fontSize: wp("4.2%"),
                                     letterSpacing: 0.5,
                                     color: colors.grey,
                                 }}
@@ -206,11 +253,11 @@ class ReviewsAndRating extends Component<IProps, IState> {
                         </View>
                         <View
                             style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                justifyContent: 'space-between',
-                                marginTop: wp('7%'),
+                                display: "flex",
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                justifyContent: "space-between",
+                                marginTop: wp("7%"),
                             }}
                         >
                             {this.state.selectedImages.map((image, index) => {
@@ -219,25 +266,25 @@ class ReviewsAndRating extends Component<IProps, IState> {
                                         <Image
                                             source={{ uri: image }}
                                             style={{
-                                                width: wp('30%'),
-                                                height: wp('30%'),
-                                                position: 'relative',
-                                                marginBottom: wp('2.5%'),
+                                                width: wp("30%"),
+                                                height: wp("30%"),
+                                                position: "relative",
+                                                marginBottom: wp("2.5%"),
                                             }}
                                         />
 
                                         <Pressable
                                             style={{
-                                                position: 'absolute',
+                                                position: "absolute",
                                                 top: 0,
                                                 right: 0,
-                                                backgroundColor: 'red',
-                                                width: wp('4%'),
-                                                height: wp('4%'),
-                                                borderRadius: wp('2%'),
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
+                                                backgroundColor: "red",
+                                                width: wp("4%"),
+                                                height: wp("4%"),
+                                                borderRadius: wp("2%"),
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
                                             }}
                                             onPress={() =>
                                                 this.removeImage(index)
@@ -246,8 +293,8 @@ class ReviewsAndRating extends Component<IProps, IState> {
                                             <Text
                                                 style={{
                                                     color: colors.white,
-                                                    fontSize: wp('2.5%'),
-                                                    fontWeight: '900',
+                                                    fontSize: wp("2.5%"),
+                                                    fontWeight: "900",
                                                 }}
                                             >
                                                 X
@@ -261,13 +308,13 @@ class ReviewsAndRating extends Component<IProps, IState> {
                             title="Submit"
                             onPressButton={this.onPressSubmit}
                             buttonStyles={{
-                                display: 'flex',
-                                alignSelf: 'center',
-                                width: '100%',
+                                display: "flex",
+                                alignSelf: "center",
+                                width: "100%",
                             }}
                             buttonTextStyles={{
-                                fontFamily: 'AirbnbCerealBold',
-                                fontSize: wp('4.2%'),
+                                fontFamily: "AirbnbCerealBold",
+                                fontSize: wp("4.2%"),
                             }}
                         />
                     </View>
@@ -279,47 +326,47 @@ class ReviewsAndRating extends Component<IProps, IState> {
 export default ReviewsAndRating
 const styles = StyleSheet.create({
     titleText: {
-        fontFamily: 'ArchivoRegular',
-        fontSize: wp('6.5%'),
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("6.5%"),
     },
     container: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
         backgroundColor: colors.white,
-        paddingVertical: wp('6%'),
+        paddingVertical: wp("6%"),
         color: colors.darkBlack,
-        paddingHorizontal: wp('3%'),
+        paddingHorizontal: wp("3%"),
     },
     commentStyles: {
         backgroundColor: colors.lightGreyFour,
-        borderRadius: wp('2.5%'),
+        borderRadius: wp("2.5%"),
         color: colors.grey,
-        fontFamily: 'ArchivoRegular',
-        fontSize: wp('4.1%'),
-        padding: wp('6%'),
-        height: hp('40%'),
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("4.1%"),
+        padding: wp("6%"),
+        height: hp("40%"),
     },
     plusButton: {
-        width: wp('15%'),
-        height: wp('15%'),
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: wp("15%"),
+        height: wp("15%"),
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         backgroundColor: colors.lightGreyFour,
-        borderRadius: wp('2%'),
-        marginRight: wp('4%'),
+        borderRadius: wp("2%"),
+        marginRight: wp("4%"),
     },
     plus: {
         color: colors.grey,
-        fontSize: wp('9%'),
+        fontSize: wp("9%"),
     },
     modalContainer: {
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         backgroundColor: colors.white,
-        padding: wp('8%'),
+        padding: wp("8%"),
         borderRadius: 10,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -327,6 +374,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: wp('90%'),
+        width: wp("90%"),
     },
 })

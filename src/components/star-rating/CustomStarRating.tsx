@@ -1,15 +1,16 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
-import { Pressable, View } from 'react-native'
+import { Pressable, View } from "react-native"
 // icons
-import { Rating, UnfilledStar } from '../../../assets/svgs/icons'
+import { Rating, UnfilledStar } from "../../../assets/svgs/icons"
 
 interface IProps {
     width: number
     height: number
     style?: any
     elementStyle?: any
+    onChange: (value: number) => void
 }
 
 interface IState {
@@ -22,16 +23,25 @@ class CustomStarRating extends Component<IProps, IState> {
             starArray: [false, false, false, false, false],
         }
     }
+    getRating = () => {
+        let rating = 0
+        this.state.starArray.forEach((ele) => {
+            if (ele) rating = rating + 1
+        })
+        this.props.onChange(rating)
+    }
+
     changeStarStaus = (index: number) => {
         let mutatedArray = this.state.starArray
         mutatedArray[index] = !mutatedArray[index]
         this.setState({ starArray: mutatedArray })
+        this.getRating()
     }
 
     render() {
         const { width, height, style, elementStyle } = this.props
         return (
-            <View style={[{ display: 'flex', flexDirection: 'row' }, style]}>
+            <View style={[{ display: "flex", flexDirection: "row" }, style]}>
                 {this.state.starArray.map((item, index) => (
                     <View style={elementStyle} key={index}>
                         {item ? (

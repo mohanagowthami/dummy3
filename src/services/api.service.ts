@@ -1,65 +1,69 @@
 // axios
-import axios, { AxiosPromise } from 'axios'
+import axios, { AxiosPromise } from "axios"
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 abstract class APIService {
     //Passing bearer for all api calls
     async getAxiosHeaders(): Promise<any> {
-        const token = await AsyncStorage.getItem('accessToken')
+        const token = await AsyncStorage.getItem("accessToken")
         return {
-            Authorization: token ? `Bearer ${token}` : '',
-            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : "",
+            "Content-Type": "application/json",
         }
     }
     // Setting access token
     async setAccessToken(value: string): Promise<any> {
         try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem('accessToken', jsonValue)
+            await AsyncStorage.setItem("accessToken", value)
         } catch (e) {
-            console.log(e, 'error in saving accessToken')
+            console.log(e, "error in saving accessToken")
         }
     }
 
     // Setting refresh token
     async setRefreshToken(value: string): Promise<any> {
         try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem('refreshToken', jsonValue)
+            await AsyncStorage.setItem("refreshToken", value)
         } catch (e) {
-            console.log(e, 'error in saving refreshToken')
+            console.log(e, "error in saving refreshToken")
         }
     }
 
     // Axios get method
-    get(url: string): AxiosPromise<any> {
-        return axios({ method: 'GET', url })
-    }
-
-    post(url: string, data = {}): AxiosPromise<any> {
+    async get(url: string): Promise<any> {
         return axios({
-            method: 'POST',
+            method: "GET",
             url,
-            data,
-            headers: this.getAxiosHeaders(),
+            headers: await this.getAxiosHeaders(),
         })
     }
 
-    put(url: string, data = {}): AxiosPromise<any> {
+    async post(url: string, data = {}): Promise<any> {
+        const headers = await this.getAxiosHeaders()
+        console.log(headers, "headers")
         return axios({
-            method: 'PUT',
+            method: "POST",
             url,
             data,
-            headers: this.getAxiosHeaders(),
+            headers: await this.getAxiosHeaders(),
         })
     }
 
-    delete(url: string): AxiosPromise<any> {
+    async put(url: string, data = {}): Promise<any> {
         return axios({
-            method: 'DELETE',
+            method: "PUT",
             url,
-            headers: this.getAxiosHeaders(),
+            data,
+            headers: await this.getAxiosHeaders(),
+        })
+    }
+
+    async delete(url: string): Promise<any> {
+        return axios({
+            method: "DELETE",
+            url,
+            headers: await this.getAxiosHeaders(),
         })
     }
 }

@@ -1,14 +1,14 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-navigation
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator } from "@react-navigation/stack"
 // screens
-import HomeScreen from './HomeScreen'
-import ItemInDetailScreen from './ItemInDetailScreen'
-import LocalFavourites from './LocalFavourites'
-import ReviewsAndRating from './ReviewsAndRating'
-import FeedBackScreen from './FeedBackScreen'
-import FoodSearchResults from './FoodResults'
+import HomeScreen from "./HomeScreen"
+import ItemInDetailScreen from "./ItemInDetailScreen"
+import LocalFavourites from "./LocalFavourites"
+import ReviewsAndRating from "./ReviewsAndRating"
+import FeedBackScreen from "./FeedBackScreen"
+import FoodSearchResults from "./FoodResults"
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()
@@ -17,6 +17,11 @@ class HomeScreens extends Component {
     render() {
         return (
             <Stack.Navigator>
+                <Stack.Screen
+                    name="home"
+                    component={HomeScreen}
+                    options={{ headerShown: false }}
+                />
                 <Stack.Screen
                     name="itemInDetail"
                     component={ItemInDetailScreen}
@@ -30,11 +35,6 @@ class HomeScreens extends Component {
                     options={{ headerShown: false }}
                 />
 
-                <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
-                    options={{ headerShown: false }}
-                />
                 <Stack.Screen
                     name="reviewsAndRating"
                     component={ReviewsAndRating}

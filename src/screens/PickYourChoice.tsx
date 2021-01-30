@@ -166,28 +166,36 @@ class PickYourChoice extends Component<IProps, IState> {
         } else if (category === 'travel')
             this.setState({ ...this.state, category: 'shopping' })
         else {
-            // this.setState({
-            //     ...this.state,
-            //     isLoading: true,
-            // })
-            // const selectedTravelist = this.filterByChecked(
-            //     this.state.travelList
-            // )
-            // const selectedFoodList = this.filterByChecked(
-            //     this.state.foodTypesList
-            // )
-            // const selectedShoppingList = this.filterByChecked(
-            //     this.state.shoppingList
-            // )
-            // const response = await favoriteService.pusher(FAVORITES, {
-            //     username: 'dorababu',
-            //     food_category: selectedFoodList,
-            //     travel_category: selectedTravelist,
-            //     shopping_category: selectedShoppingList,
-            // })
-            // console.log(response, 'response')
-            // if (response)
-            this.props.navigation.navigate('bottomTab')
+            this.setState({
+                ...this.state,
+                isLoading: true,
+            })
+            const selectedTravelist = this.filterByChecked(
+                this.state.travelList
+            )
+            const selectedFoodList = this.filterByChecked(
+                this.state.foodTypesList
+            )
+            const selectedShoppingList = this.filterByChecked(
+                this.state.shoppingList
+            )
+            favoriteService
+                .pusher(FAVORITES, {
+                    food_category: selectedFoodList,
+                    travel_category: selectedTravelist,
+                    shopping_category: selectedShoppingList,
+                })
+                .then((response) => {
+                    console.log(response, 'response in pick your choice')
+                    this.props.navigation.navigate('bottomTab')
+                })
+                .catch((error) => {
+                    console.log(error, 'error in pick your choice ')
+                    this.setState({
+                        ...this.state,
+                        isLoading: false,
+                    })
+                })
         }
     }
     setModalVisible = () => {

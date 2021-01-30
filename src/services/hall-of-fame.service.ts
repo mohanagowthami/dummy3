@@ -1,7 +1,7 @@
 // services
 import APIService from "./api.service"
 
-class TravelService extends APIService {
+class HallOfFameService extends APIService {
     pusher(url: string, data: any): Promise<any> {
         return this.post(url, data)
             .then((response: any) => {
@@ -21,4 +21,4 @@ class TravelService extends APIService {
             })
     }
 }
-export default TravelService
+export default HallOfFameService

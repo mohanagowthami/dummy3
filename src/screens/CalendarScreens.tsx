@@ -15,14 +15,13 @@ class CalenderScreens extends Component {
         return (
             <Stack.Navigator>
                 <Stack.Screen
-                    name="frappyCards"
-                    component={FrappyPlannerCards}
-                    options={{ headerShown: false }}
-                />
-
-                <Stack.Screen
                     name="frappyCalender"
                     component={FrappyPlannerCalendar}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="frappyCards"
+                    component={FrappyPlannerCards}
                     options={{ headerShown: false }}
                 />
 
