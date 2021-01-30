@@ -32,8 +32,17 @@ class CustomStarRating extends Component<IProps, IState> {
     }
 
     changeStarStaus = (index: number) => {
-        let mutatedArray = this.state.starArray
-        mutatedArray[index] = !mutatedArray[index]
+        let mutatedArray = [...this.state.starArray]
+        // console.log(mutatedArray[index])
+        if (mutatedArray[index]) {
+            mutatedArray[index] = !mutatedArray[index]
+        } else {
+            for (let i = 0; i <= index; i++) {
+                // console.log(index)
+                mutatedArray[i] = true
+            }
+        }
+        // console.log(mutatedArray)
         this.setState({ starArray: mutatedArray })
         this.getRating()
     }

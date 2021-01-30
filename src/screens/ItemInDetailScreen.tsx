@@ -23,6 +23,7 @@ import {
     ReadMore,
     Loading,
     Profile,
+    LoveIcon,
 } from "../../assets/svgs/icons"
 import { BackIcon, RightArrow } from "../../assets/svgs/icons/icons-directions"
 // components
@@ -38,7 +39,11 @@ import {
     REVIEWS_SPECIFIC_RESTAURANTS,
 } from "../lib/endpoints"
 const image1 =
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
+    "https://pattys-cakes.com/wp-content/uploads/2020/11/colorful-rosette-cake-350x350.jpg"
+const image2 =
+    "https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+const image3 =
+    "https://www.mockofun.com/wp-content/uploads/2019/12/circle-photo.jpg"
 interface IProps {
     navigation: any
     route: any
@@ -114,7 +119,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         }
     }
     onPressGetDirections = () => {
-        console.log("Got Directions")
+        this.props.navigation.navigate("navigation")
     }
     _renderItem({ item, index }: any) {
         return <View></View>
@@ -171,22 +176,49 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 style={styles.maincontainer}
             >
                 {/* Item - back button,image,name,address,time,distance */}
-                <View>
+                <View style={{ display: "flex" }}>
                     <View
                         style={{
-                            paddingLeft: wp("5.6%"),
-                            paddingTop: hp("4.07%"),
+                            // display: 'flex',
+                            position: "relative",
+                            flexDirection: "column",
                         }}
                     >
-                        <Pressable
-                            onPress={() =>
-                                this.props.navigation.navigate(
-                                    "localFavourites"
-                                )
-                            }
+                        <View
+                            style={{
+                                paddingLeft: wp("5.6%"),
+                                paddingTop: hp("6.07%"),
+                            }}
                         >
-                            <BackIcon />
-                        </Pressable>
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        "localFavourites"
+                                    )
+                                }
+                            >
+                                <BackIcon
+                                    width={wp("2.62%")}
+                                    height={hp("2.26%")}
+                                />
+                            </Pressable>
+                            <Image
+                                style={[
+                                    {
+                                        width: wp("35.03%"),
+                                        height: wp("35.03%"),
+                                        alignSelf: "center",
+                                        borderRadius: wp("17.5%"),
+                                    },
+                                ]}
+                                resizeMode="cover"
+                                source={{ uri: image1 }}
+                            />
+                            <LoveIcon
+                                width={wp("7.46%")}
+                                height={hp("3.015%")}
+                            />
+                        </View>
                     </View>
                     <Image
                         style={[
@@ -216,14 +248,20 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         </View>
                     </View>
                     <View style={{ display: "flex" }}>
-                        <Text style={{ fontFamily: "AirbnbCerealBook" }}>
+                        <Text
+                            style={{
+                                fontFamily: "AirbnbCerealBook",
+                                fontSize: wp("3.466%"),
+                                color: "#333A4D",
+                            }}
+                        >
                             33 min <View style={styles.line} /> 4.8 miles
                         </Text>
                     </View>
                 </View>
                 {/* grey container,ratings,bookmarks,photos,Description */}
                 <View style={styles.greycontainer}>
-                    <RatingIcon />
+                    <RatingIcon width={wp("10.13%")} height={hp("5%")} />
                     <View
                         style={{
                             display: "flex",
@@ -236,7 +274,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                     </View>
 
                     <View style={[styles.line, { height: hp("4.34%") }]} />
-                    <BookmarkIcon />
+                    <BookmarkIcon width={wp("10.13%")} height={hp("5%")} />
                     <View
                         style={{
                             display: "flex",
@@ -244,11 +282,11 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                             paddingRight: hp("3%"),
                         }}
                     >
-                        <Text style={styles.greyboxtext}>{likes}</Text>
-                        <Text style={styles.greyboxtext}>Bookmark</Text>
+                        <Text style={styles.greyboxtext}>137k</Text>
+                        <Text style={styles.greyboxtext}>Likes</Text>
                     </View>
                     <View style={[styles.line, { height: hp("4.34%") }]} />
-                    <PhotoIcon />
+                    <PhotoIcon width={wp("10.13%")} height={hp("5%")} />
                     <View
                         style={{
                             display: "flex",
@@ -474,6 +512,16 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                             }
                         />
                     </View>
+                    <View style={styles.searchButton}>
+                        <Profile width={wp("5%")} height={wp("5%")} />
+                        <TextInput
+                            placeholder="Write feedback"
+                            style={styles.searchInput}
+                            onFocus={() =>
+                                this.props.navigation.navigate("feedBack")
+                            }
+                        />
+                    </View>
                 </View>
             </ScrollView>
         )
@@ -532,7 +580,7 @@ const styles = StyleSheet.create({
         paddingTop: hp("1.10"),
         paddingLeft: wp("2.4%"),
         paddingRight: wp("1%"),
-        lineHeight: hp("2.76%"),
+        // lineHeight: hp('2.76%'),
         paddingBottom: hp("1.10%"),
     },
     line: {
@@ -629,6 +677,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'cyan',
         borderRadius: wp("3%"),
         alignItems: "center",
+        marginBottom: hp("2%"),
     },
     searchInput: {
         flex: 1,

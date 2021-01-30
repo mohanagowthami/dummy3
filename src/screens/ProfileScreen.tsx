@@ -10,13 +10,14 @@ import {
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
 //icons
-import { ForwardIcon } from '../../assets/svgs/icons/icons-directions'
-import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
-import Search from '../../assets/svgs/icons/icons-profile/Search'
-import Share from '../../assets/svgs/icons/icons-profile/Share'
-import Social from '../../assets/svgs/icons/icons-profile/Social'
-import Settings from '../../assets/svgs/icons/icons-profile/Settings'
-import Logout from '../../assets/svgs/icons/icons-profile/Logout'
+import {
+    Notifications,
+    Share,
+    Social,
+    Settings,
+    Logout,
+    Edit,
+} from '../../assets/svgs/icons/icons-profile'
 // colors
 import { colors } from '../lib/colors'
 
@@ -40,7 +41,6 @@ const details = {
             name: 'Rohit Sharma',
             image:
                 'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-            // 'https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg',
             place: 'Hyderabad',
         },
     ],
@@ -73,20 +73,55 @@ class ProfileScreen extends Component<IProps, Istate> {
                                                 uri: image,
                                             }}
                                         />
-                                        <Pressable
-                                            // style={{ backgroundColor: 'cyan' }}
-                                            onPress={() =>
-                                                this.props.navigation.navigate(
-                                                    'profile'
-                                                )
-                                            }
-                                        >
-                                            <ForwardIcon
-                                                paddingTop={wp('20%')}
-                                                width={wp('2.92%')}
-                                                height={hp('2.86%')}
-                                            />
-                                        </Pressable>
+                                        <View style={{ alignSelf: 'center' }}>
+                                            <Pressable
+                                                onPress={() =>
+                                                    this.props.navigation.navigate(
+                                                        'profile'
+                                                    )
+                                                }
+                                            >
+                                                <View
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        borderWidth: 1,
+                                                        justifyContent:
+                                                            'center',
+                                                        padding: '5%',
+                                                        borderColor: '#77838F',
+                                                        borderRadius: 7,
+                                                    }}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontFamily:
+                                                                'ArchivoRegular',
+                                                            fontSize: wp(
+                                                                '4.8%'
+                                                            ),
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </Text>
+                                                    <View
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignSelf: 'center',
+                                                            marginLeft: wp(
+                                                                '1%'
+                                                            ),
+                                                        }}
+                                                    >
+                                                        <Edit
+                                                            width={wp('4.53%')}
+                                                            height={hp('2.10%')}
+                                                        />
+                                                    </View>
+                                                </View>
+                                            </Pressable>
+                                        </View>
                                     </View>
                                     <View style={styles.nameandplace}>
                                         <Text style={styles.name}>{name}</Text>
@@ -102,28 +137,46 @@ class ProfileScreen extends Component<IProps, Istate> {
                 </View>
                 <View style={styles.optionscontainer}>
                     <View style={styles.optioncontainer}>
-                        <Notifications
-                            width={wp('5.86%')}
-                            height={hp('2.89%')}
-                        />
-                        <Text style={styles.optionstext}>Notifications</Text>
-                        <View style={styles.notificationcount}>
-                            <Text
-                                style={{
-                                    alignSelf: 'center',
-                                    alignItems: 'center',
-                                    color: colors.white,
-                                    fontSize: wp('3%'),
-                                }}
-                            >
-                                3
-                                {/* <Text>{this.state.notificationsCount}</Text> */}
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate('notifications')
+                            }
+                        >
+                            <Notifications
+                                width={wp('5.86%')}
+                                height={hp('2.89%')}
+                            />
+                        </Pressable>
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate('notifications')
+                            }
+                        >
+                            <Text style={styles.optionstext}>
+                                Notifications
                             </Text>
+                        </Pressable>
+                        <View style={styles.notificationcount}>
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'notifications'
+                                    )
+                                }
+                            >
+                                <Text
+                                    style={{
+                                        alignSelf: 'center',
+                                        alignItems: 'center',
+                                        color: colors.white,
+                                        fontSize: wp('3%'),
+                                    }}
+                                >
+                                    3
+                                    {/* <Text>{this.state.notificationsCount}</Text> */}
+                                </Text>
+                            </Pressable>
                         </View>
-                    </View>
-                    <View style={styles.optioncontainer}>
-                        <Search width={wp('5.86%')} height={hp('2.89%')} />
-                        <Text style={styles.optionstext}>Search</Text>
                     </View>
                     <View style={styles.optioncontainer}>
                         <Share width={wp('5.86%')} height={hp('2.89%')} />
@@ -173,13 +226,12 @@ const styles = StyleSheet.create({
     },
     profilecontainer: {
         display: 'flex',
-        flex: 1,
+        // flex: 1,
         paddingTop: hp('0.5%'),
     },
     imageandbackicon: {
         display: 'flex',
         flexDirection: 'row',
-        // width:wp(""),
         // height: wp('12.368%'),
         paddingRight: wp('12.8%'),
         justifyContent: 'space-between',
@@ -216,8 +268,6 @@ const styles = StyleSheet.create({
     optionscontainer: {
         display: 'flex',
         flex: 1,
-        // backgroundColor: 'yellow',
-        // alignItems: 'center',
     },
     optioncontainer: {
         display: 'flex',
@@ -225,8 +275,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingLeft: wp('5.86%'),
         paddingBottom: hp('5.92%'),
-        // justifyContent: 'center',
-        // backgroundColor: 'cyan',
     },
     optionstext: {
         fontFamily: 'ArchivoRegular',
@@ -235,11 +283,11 @@ const styles = StyleSheet.create({
         paddingLeft: wp('13.33%'),
     },
     notificationcount: {
-        width: wp('7.2%'),
-        height: wp('7.2%'),
+        width: wp('6.2%'),
+        height: wp('6.2%'),
         marginLeft: wp('25.33%'),
         backgroundColor: colors.orange,
-        borderRadius: wp('3.6%'),
+        borderRadius: wp('3.1%'),
         justifyContent: 'center',
     },
 })

@@ -1,11 +1,11 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-navigation
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator } from "@react-navigation/stack"
 // screens
-import AddDateToCalender from './AddDateToCalender'
-import FrappyPlannerCalendar from './FrappyPlannerCalendar'
-import FrappyPlannerCards from './FrappyPlannerCards'
+import AddDateToCalender from "./AddDateToCalender"
+import FrappyPlannerCalendar from "./FrappyPlannerCalendar"
+import FrappyPlannerCards from "./FrappyPlannerCards"
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()
@@ -20,14 +20,13 @@ class CalenderScreens extends Component {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="frappyCards"
-                    component={FrappyPlannerCards}
-                    options={{ headerShown: false }}
-                />
-
-                <Stack.Screen
                     name="addDateToCalender"
                     component={AddDateToCalender}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="frappyCards"
+                    component={FrappyPlannerCards}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

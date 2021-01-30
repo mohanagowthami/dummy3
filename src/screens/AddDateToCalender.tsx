@@ -11,11 +11,15 @@ import {
     ScrollView,
 } from 'react-native'
 // react-native-responsive-screen
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import {
+    heightPercentageToDP as hp,
+    widthPercentageToDP as wp,
+} from 'react-native-responsive-screen'
 // DateTimePicker
 import DateTimePicker from '@react-native-community/datetimepicker'
 // icons
-import { BellIcon, Clock } from '../../assets/svgs/icons'
+import { BellIcon, Clock, LocationIcon } from '../../assets/svgs/icons'
+import { CurrentLocation } from '../../assets/svgs/icons/icons-profile'
 // components
 import CustomTextField from '../components/input-controllers/CustomTextField'
 import CustomButton from '../components/buttons/CustomButton'
@@ -142,8 +146,18 @@ class AddDateToCalender extends Component<IProps, IState> {
                     <View style={styles.container}>
                         <View style={styles.TitleContainer}>
                             <Text style={styles.titleText}>Frappy planner</Text>
-
-                            <BellIcon width={wp('5.9%')} height={wp('5.9%')} />
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'notifications'
+                                    )
+                                }
+                            >
+                                <BellIcon
+                                    width={wp('5.9%')}
+                                    height={wp('5.9%')}
+                                />
+                            </Pressable>
                         </View>
                         <Text
                             style={styles.selectDate}
@@ -176,7 +190,10 @@ class AddDateToCalender extends Component<IProps, IState> {
                                 <Pressable
                                     onPress={() => this.showPicker('time')}
                                 >
-                                    <Clock />
+                                    <Clock
+                                        width={wp('6.13%')}
+                                        height={hp('3.02%')}
+                                    />
                                 </Pressable>
                             </View>
                             <View style={styles.timeBox}>
@@ -186,17 +203,64 @@ class AddDateToCalender extends Component<IProps, IState> {
                                 <Pressable
                                     onPress={() => this.showPicker('time')}
                                 >
-                                    <Clock />
+                                    <Clock
+                                        width={wp('6.13%')}
+                                        height={hp('3.02%')}
+                                    />
+                                </Pressable>
+                            </View>
+                        </View>
+                        <Text
+                            style={styles.selectDate}
+                            // onPress={() => this.showPicker('Date')}
+                        >
+                            Location
+                        </Text>
+                        <View
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                marginBottom: wp('4%'),
+                            }}
+                        >
+                            <View style={styles.timeBox}>
+                                <Text style={styles.timeText}>
+                                    {this.state.fromText}
+                                </Text>
+                                <Pressable
+                                // onPress={() => this.showPicker('time')}
+                                >
+                                    <LocationIcon
+                                        width={wp('6.13%')}
+                                        height={hp('3.02%')}
+                                    />
+                                </Pressable>
+                            </View>
+                            <View style={styles.timeBox}>
+                                <Text style={styles.timeText}>
+                                    {this.state.toText}
+                                </Text>
+                                <Pressable
+                                // onPress={() => this.showPicker('time')}
+                                >
+                                    <LocationIcon
+                                        width={wp('6.13%')}
+                                        height={hp('3.02%')}
+                                    />
                                 </Pressable>
                             </View>
                         </View>
                         <Text style={styles.selectDate}>Select Category</Text>
                         {this.renderSelectCategorySwitches()}
                         <CustomTextField
-                            onCallBack={this.onBlurDescription}
+                            onChange={() => {
+                                // console.log('date changed')
+                            }}
+                            // onCallBack={this.onBlurDescription}
                             textAlignVertical="top"
                             placeholderTextColor={colors.greyTwo}
-                            placeholder={'Discription'}
+                            placeholder={'Description'}
                             style={{
                                 height: wp('40%'),
                                 borderRadius: wp('2%'),
@@ -238,7 +302,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                                         borderWidth: 0,
                                     },
                                 ]}
-                                title="Save"
+                                title="Plan"
                                 buttonTextStyles={[
                                     styles.buttonTextStyles,
                                     { color: colors.white },
@@ -281,11 +345,11 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         backgroundColor: colors.white,
-        paddingTop: wp('3%'),
+        paddingTop: wp('5%'),
     },
     selectDate: {
         fontFamily: 'ArchivoRegular',
-        fontSize: wp('4.2%'),
+        fontSize: wp('4%'),
         color: colors.darkBlack,
         lineHeight: wp('4.5%'),
         marginBottom: wp('4%'),
@@ -306,6 +370,7 @@ const styles = StyleSheet.create({
         fontSize: wp('5%'),
         color: colors.greyTwo,
         lineHeight: wp('5.3%'),
+        paddingBottom: wp('2%'),
     },
     buttonStyles: {
         width: wp('43%'),

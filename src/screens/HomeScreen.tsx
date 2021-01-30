@@ -304,7 +304,7 @@ class HomeScreen extends Component<IProps, Istate> {
                 recapService.fetcher(RECAP_CATEGORY(type)),
             ])
                 .then((values) => {
-                    console.log(values, "values123")
+                    console.log(values)
                     let stateData = { ...this.state }
                     stateData.categoryData[index].data.localFavouritesList =
                         values[0].results
@@ -662,7 +662,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     {this.state.categoryData[this.getActiveIndex()].data &&
                         this.renderTrendsSlider()}
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .localFavouritesList.length > 0 && (
+                        .localFavouritesList.length > 1 && (
                         <>
                             <View
                                 style={[
@@ -699,7 +699,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     )}
 
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .recapList.length > 0 && (
+                        .recapList.length > 1 && (
                         <>
                             <View style={[styles.TitleContainer]}>
                                 <Text style={styles.frappyText}>Recap</Text>
@@ -831,7 +831,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     )}
 
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .hallOfFame.length > 0 && (
+                        .hallOfFame.length > 1 && (
                         <>
                             <View style={[styles.TitleContainer]}>
                                 <Text style={styles.frappyText}>

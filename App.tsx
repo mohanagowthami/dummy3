@@ -34,14 +34,14 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen
-                    name="login"
-                    component={LoginScreen}
+                {/* <Stack.Screen
+                    name="onBoarding"
+                    component={OnboardingScreens}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="onBoarding"
-                    component={OnboardingScreens}
+                    name="login"
+                    component={LoginScreen}
                     options={{ headerShown: false }}
                 />
 
@@ -50,12 +50,11 @@ export default function App() {
                     component={SignUpScreen}
                     options={{ headerShown: false }}
                 />
-
                 <Stack.Screen
                     name="pickYourChoice"
                     component={PickYourChoice}
                     options={{ headerShown: false }}
-                />
+                /> */}
 
                 <Stack.Screen
                     name="bottomTab"

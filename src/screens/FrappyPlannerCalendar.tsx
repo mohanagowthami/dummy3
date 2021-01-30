@@ -131,19 +131,21 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                 <ScrollView style={styles.mainContainer}>
                     <View style={styles.heading}>
                         <Text style={styles.title}>Frappy Planner</Text>
+
                         <View style={styles.notificationIcon}>
-                            <Notifications
-                                width={wp('5.86%')}
-                                height={hp('2.89%')}
-                            />
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'notifications'
+                                    )
+                                }
+                            >
+                                <Notifications
+                                    width={wp('5.86%')}
+                                    height={hp('2.89%')}
+                                />
+                            </Pressable>
                         </View>
-                    </View>
-                    <View style={styles.searchButton}>
-                        <SearchIcon width={wp('5%')} height={wp('5%')} />
-                        <TextInput
-                            placeholder="Search"
-                            style={styles.searchInput}
-                        />
                     </View>
                     <Text
                         style={{
@@ -158,6 +160,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                     </Text>
                     <Text
                         style={{
+                            fontSize: wp('3.73%'),
                             paddingLeft: wp('6%'),
                             paddingTop: wp('2%'),
                             color: colors.greyTwo,

@@ -134,6 +134,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
         const { isLoading } = this.state
         return (
             <SafeAreaView>
+<<<<<<< HEAD
                 {isLoading ? (
                     <ActivityIndicator />
                 ) : (
@@ -173,6 +174,60 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                                 <View style={[styles.loginBottom]}>
                                     <Text style={styles.loginWith}>
                                         Or Login with...
+=======
+                <View
+                    style={{
+                        backgroundColor: colors.white,
+                    }}
+                >
+                    {this.state.modalVisible && (
+                        <View>
+                            <Modal
+                                isVisible={this.state.modalVisible}
+                                backdropColor={colors.white}
+                                backdropOpacity={0.9}
+                            >
+                                <View style={styles.modalView}>
+                                    {/* This call renders the modal*/}
+                                    {this.renderModalContent()}
+                                </View>
+                            </Modal>
+                        </View>
+                    )}
+                    <ScrollView keyboardShouldPersistTaps="always">
+                        <View style={styles.container}>
+                            <Image
+                                style={{
+                                    width: wp('66.35%'),
+                                    height: hp('23.25%'),
+                                }}
+                                resizeMode="contain"
+                                source={Welcome}
+                            />
+                            <Text style={styles.loginText}>SignUp</Text>
+                            <SignUpForm onPressGetOTP={this.onPressGetOTP} />
+                            <View style={styles.loginBottom}>
+                                <Text style={styles.loginWith}>
+                                    Or Login with...
+                                </Text>
+                                <View style={styles.socialIconsContainer}>
+                                    <FacebookSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                    <TwitterSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                    <GoogleSvg
+                                        width={wp('14.66%')}
+                                        height={hp('6.19')}
+                                    />
+                                </View>
+                                <Text>
+                                    <Text style={styles.haveAnAccount}>
+                                        Already have an account?{' '}
+>>>>>>> edd4c541ee7986fc88da2801ffb4953b21911809
                                     </Text>
                                     <View style={styles.socialIconsContainer}>
                                         <FacebookSvg
@@ -233,7 +288,8 @@ const styles = StyleSheet.create({
         width: wp('100%'),
         height: hp('25%'),
         backgroundColor: '#fff',
-        marginBottom: '7%',
+        // marginBottom: '7%',
+        marginTop: hp('3%'),
         alignItems: 'center',
         justifyContent: 'space-between',
     },

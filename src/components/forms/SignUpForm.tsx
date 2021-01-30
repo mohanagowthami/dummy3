@@ -50,19 +50,19 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                 {({ handleChange, handleBlur, handleSubmit, values }) => (
                     <View style={styles.container}>
                         <TextInput
-                            placeholder="User Name"
+                            placeholder="Enter User Name"
                             onChangeText={handleChange('username')}
                             value={values.username}
                             style={styles.inputBox}
                         />
                         <TextInput
-                            placeholder="Email ID"
+                            placeholder="Enter Email ID"
                             onChangeText={handleChange('email')}
                             value={values.email}
                             style={styles.inputBox}
                         />
                         <TextInput
-                            placeholder="Password"
+                            placeholder="Enter Password"
                             onChangeText={handleChange('password')}
                             value={values.password}
                             style={styles.inputBox}
@@ -74,7 +74,7 @@ class SignUpForm extends Component<ISignUpFormProps, {}> {
                                 buttonTextStyles={[
                                     {
                                         fontFamily: 'ArchivoBold',
-                                        fontSize: wp('3%'),
+                                        fontSize: wp('4%'),
                                     },
                                 ]}
                             />
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         width: wp('85.33%'),
         margin: '3%',
         marginLeft: wp('0%'),
-        // fontSize: hp("1.576%"),
+        fontSize: wp('4.26%'),
         marginRight: wp('0%'),
         padding: wp('2%'),
         borderBottomWidth: 2,

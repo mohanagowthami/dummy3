@@ -12,6 +12,8 @@ import NotificationsTwo from './NotificationsTwo'
 import Refer from './ShareTwo'
 import Rating from './Rating'
 import RatingGreen from './RatingGreen'
+import CurrentLocation from './CurrentLocation'
+import Edit from './Edit'
 
 export {
     Notifications,
@@ -28,4 +30,6 @@ export {
     Refer,
     Rating,
     RatingGreen,
+    CurrentLocation,
+    Edit,
 }

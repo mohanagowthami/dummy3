@@ -4,16 +4,16 @@ import Svg, { SvgProps, Path } from 'react-native-svg'
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg
-            width={10}
-            height={18}
-            viewBox="0 0 10 18"
+            width={17}
+            height={16}
+            viewBox="0 0 17 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
             <Path
-                d="M6 6.111V3.89c0-.613.498-1.111 1.111-1.111h1.111V0H6a3.333 3.333 0 00-3.333 3.333v2.778H.444V8.89h2.223v8.889H6v-8.89h2.222l1.111-2.777H6z"
-                fill="#7A869A"
+                d="M2 11.074L11.83 2 15 4.926 5.17 14 2 11.074zM0 16l4-.831L1.108 13 0 16zM15.828.45a1.54 1.54 0 00-2.175 0L13 1.102 15.898 4l.652-.653c.6-.6.6-1.574 0-2.175L15.828.45z"
+                fill="#352C2D"
             />
         </Svg>
     )

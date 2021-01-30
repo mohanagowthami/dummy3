@@ -1,11 +1,6 @@
 import * as React from 'react'
 import Svg, { SvgProps, Path } from 'react-native-svg'
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-    listenOrientationChange as loc,
-    removeOrientationListener as rol,
-} from 'react-native-responsive-screen'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 function SvgComponent(props: SvgProps | any) {
     return (
         <Svg

@@ -3,11 +3,9 @@ import { ScrollView } from 'react-native-gesture-handler'
 // react
 import React, { Component } from 'react'
 // react-native
-import { Text, View, StyleSheet, TextInput, Image } from 'react-native'
+import { Text, View, StyleSheet, Pressable } from 'react-native'
 //icons
 import { Notifications } from '../../assets/svgs/icons/icons-profile'
-import { NavigationIcon } from '../../assets/svgs/icons/icons-directions'
-import { Rating, SearchIcon } from '../../assets/svgs/icons'
 // colors
 import { colors } from '../lib/colors'
 // react-native-responsive-screen
@@ -117,18 +115,17 @@ class FrappyPlannerCards extends Component<IProps, Istate> {
                 <View style={styles.heading}>
                     <Text style={styles.title}>Frappy Planner</Text>
                     <View style={styles.notificationIcon}>
-                        <Notifications
-                            width={wp('5.86%')}
-                            height={hp('2.89%')}
-                        />
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate('notifications')
+                            }
+                        >
+                            <Notifications
+                                width={wp('5.86%')}
+                                height={hp('2.89%')}
+                            />
+                        </Pressable>
                     </View>
-                </View>
-                <View style={styles.searchButton}>
-                    <SearchIcon width={wp('5%')} height={wp('5%')} />
-                    <TextInput
-                        placeholder="Search"
-                        style={styles.searchInput}
-                    />
                 </View>
                 <MapView style={{ width: wp('100%'), height: hp('40%') }} />
                 <View style={styles.bottomTab}>

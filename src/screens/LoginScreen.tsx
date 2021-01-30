@@ -136,11 +136,15 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             ...this.state,
             isLoading: true,
         })
+<<<<<<< HEAD
         console.log(this.values, 'values')
+=======
+        // console.log(this.values, 'values')
+>>>>>>> edd4c541ee7986fc88da2801ffb4953b21911809
         authService
             .logIn(this.values)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
                 authService.authenticateUser(response.access, response.refresh)
             })
             .then(() => {
@@ -174,6 +178,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                             alignItems: 'center',
                         }}
                     >
+                        {/* {this.renderModalContent()} */}
                         <ActivityIndicator />
                     </View>
                 ) : (
@@ -212,14 +217,14 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                 onChange={(value) =>
                                     this.onChange('email', value)
                                 }
-                                placeholder="enter email"
+                                placeholder="Enter Email Id"
                                 style={styles.inputBox}
                             />
                             <CustomTextField
                                 onChange={(value) =>
                                     this.onChange('password', value)
                                 }
-                                placeholder="enter password"
+                                placeholder="Enter Password"
                                 style={styles.inputBox}
                             />
                             <View>
@@ -253,7 +258,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                         height={hp('7.23%')}
                                     />
                                 </View>
-                                <Text style={{ marginTop: hp('4.73%') }}>
+                                <Text style={{ marginTop: hp('1.73%') }}>
                                     <Text style={styles.newToFrappy}>
                                         New to Frappy?{' '}
                                     </Text>
@@ -274,7 +279,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 }
 const styles = StyleSheet.create({
     welcome: {
-        marginTop: hp('6.47%'),
+        // marginTop: hp('6.47%'),
         width: wp('66.35%'),
         height: hp('23.25%'),
     },
@@ -350,10 +355,10 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         alignItems: 'center',
-        paddingTop: hp('3.68%'),
+        paddingTop: hp('4.68%'),
         paddingRight: wp('7.4%'),
         paddingLeft: wp('7.2%'),
-        paddingBottom: hp('5.52%'),
+        // paddingBottom: hp('5.52%'),
         backgroundColor: colors.white,
     },
     tinyLogo: {
@@ -363,12 +368,16 @@ const styles = StyleSheet.create({
     loginText: {
         color: colors.darkBlack,
         margin: '1%',
-        marginTop: hp('2.56%'),
+        // marginTop: hp('2.56%'),
         fontSize: wp('9%'),
         fontFamily: 'AirbnbCerealBold',
     },
     inputBox: {
-        marginTop: '7%',
+        // marginTop: '7%',
+        fontFamily: 'ArchivoRegular',
+        marginTop: hp('3%'),
+        marginBottom: hp('1%'),
+        fontSize: wp('4.2%'),
     },
     loginBottom: {
         display: 'flex',
@@ -376,7 +385,7 @@ const styles = StyleSheet.create({
         height: hp('24.41%'),
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: hp('7%'),
+        // marginBottom: hp('7%'),
     },
     loginButtonBox: {
         marginTop: '7%',
@@ -384,8 +393,8 @@ const styles = StyleSheet.create({
     },
     loginWith: {
         fontSize: wp('3.7%'),
-        marginTop: hp('7.28%'),
-        marginBottom: hp('5.92%'),
+        marginTop: hp('2.28%'), //-5
+        marginBottom: hp('2.92%'), //-3
         fontFamily: 'AirbnbCerealBook',
         color: colors.lightBlack,
     },

@@ -19,6 +19,10 @@ import RatingIcon from './RatingIcon'
 import ReadMore from './ReadMore'
 import Loading from './Loading'
 import Profile from './Profile'
+import MyLocation from './MyLocation'
+import LocationIcon from './MyLocation'
+import LoveIcon from './LoveIcon'
+import WavingHand from './WavingHand'
 
 export {
     CalenderSvg,
@@ -42,4 +46,8 @@ export {
     RatingIcon,
     ReadMore,
     Loading,
+    MyLocation,
+    LocationIcon,
+    LoveIcon,
+    WavingHand,
 }
