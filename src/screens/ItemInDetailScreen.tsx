@@ -167,9 +167,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             likes,
             menu_images,
         } = restaurantDetails
-        const representImage = menu_images[0]
-            ? menu_images[0].image
-            : "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
+        const representImage = menu_images[0] ? menu_images[0].image : image1
         return (
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -212,7 +210,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                     },
                                 ]}
                                 resizeMode="cover"
-                                source={{ uri: image1 }}
+                                source={{ uri: representImage }}
                             />
                             <LoveIcon
                                 width={wp("7.46%")}
@@ -220,14 +218,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                             />
                         </View>
                     </View>
-                    <Image
-                        style={[
-                            styles.hallOfFameImage,
-                            { alignSelf: "center" },
-                        ]}
-                        // resizeMode="contain"
-                        source={{ uri: representImage }}
-                    />
                 </View>
                 <View style={styles.details}>
                     <Text style={styles.restaurantname}>{name}</Text>
@@ -509,16 +499,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                     "reviewsAndRating",
                                     { id: restaurantDetails.id }
                                 )
-                            }
-                        />
-                    </View>
-                    <View style={styles.searchButton}>
-                        <Profile width={wp("5%")} height={wp("5%")} />
-                        <TextInput
-                            placeholder="Write feedback"
-                            style={styles.searchInput}
-                            onFocus={() =>
-                                this.props.navigation.navigate("feedBack")
                             }
                         />
                     </View>
