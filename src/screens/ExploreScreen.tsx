@@ -1,20 +1,20 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-navigation
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator } from "@react-navigation/stack"
 // screens
-import HomeScreen from './HomeScreen'
-import ItemInDetailScreen from './ItemInDetailScreen'
-import LocalFavourites from './LocalFavourites'
-import ReviewsAndRating from './ReviewsAndRating'
-import FeedBackScreen from './FeedBackScreen'
-import FoodSearchResults from './FoodResults'
-import RestaurantsNearYou from './RestaurantsNearYou'
-import Navigation from './Navigation'
-import Notifications from './Notifications'
-import Recap from './RecapScreen'
-import HallOfFame from './HallOfFameScreen'
-import Locations from './Locations'
+import HomeScreen from "./HomeScreen"
+import ItemInDetailScreen from "./ItemInDetailScreen"
+import LocalFavourites from "./LocalFavourites"
+import ReviewsAndRating from "./ReviewsAndRating"
+import FeedBackScreen from "./FeedBackScreen"
+import FoodSearchResults from "./FoodResults"
+import RestaurantsNearYou from "./RestaurantsNearYou"
+import Navigation from "./Navigation"
+import Notifications from "./Notifications"
+import Recap from "./RecapScreen"
+import HallOfFame from "./HallOfFameScreen"
+import Locations from "./Locations"
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()

@@ -25,6 +25,7 @@ import {
     Rating,
     RightArrow,
     SearchIcon,
+    WavingHand,
 } from "../../assets/svgs/icons"
 // svgs
 
@@ -304,7 +305,7 @@ class HomeScreen extends Component<IProps, Istate> {
                 recapService.fetcher(RECAP_CATEGORY(type)),
             ])
                 .then((values) => {
-                    console.log(values)
+                    console.log(values, "values123")
                     let stateData = { ...this.state }
                     stateData.categoryData[index].data.localFavouritesList =
                         values[0].results
@@ -362,7 +363,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     >
                         {item.description}
                     </Text>
-                    <NavigationIcon width={wp("7.8")} height={wp("7.8%")} />
+                    <NavigationIcon width={wp("7.8")} height={hp("3.68%")} />
                 </View>
 
                 <Image
@@ -536,7 +537,10 @@ class HomeScreen extends Component<IProps, Istate> {
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Rating />
+                                            <Rating
+                                                width={wp("4.2%")}
+                                                height={hp("4.2%")}
+                                            />
                                             <Text
                                                 style={{
                                                     marginLeft: wp("2%"),
@@ -547,7 +551,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                         </View>
                                         <NavigationIcon
                                             width={wp("7.8%")}
-                                            height={wp("7.8%")}
+                                            height={hp("3.68%")}
                                         />
                                     </View>
                                 </View>
@@ -564,11 +568,29 @@ class HomeScreen extends Component<IProps, Istate> {
         return (
             <ScrollView style={styles.container}>
                 <View>
-                    <View style={styles.TitleContainer}>
+                    <View
+                        style={[styles.TitleContainer, { marginTop: wp("0%") }]}
+                    >
                         <Text style={styles.frappyText}>Frappy morning</Text>
-                        <BellIcon width={wp("6%")} height={wp("6%")} />
+                        <Pressable
+                            onPress={() =>
+                                this.props.navigation.navigate("notifications")
+                            }
+                        >
+                            <BellIcon width={wp("6%")} height={wp("6%")} />
+                        </Pressable>
                     </View>
-                    <Text style={styles.userName}>User name</Text>
+                    <View
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            paddingVertical: hp("2%"),
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text style={styles.userName}>User name</Text>
+                        <WavingHand width={wp("5.33%")} height={hp("2.63%")} />
+                    </View>
                     <View style={styles.searchButton}>
                         <SearchIcon width={wp("5%")} height={wp("5%")} />
                         <TextInput
@@ -576,7 +598,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             style={styles.searchInput}
                             onChange={() =>
                                 this.props.navigation.navigate(
-                                    "searchFoodResults"
+                                    "restaurantsNearYou"
                                 )
                             }
                         />
@@ -662,7 +684,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     {this.state.categoryData[this.getActiveIndex()].data &&
                         this.renderTrendsSlider()}
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .localFavouritesList.length > 1 && (
+                        .localFavouritesList.length > 0 && (
                         <>
                             <View
                                 style={[
@@ -690,7 +712,10 @@ class HomeScreen extends Component<IProps, Istate> {
                                         <Text style={styles.showAllText}>
                                             Show all
                                         </Text>
-                                        <RightArrow />
+                                        <RightArrow
+                                            width={wp("1.59%")}
+                                            height={hp("1.10%")}
+                                        />
                                     </View>
                                 </Pressable>
                             </View>
@@ -699,16 +724,25 @@ class HomeScreen extends Component<IProps, Istate> {
                     )}
 
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .recapList.length > 1 && (
+                        .recapList.length > 0 && (
                         <>
                             <View style={[styles.TitleContainer]}>
                                 <Text style={styles.frappyText}>Recap</Text>
-                                <View style={styles.sectionHeaderWrapper}>
-                                    <Text style={styles.showAllText}>
-                                        Show all
-                                    </Text>
-                                    <RightArrow />
-                                </View>
+                                <Pressable
+                                    onPress={() =>
+                                        this.props.navigation.navigate("recap")
+                                    }
+                                >
+                                    <View style={styles.sectionHeaderWrapper}>
+                                        <Text style={styles.showAllText}>
+                                            Show all
+                                        </Text>
+                                        <RightArrow
+                                            width={wp("1.59%")}
+                                            height={hp("1.10%")}
+                                        />
+                                    </View>
+                                </Pressable>
                             </View>
                             <View>
                                 <View>
@@ -717,9 +751,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                     ].data.recapList.map((ele, index) => {
                                         const {
                                             restaurant,
-
                                             user_rating,
-
                                             review_images,
                                         } = ele
                                         const numberOfRatings = "511"
@@ -778,16 +810,19 @@ class HomeScreen extends Component<IProps, Istate> {
                                                         >
                                                             <Rating
                                                                 width={wp(
-                                                                    "4.2"
+                                                                    "4.2%"
                                                                 )}
-                                                                height={wp(
-                                                                    "4.2"
+                                                                height={hp(
+                                                                    "4.2%"
                                                                 )}
                                                             />
                                                             <Text
                                                                 style={[
                                                                     styles.recapCardText,
                                                                     {
+                                                                        marginTop: hp(
+                                                                            "1%"
+                                                                        ),
                                                                         marginLeft: wp(
                                                                             "2%"
                                                                         ),
@@ -811,7 +846,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                     >
                                                         <NavigationIcon
                                                             width={wp("7.8%")}
-                                                            height={wp("7.8%")}
+                                                            height={hp("3.68%")}
                                                         />
                                                     </View>
                                                 </View>
@@ -831,17 +866,36 @@ class HomeScreen extends Component<IProps, Istate> {
                     )}
 
                     {this.state.categoryData[this.getActiveIndex()].data
-                        .hallOfFame.length > 1 && (
+                        .hallOfFame.length > 0 && (
                         <>
                             <View style={[styles.TitleContainer]}>
                                 <Text style={styles.frappyText}>
                                     Hall of Fame
                                 </Text>
                                 <View style={styles.sectionHeaderWrapper}>
-                                    <Text style={styles.showAllText}>
-                                        Show all
-                                    </Text>
-                                    <RightArrow />
+                                    <Pressable
+                                        onPress={() =>
+                                            this.props.navigation.navigate(
+                                                "hallOfFame"
+                                            )
+                                        }
+                                    >
+                                        <View
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <Text style={styles.showAllText}>
+                                                Show all
+                                            </Text>
+                                            <RightArrow
+                                                width={wp("1.59%")}
+                                                height={hp("1.10%")}
+                                            />
+                                        </View>
+                                    </Pressable>
                                 </View>
                             </View>
                             <View
@@ -892,14 +946,16 @@ const styles = StyleSheet.create({
     container: {
         padding: "5%",
         display: "flex",
+        paddingTop: "8%",
         flex: 1,
         backgroundColor: colors.white,
     },
     userName: {
         fontFamily: "ArchivoRegular",
         color: colors.grey,
-        fontSize: wp("4%"),
-        marginVertical: wp("4%"),
+        fontSize: wp("4.5%"),
+        marginRight: wp("3%"),
+        // marginVertical: wp("4%"),
     },
     searchButton: {
         display: "flex",

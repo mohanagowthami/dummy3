@@ -1,5 +1,5 @@
 // react
-import React from 'react'
+import React from "react"
 // react native
 import {
     View,
@@ -10,27 +10,27 @@ import {
     SafeAreaView,
     Image,
     ActivityIndicator,
-} from 'react-native'
+} from "react-native"
 // react-native-modal
-import Modal from 'react-native-modal'
+import Modal from "react-native-modal"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // icons
 import {
     FacebookSvg,
     TwitterSvg,
     GoogleSvg,
-} from '../../assets/svgs/icons/icons-login'
+} from "../../assets/svgs/icons/icons-login"
 // components
-import SignUpForm from '../components/forms/SignUpForm'
-import CustomButton from '../components/buttons/CustomButton'
+import SignUpForm from "../components/forms/SignUpForm"
+import CustomButton from "../components/buttons/CustomButton"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 // services
-import UserService from '../services/user.service'
+import UserService from "../services/user.service"
 //interface for signup screen
 interface ISignUpScreen {
     navigation: any
@@ -41,7 +41,7 @@ interface State {
     isLoading: boolean
 }
 
-const Welcome = require('../../assets/images/welcome.png')
+const Welcome = require("../../assets/images/welcome.png")
 //Main Class
 const userService = new UserService()
 class SignUpScreen extends React.Component<ISignUpScreen, State> {
@@ -57,7 +57,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     // Verify & Continue Function
     onPressVerifyAndContinue = () => {
         this.setModalVisible()
-        this.props.navigation.navigate('pickYourChoice')
+        this.props.navigation.navigate("pickYourChoice")
     }
 
     onChangeOtp = (index: number) => {
@@ -70,7 +70,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>OTP Verification</Text>
                 <Text style={styles.modalDescription}>
-                    Enter the OTP you received to{' '}
+                    Enter the OTP you received to{" "}
                 </Text>
                 <Text style={styles.phonenumber}>+91-9100950567</Text>
                 {/* OTP Section*/}
@@ -103,10 +103,10 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
 
                 <CustomButton
                     title="Verify and Continue"
-                    buttonStyles={{ width: wp('69.33%') }}
+                    buttonStyles={{ width: wp("69.33%") }}
                     buttonTextStyles={{
-                        fontFamily: 'ArchivoBold',
-                        fontSize: wp('4%'),
+                        fontFamily: "ArchivoBold",
+                        fontSize: wp("4%"),
                     }}
                     onPressButton={this.onPressVerifyAndContinue}
                 />
@@ -127,14 +127,13 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     onPressGetOTP = async () => {
         // this.setModalVisible()
         const token = await userService.getAccessToken()
-        if (token) this.props.navigation.navigate('pickYourChoice')
+        if (token) this.props.navigation.navigate("pickYourChoice")
     }
     // render
     render() {
         const { isLoading } = this.state
         return (
             <SafeAreaView>
-<<<<<<< HEAD
                 {isLoading ? (
                     <ActivityIndicator />
                 ) : (
@@ -161,8 +160,8 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                             <View style={styles.container}>
                                 <Image
                                     style={{
-                                        width: wp('66.35%'),
-                                        height: hp('23.25%'),
+                                        width: wp("66.35%"),
+                                        height: hp("23.25%"),
                                     }}
                                     resizeMode="contain"
                                     source={Welcome}
@@ -174,84 +173,30 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                                 <View style={[styles.loginBottom]}>
                                     <Text style={styles.loginWith}>
                                         Or Login with...
-=======
-                <View
-                    style={{
-                        backgroundColor: colors.white,
-                    }}
-                >
-                    {this.state.modalVisible && (
-                        <View>
-                            <Modal
-                                isVisible={this.state.modalVisible}
-                                backdropColor={colors.white}
-                                backdropOpacity={0.9}
-                            >
-                                <View style={styles.modalView}>
-                                    {/* This call renders the modal*/}
-                                    {this.renderModalContent()}
-                                </View>
-                            </Modal>
-                        </View>
-                    )}
-                    <ScrollView keyboardShouldPersistTaps="always">
-                        <View style={styles.container}>
-                            <Image
-                                style={{
-                                    width: wp('66.35%'),
-                                    height: hp('23.25%'),
-                                }}
-                                resizeMode="contain"
-                                source={Welcome}
-                            />
-                            <Text style={styles.loginText}>SignUp</Text>
-                            <SignUpForm onPressGetOTP={this.onPressGetOTP} />
-                            <View style={styles.loginBottom}>
-                                <Text style={styles.loginWith}>
-                                    Or Login with...
-                                </Text>
-                                <View style={styles.socialIconsContainer}>
-                                    <FacebookSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                    <TwitterSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                    <GoogleSvg
-                                        width={wp('14.66%')}
-                                        height={hp('6.19')}
-                                    />
-                                </View>
-                                <Text>
-                                    <Text style={styles.haveAnAccount}>
-                                        Already have an account?{' '}
->>>>>>> edd4c541ee7986fc88da2801ffb4953b21911809
                                     </Text>
                                     <View style={styles.socialIconsContainer}>
                                         <FacebookSvg
-                                            width={wp('14.66%')}
-                                            height={hp('6.19')}
+                                            width={wp("14.66%")}
+                                            height={hp("6.19")}
                                         />
                                         <TwitterSvg
-                                            width={wp('14.66%')}
-                                            height={hp('6.19')}
+                                            width={wp("14.66%")}
+                                            height={hp("6.19")}
                                         />
                                         <GoogleSvg
-                                            width={wp('14.66%')}
-                                            height={hp('6.19')}
+                                            width={wp("14.66%")}
+                                            height={hp("6.19")}
                                         />
                                     </View>
                                     <Text>
                                         <Text style={styles.haveAnAccount}>
-                                            Already have an account?{' '}
+                                            Already have an account?{" "}
                                         </Text>
                                         <Text
                                             style={styles.signIn}
                                             onPress={() =>
                                                 this.props.navigation.navigate(
-                                                    'login'
+                                                    "login"
                                                 )
                                             }
                                         >
@@ -269,68 +214,68 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
 }
 const styles = StyleSheet.create({
     container: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
-        alignItems: 'center',
-        paddingTop: hp('6%'),
-        paddingRight: wp('7.4%'),
-        paddingLeft: wp('7.2%'),
-        paddingBottom: hp('5.52%'),
+        alignItems: "center",
+        paddingTop: hp("6%"),
+        paddingRight: wp("7.4%"),
+        paddingLeft: wp("7.2%"),
+        paddingBottom: hp("5.52%"),
     },
     loginText: {
         color: colors.darkBlack,
-        margin: '1%',
-        fontSize: wp('9%'),
-        fontFamily: 'AirbnbCerealBold',
+        margin: "1%",
+        fontSize: wp("9%"),
+        fontFamily: "AirbnbCerealBold",
     },
     loginBottom: {
-        display: 'flex',
-        width: wp('100%'),
-        height: hp('25%'),
-        backgroundColor: '#fff',
+        display: "flex",
+        width: wp("100%"),
+        height: hp("25%"),
+        backgroundColor: "#fff",
         // marginBottom: '7%',
-        marginTop: hp('3%'),
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        marginTop: hp("3%"),
+        alignItems: "center",
+        justifyContent: "space-between",
     },
     loginButtonBox: {
-        marginTop: '7%',
-        marginBottom: '7%',
+        marginTop: "7%",
+        marginBottom: "7%",
     },
     loginWith: {
-        fontSize: wp('4%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("4%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.lightBlack,
     },
     haveAnAccount: {
-        fontSize: wp('3.73%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3.73%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.lightBlack,
     },
     signIn: {
-        fontSize: wp('3.73%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3.73%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.orange,
     },
     socialIconsContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '60%',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "60%",
     },
     modalView: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
     },
     modalContainer: {
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         backgroundColor: colors.white,
-        padding: '5%',
+        padding: "5%",
         borderRadius: 10,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -338,59 +283,59 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: wp('90%'),
+        width: wp("90%"),
     },
     modalTitle: {
-        fontSize: wp('4%'),
-        fontStyle: 'normal',
-        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp("4%"),
+        fontStyle: "normal",
+        fontFamily: "AirbnbCerealBold",
     },
     modalDescription: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.grey,
-        fontWeight: '400',
-        margin: wp('3%'),
+        fontWeight: "400",
+        margin: wp("3%"),
     },
     phonenumber: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBold',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBold",
         color: colors.grey,
-        fontWeight: 'bold',
-        margin: wp('3%'),
-        textAlign: 'center',
+        fontWeight: "bold",
+        margin: wp("3%"),
+        textAlign: "center",
         marginTop: 0,
     },
     codeText: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.grey,
-        fontWeight: '400',
-        margin: wp('3%'),
+        fontWeight: "400",
+        margin: wp("3%"),
     },
     resendOTP: {
-        fontSize: wp('3%'),
-        fontFamily: 'AirbnbCerealBook',
+        fontSize: wp("3%"),
+        fontFamily: "AirbnbCerealBook",
         color: colors.orange,
-        fontWeight: '400',
-        margin: wp('4%'),
+        fontWeight: "400",
+        margin: wp("4%"),
     },
     otpFieldContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '90%',
-        marginVertical: '3%',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "90%",
+        marginVertical: "3%",
         marginTop: 0,
     },
     customTextFieldStyles: {
-        width: wp('13.33%'),
+        width: wp("13.33%"),
         borderBottomColor: colors.darkGrey,
-        padding: '2%',
+        padding: "2%",
         borderBottomWidth: 2,
-        textAlign: 'center',
-        fontFamily: 'AirbnbCerealBook',
-        fontSize: hp('2%'),
+        textAlign: "center",
+        fontFamily: "AirbnbCerealBook",
+        fontSize: hp("2%"),
     },
 })
 export default SignUpScreen

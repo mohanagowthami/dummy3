@@ -1,23 +1,23 @@
 // react-native-gesture-handler
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView } from "react-native-gesture-handler"
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native'
+import { Text, View, StyleSheet, TextInput, Pressable } from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // DateTimePicker
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePicker from "@react-native-community/datetimepicker"
 // icons
-import Notifications from '../../assets/svgs/icons/icons-profile/Notifications'
-import { SearchIcon, AddIcon } from '../../assets/svgs/icons'
+import Notifications from "../../assets/svgs/icons/icons-profile/Notifications"
+import { SearchIcon, AddIcon } from "../../assets/svgs/icons"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 
-import { getFormatedDate } from '../lib/helper'
+import { getFormatedDate } from "../lib/helper"
 
 interface IProps {
     navigation: any
@@ -36,65 +36,65 @@ interface Istate {
 const details = {
     profileDetails: [
         {
-            name: 'Rohit Sharma',
+            name: "Rohit Sharma",
             image:
-                'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-            place: 'Hyderabad',
+                "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+            place: "Hyderabad",
         },
     ],
     results: [
         {
-            name: 'Saleem',
-            type: 'Biryani',
-            address: 'Opposite VIT',
-            place: 'Vellore',
+            name: "Saleem",
+            type: "Biryani",
+            address: "Opposite VIT",
+            place: "Vellore",
             time: 25,
             rating: 4.3,
-            noOfratings: '200+',
+            noOfratings: "200+",
             photo1:
-                'https://media.istockphoto.com/photos/indian-chicken-biryani-served-in-a-terracotta-bowl-with-yogurt-over-picture-id979891994?k=6&m=979891994&s=612x612&w=0&h=AZUYF4BdDzWeZ6q2puAzcqD0miXvAct42o7Hgump6ZA=',
-            photo2: '',
-            photp3: '',
-            photo4: '',
+                "https://media.istockphoto.com/photos/indian-chicken-biryani-served-in-a-terracotta-bowl-with-yogurt-over-picture-id979891994?k=6&m=979891994&s=612x612&w=0&h=AZUYF4BdDzWeZ6q2puAzcqD0miXvAct42o7Hgump6ZA=",
+            photo2: "",
+            photp3: "",
+            photo4: "",
         },
         {
             name: "McDonald's",
-            type: 'Chinese',
-            place: 'Hyderabad',
+            type: "Chinese",
+            place: "Hyderabad",
             time: 25,
             rating: 4.3,
-            noOfratings: '200+',
+            noOfratings: "200+",
             photo1:
-                'https://media.istockphoto.com/photos/authentic-chicken-biryani-with-onion-raita-picture-id516401834?k=6&m=516401834&s=612x612&w=0&h=GUFCrtpi_MEWzt5RUvBh6v2jsG127n8LG2FyU9IYbbs=',
-            photo2: '',
-            photp3: '',
-            photo4: '',
+                "https://media.istockphoto.com/photos/authentic-chicken-biryani-with-onion-raita-picture-id516401834?k=6&m=516401834&s=612x612&w=0&h=GUFCrtpi_MEWzt5RUvBh6v2jsG127n8LG2FyU9IYbbs=",
+            photo2: "",
+            photp3: "",
+            photo4: "",
         },
         {
             name: "McDonald's",
-            type: 'Chinese',
-            place: 'Hyderabad',
+            type: "Chinese",
+            place: "Hyderabad",
             time: 25,
             rating: 4.3,
-            noOfratings: '200+',
+            noOfratings: "200+",
             photo1:
-                'https://media.istockphoto.com/photos/fish-biryani-with-basmati-rice-indian-food-picture-id488481490?k=6&m=488481490&s=612x612&w=0&h=J8lIVq-5pPU-ta0BRZPaHY3WVXf6nbSJqAW9E2J-qDs=',
-            photo2: '',
-            photp3: '',
-            photo4: '',
+                "https://media.istockphoto.com/photos/fish-biryani-with-basmati-rice-indian-food-picture-id488481490?k=6&m=488481490&s=612x612&w=0&h=J8lIVq-5pPU-ta0BRZPaHY3WVXf6nbSJqAW9E2J-qDs=",
+            photo2: "",
+            photp3: "",
+            photo4: "",
         },
         {
             name: "McDonald's",
-            type: 'Chinese',
-            place: 'Hyderabad',
+            type: "Chinese",
+            place: "Hyderabad",
             time: 25,
             rating: 4.3,
-            noOfratings: '200+',
+            noOfratings: "200+",
             photo1:
-                'https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=',
-            photo2: '',
-            photp3: '',
-            photo4: '',
+                "https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=",
+            photo2: "",
+            photp3: "",
+            photo4: "",
         },
     ],
 }
@@ -109,7 +109,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     }
 
     onChangePicker = (event: any, selectedDate: any) => {
-        console.log(selectedDate, 'selectedDate')
+        console.log(selectedDate, "selectedDate")
         this.setState({
             ...this.state,
             isModalOpen: false,
@@ -126,7 +126,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     render() {
         return (
             <View
-                style={{ display: 'flex', flex: 1, backgroundColor: 'white' }}
+                style={{ display: "flex", flex: 1, backgroundColor: "white" }}
             >
                 <ScrollView style={styles.mainContainer}>
                     <View style={styles.heading}>
@@ -136,43 +136,31 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             <Pressable
                                 onPress={() =>
                                     this.props.navigation.navigate(
-                                        'notifications'
+                                        "notifications"
                                     )
                                 }
                             >
                                 <Notifications
-                                    width={wp('5.86%')}
-                                    height={hp('2.89%')}
+                                    width={wp("5.86%")}
+                                    height={hp("2.89%")}
                                 />
                             </Pressable>
                         </View>
                     </View>
                     <Text
-                        style={{
-                            fontFamily: 'ArchivoRegular',
-                            fontSize: wp('3.73'),
-                            color: colors.darkBlack,
-                            paddingHorizontal: wp('6%'),
-                        }}
+                        style={styles.selectDate}
                         onPress={this.setModalStatus}
                     >
                         Select Date
                     </Text>
-                    <Text
-                        style={{
-                            fontSize: wp('3.73%'),
-                            paddingLeft: wp('6%'),
-                            paddingTop: wp('2%'),
-                            color: colors.greyTwo,
-                        }}
-                    >
+                    <Text style={[styles.selectDate, { paddingTop: hp("2%") }]}>
                         {getFormatedDate(this.state.selectedDate)}
                     </Text>
                     <View style={styles.bottomTab}>
                         <Text
                             style={{
-                                fontFamily: 'ArchivoRegular',
-                                fontSize: wp('3.73'),
+                                fontFamily: "ArchivoRegular",
+                                fontSize: wp("4.5%"),
                                 color: colors.darkBlack,
                             }}
                         >
@@ -180,29 +168,29 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                         </Text>
                         <View
                             style={{
-                                display: 'flex',
+                                display: "flex",
                                 flex: 1,
-                                backgroundColor: '#FFE8E7',
-                                borderRadius: wp('2%'),
-                                marginTop: hp('2.76%'),
-                                justifyContent: 'space-around',
+                                backgroundColor: "#FFE8E7",
+                                borderRadius: wp("2%"),
+                                marginTop: hp("2.76%"),
+                                justifyContent: "space-around",
                             }}
                         >
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontWeight: '500',
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontWeight: "500",
+                                    fontSize: wp("3.73%"),
                                 }}
                             >
                                 Breakfast in Chutney’s
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -211,9 +199,9 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -222,29 +210,29 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                         </View>
                         <View
                             style={{
-                                display: 'flex',
+                                display: "flex",
                                 flex: 1,
-                                backgroundColor: '#E1E2FF',
-                                borderRadius: wp('2%'),
-                                marginTop: hp('2.76%'),
-                                justifyContent: 'space-around',
+                                backgroundColor: "#E1E2FF",
+                                borderRadius: wp("2%"),
+                                marginTop: hp("2.76%"),
+                                justifyContent: "space-around",
                             }}
                         >
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontWeight: '500',
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontWeight: "500",
+                                    fontSize: wp("3.73%"),
                                 }}
                             >
                                 Lunch in Paradise
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -253,9 +241,9 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -264,29 +252,29 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                         </View>
                         <View
                             style={{
-                                display: 'flex',
+                                display: "flex",
                                 flex: 1,
-                                backgroundColor: 'cyan',
-                                borderRadius: wp('2%'),
-                                marginTop: hp('2.76%'),
-                                justifyContent: 'space-around',
+                                backgroundColor: "cyan",
+                                borderRadius: wp("2%"),
+                                marginTop: hp("2.76%"),
+                                justifyContent: "space-around",
                             }}
                         >
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontWeight: '500',
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontWeight: "500",
+                                    fontSize: wp("3.73%"),
                                 }}
                             >
                                 Snacks
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -295,9 +283,9 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             </Text>
                             <Text
                                 style={{
-                                    fontFamily: 'ArchivoRegular',
-                                    padding: wp('2%'),
-                                    fontSize: wp('3.73%'),
+                                    fontFamily: "ArchivoRegular",
+                                    padding: wp("2%"),
+                                    fontSize: wp("3.73%"),
                                     color: colors.grey,
                                 }}
                             >
@@ -309,17 +297,17 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
 
                 <View
                     style={{
-                        position: 'absolute',
-                        right: wp('6%'),
-                        bottom: hp('3%'),
+                        position: "absolute",
+                        right: wp("6%"),
+                        bottom: hp("3%"),
                     }}
                 >
                     <Pressable
                         onPress={() =>
-                            this.props.navigation.navigate('addDateToCalender')
+                            this.props.navigation.navigate("addDateToCalender")
                         }
                     >
-                        <AddIcon width={wp('13.06%')} height={hp('6.44%')} />
+                        <AddIcon width={wp("13.06%")} height={hp("6.44%")} />
                     </Pressable>
                 </View>
                 {this.state.isModalOpen && (
@@ -337,61 +325,69 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
 }
 const styles = StyleSheet.create({
     mainContainer: {
-        display: 'flex',
-        paddingTop: hp('2%'),
+        display: "flex",
+        paddingTop: hp("2%"),
         backgroundColor: colors.white,
     },
     heading: {
-        display: 'flex',
-        paddingTop: hp('2%'),
-        paddingBottom: hp('2.10%'),
-        paddingLeft: wp('7.46%'),
-        paddingRight: wp('5.33%'),
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        display: "flex",
+        paddingTop: hp("2%"),
+        paddingBottom: hp("2.10%"),
+        paddingLeft: wp("6%"),
+        paddingRight: wp("5.33%"),
+        flexDirection: "row",
+        justifyContent: "space-between",
     },
     title: {
-        fontFamily: 'ArchivoBold',
-        fontSize: wp('6.4%'),
+        fontFamily: "ArchivoBold",
+        fontSize: wp("6.4%"),
     },
     notificationIcon: {
-        display: 'flex',
-        paddingTop: hp('1.2%'),
-        alignSelf: 'center',
+        display: "flex",
+        paddingTop: hp("1.2%"),
+        alignSelf: "center",
         // paddingRight: wp('15.46%'),
     },
+    selectDate: {
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("5%"),
+        color: colors.darkBlack,
+        // lineHeight: wp("4.5%"),
+        // marginBottom: wp("4%"),
+        paddingHorizontal: wp("6%"),
+    },
     searchButton: {
-        display: 'flex',
-        flexDirection: 'row',
+        display: "flex",
+        flexDirection: "row",
         flex: 1,
-        padding: '2%',
+        padding: "2%",
         backgroundColor: colors.lightGrey,
-        marginLeft: wp('7.73%'),
-        marginRight: wp('7.73%'),
-        borderRadius: wp('3%'),
-        marginBottom: hp('3.68%'),
+        marginLeft: wp("7.73%"),
+        marginRight: wp("7.73%"),
+        borderRadius: wp("3%"),
+        marginBottom: hp("3.68%"),
     },
     searchInput: {
         flex: 1,
-        marginLeft: wp('3%'),
-        fontSize: wp('4%'),
-        fontFamily: 'ArchivoRegular',
+        marginLeft: wp("3%"),
+        fontSize: wp("4%"),
+        fontFamily: "ArchivoRegular",
         color: colors.grey,
     },
     map: {
-        display: 'flex',
+        display: "flex",
         flex: 1,
     },
     card: {
-        display: 'flex',
-        position: 'absolute',
-        backgroundColor: 'white',
+        display: "flex",
+        position: "absolute",
+        backgroundColor: "white",
         // backgroundColor: 'cyan',
-        padding: wp('2%'),
+        padding: wp("2%"),
     },
     bottomTab: {
-        display: 'flex',
-        padding: wp('6%'),
+        display: "flex",
+        padding: wp("6%"),
     },
 })
 
