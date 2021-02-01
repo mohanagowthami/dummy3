@@ -136,7 +136,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             ...this.state,
             isLoading: true,
         })
-        console.log(this.values, "values")
+        // console.log(this.values, 'values')
         authService
             .logIn(this.values)
             .then((response) => {

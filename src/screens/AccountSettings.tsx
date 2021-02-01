@@ -1,5 +1,5 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
 import {
     Text,
@@ -9,16 +9,16 @@ import {
     ScrollView,
     SafeAreaView,
     Pressable,
-} from 'react-native'
+} from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // react-native / NewAppScreen
-import { Colors } from 'react-native/Libraries/NewAppScreen'
+import { Colors } from "react-native/Libraries/NewAppScreen"
 // icons
-import { ForwardIcon } from '../../assets/svgs/icons/icons-directions'
+import { ForwardIcon } from "../../assets/svgs/icons/icons-directions"
 import {
     Profile,
     Facebook,
@@ -28,9 +28,9 @@ import {
     FAQ,
     Rating,
     RatingGreen,
-} from '../../assets/svgs/icons/icons-profile'
+} from "../../assets/svgs/icons/icons-profile"
 // colors
-import { colors } from '../lib/colors'
+import { colors } from "../lib/colors"
 
 interface IProps {
     navigation: any
@@ -46,20 +46,20 @@ interface IState {
 const accountList = [
     {
         representationSvg: Profile,
-        title: 'Profile Information',
-        description: 'Change your account information',
+        title: "Profile Information",
+        description: "Change your account information",
         actionIcon: ForwardIcon,
     },
     {
         representationSvg: Facebook,
-        title: 'Add Social Account',
-        description: 'Add Facebook, Twitter etc ',
+        title: "Add Social Account",
+        description: "Add Facebook, Twitter etc ",
         actionIcon: ForwardIcon,
     },
     {
         representationSvg: Refer,
-        title: 'Refer to Friends',
-        description: 'Get $10 for reffering friends',
+        title: "Refer to Friends",
+        description: "Get $10 for reffering friends",
         actionIcon: ForwardIcon,
     },
 ]
@@ -67,20 +67,20 @@ const accountList = [
 const notificationsList = [
     {
         representationSvg: NotificationsTwo,
-        title: 'Push Notifications',
-        description: 'For daily update you will get it',
+        title: "Push Notifications",
+        description: "For daily update you will get it",
         actionIcon: Switch,
     },
     {
         representationSvg: NotificationsTwo,
-        title: 'SMS Notifications',
-        description: 'For daily update you will get it',
+        title: "SMS Notifications",
+        description: "For daily update you will get it",
         actionIcon: Switch,
     },
     {
         representationSvg: NotificationsTwo,
-        title: 'Promotional Notifications',
-        description: 'For daily update you will get it',
+        title: "Promotional Notifications",
+        description: "For daily update you will get it",
         actionIcon: Switch,
     },
 ]
@@ -88,19 +88,19 @@ const notificationsList = [
 const moreList = [
     {
         representationSvg: RatingGreen,
-        title: 'Rate Us',
-        description: 'Rate us playstore, appstor',
+        title: "Rate Us",
+        description: "Rate us playstore, appstor",
         actionIcon: ForwardIcon,
     },
     {
         representationSvg: FAQ,
-        title: 'FAQ',
-        description: 'Frequently asked questions',
+        title: "FAQ",
+        description: "Frequently asked questions",
         actionIcon: ForwardIcon,
     },
     {
         representationSvg: Logout,
-        title: 'Logout',
+        title: "Logout",
         actionIcon: ForwardIcon,
     },
 ]
@@ -111,15 +111,15 @@ class AccountSettings extends Component<IProps, IState> {
         this.state = {
             switchArray: [
                 {
-                    name: 'push',
+                    name: "push",
                     isEnabled: false,
                 },
                 {
-                    name: 'push',
+                    name: "push",
                     isEnabled: false,
                 },
                 {
-                    name: 'push',
+                    name: "push",
                     isEnabled: false,
                 },
             ],
@@ -134,7 +134,7 @@ class AccountSettings extends Component<IProps, IState> {
 
     renderSettings = (list: any) => {
         return (
-            <View style={{ marginVertical: wp('5%') }}>
+            <View style={{ marginVertical: wp("5%") }}>
                 {list.map((element: any, index: number) => {
                     const {
                         representationSvg: RepresentationSvg,
@@ -147,42 +147,42 @@ class AccountSettings extends Component<IProps, IState> {
                         <View key={index}>
                             <View
                                 style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    paddingVertical: wp('5%'),
-                                    paddingRight: wp('4%'),
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    paddingVertical: wp("5%"),
+                                    paddingRight: wp("4%"),
                                 }}
                             >
                                 <Pressable
                                     onPress={() => {
                                         if (index == 0) {
                                             this.props.navigation.navigate(
-                                                'profile'
+                                                "profile"
                                             )
                                         }
                                     }}
                                 >
                                     <View
                                         style={{
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
                                         }}
                                     >
                                         <View
                                             style={{
-                                                width: wp('10%'),
-                                                marginRight: wp('2%'),
-                                                display: 'flex',
-                                                justifyContent: 'flex-start',
-                                                alignItems: 'center',
+                                                width: wp("10%"),
+                                                marginRight: wp("2%"),
+                                                display: "flex",
+                                                justifyContent: "flex-start",
+                                                alignItems: "center",
                                             }}
                                         >
                                             <RepresentationSvg
-                                                width={wp('6%')}
-                                                height={hp('3%')}
+                                                width={wp("6%")}
+                                                height={hp("3%")}
                                                 color={colors.greyTwo}
                                             />
                                         </View>
@@ -190,26 +190,26 @@ class AccountSettings extends Component<IProps, IState> {
                                             <Text
                                                 style={{
                                                     fontFamily:
-                                                        'ArchivoRegular',
-                                                    fontSize: wp('4.2%'),
+                                                        "ArchivoRegular",
+                                                    fontSize: wp("4.2%"),
                                                     color: colors.darkBlack,
-                                                    lineHeight: wp('4.2%'),
+                                                    lineHeight: wp("4.2%"),
                                                     letterSpacing: 0.28,
-                                                    fontWeight: '400',
+                                                    fontWeight: "400",
                                                 }}
                                             >
                                                 {title}
                                             </Text>
-                                            {title !== 'Logout' && (
+                                            {title !== "Logout" && (
                                                 <Text
                                                     style={{
                                                         fontFamily:
-                                                            'AirbnbCerealBook',
-                                                        fontSize: wp('3.8%'),
-                                                        lineHeight: wp('4.2%'),
+                                                            "AirbnbCerealBook",
+                                                        fontSize: wp("3.8%"),
+                                                        lineHeight: wp("4.2%"),
                                                         color: colors.grey,
                                                         letterSpacing: 0.28,
-                                                        marginTop: wp('3%'),
+                                                        marginTop: wp("3%"),
                                                     }}
                                                 >
                                                     {description}
@@ -223,7 +223,7 @@ class AccountSettings extends Component<IProps, IState> {
                                     <ActionIcon
                                         trackColor={{
                                             false: colors.lightGreyThree,
-                                            true: 'green',
+                                            true: "green",
                                         }}
                                         thumbColor={colors.white}
                                         ios_backgroundColor={Colors.grey}
@@ -236,15 +236,15 @@ class AccountSettings extends Component<IProps, IState> {
                                         }
                                         style={{
                                             transform: [
-                                                { scaleX: wp('0.4%') },
-                                                { scaleY: wp('0.4%') },
+                                                { scaleX: wp("0.4%") },
+                                                { scaleY: wp("0.4%") },
                                             ],
                                         }}
                                     />
                                 ) : (
                                     <ActionIcon
-                                        width={wp('4%')}
-                                        height={hp('2.3%')}
+                                        width={wp("4%")}
+                                        height={hp("2.3%")}
                                     />
                                 )}
                             </View>
@@ -253,10 +253,10 @@ class AccountSettings extends Component<IProps, IState> {
                                     moreList[2].description) && (
                                 <View
                                     style={{
-                                        width: '100%',
-                                        height: wp('0.05%'),
+                                        width: "100%",
+                                        height: wp("0.05%"),
                                         backgroundColor: colors.lightGreyFive,
-                                        marginLeft: wp('12%'),
+                                        marginLeft: wp("12%"),
                                     }}
                                 />
                             )}
@@ -274,7 +274,7 @@ class AccountSettings extends Component<IProps, IState> {
                     <Text style={styles.title}>Account Settings</Text>
                     <Text style={styles.description}>
                         Update your settings like notifications,
-                        {'\n'}payments, profile edit etc.
+                        {"\n"}payments, profile edit etc.
                     </Text>
                     {this.renderSettings(accountList)}
                     <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
@@ -289,32 +289,33 @@ class AccountSettings extends Component<IProps, IState> {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: wp('5%'),
+        padding: hp("2%"),
+        paddingTop: hp("4%"),
         backgroundColor: colors.white,
-        display: 'flex',
+        display: "flex",
         paddingRight: 0,
     },
     title: {
-        fontFamily: 'ArchivoRegular',
-        fontSize: wp('7.8%'),
-        lineHeight: wp('9%'),
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("7.8%"),
+        lineHeight: wp("9%"),
         letterSpacing: 0.18,
-        marginBottom: wp('1%'),
+        marginBottom: wp("1%"),
     },
     description: {
-        fontFamily: 'ArchivoRegular',
-        fontSize: wp('4.2'),
-        lineHeight: wp('7.8%'),
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("4.2"),
+        lineHeight: wp("7.8%"),
         letterSpacing: -0.4,
         color: colors.grey,
     },
     settingsHeading: {
-        fontFamily: 'ArchivoRegular',
-        fontSize: wp('4.2%'),
+        fontFamily: "ArchivoRegular",
+        fontSize: wp("4.2%"),
         color: colors.darkBlack,
-        lineHeight: wp('7.5%'),
-        fontWeight: '500',
-        letterSpacing: wp('0.05%'),
+        lineHeight: wp("7.5%"),
+        fontWeight: "500",
+        letterSpacing: wp("0.05%"),
     },
 })
 

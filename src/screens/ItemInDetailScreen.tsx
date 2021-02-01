@@ -299,7 +299,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                             <Text style={styles.frappyText}>Photos</Text>
                             <View style={styles.sectionHeaderWrapper}>
                                 <Text style={styles.showAllText}>Show all</Text>
-                                <RightArrow />
+                                <RightArrow
+                                    width={wp("1.59%")}
+                                    height={hp("1.10%")}
+                                />
                             </View>
                         </View>
                         <View
