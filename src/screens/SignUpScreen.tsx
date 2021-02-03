@@ -31,6 +31,7 @@ import CustomButton from "../components/buttons/CustomButton"
 import { colors } from "../lib/colors"
 // services
 import UserService from "../services/user.service"
+import { Logo } from "../../assets/svgs/icons"
 //interface for signup screen
 interface ISignUpScreen {
     navigation: any
@@ -68,52 +69,13 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
     renderModalContent = () => {
         return (
             <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>OTP Verification</Text>
-                <Text style={styles.modalDescription}>
-                    Enter the OTP you received to{" "}
-                </Text>
-                <Text style={styles.phonenumber}>+91-9100950567</Text>
-                {/* OTP Section*/}
-                <View style={styles.otpFieldContainer}>
-                    <TextInput
-                        autoFocus
-                        style={styles.customTextFieldStyles}
-                        maxLength={1}
-                        onChangeText={() => this.onChangeOtp(1)}
-                        ref={(ref) => (this.inputRef[0] = ref)}
-                    />
-                    <TextInput
-                        style={styles.customTextFieldStyles}
-                        maxLength={1}
-                        onChangeText={() => this.onChangeOtp(2)}
-                        ref={(ref) => (this.inputRef[1] = ref)}
-                    />
-                    <TextInput
-                        style={styles.customTextFieldStyles}
-                        maxLength={1}
-                        onChangeText={() => this.onChangeOtp(3)}
-                        ref={(ref) => (this.inputRef[2] = ref)}
-                    />
-                    <TextInput
-                        style={styles.customTextFieldStyles}
-                        maxLength={1}
-                        ref={(ref) => (this.inputRef[3] = ref)}
-                    />
-                </View>
+                <Logo width={wp("50%")} height={hp("28%")} />
 
-                <CustomButton
-                    title="Verify and Continue"
-                    buttonStyles={{ width: wp("69.33%") }}
-                    buttonTextStyles={{
-                        fontFamily: "ArchivoBold",
-                        fontSize: wp("4%"),
-                    }}
-                    onPressButton={this.onPressVerifyAndContinue}
-                />
-                <Text style={styles.codeText}>
-                    Did’t receive code?
-                    <Text style={styles.resendOTP}> Resend OTP</Text>
+                <Text style={styles.hurryText}>Hurray!</Text>
+                <Text style={styles.logginSuccessfullyText}>
+                    You have successfully{" "}
                 </Text>
+                <Text style={styles.logginSuccessfullyText}>Logged In</Text>
             </View>
         )
     }
@@ -336,6 +298,21 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontFamily: "AirbnbCerealBook",
         fontSize: hp("2%"),
+    },
+    hurryText: {
+        fontFamily: "AirbnbCerealBold",
+        fontWeight: "700",
+        fontSize: wp("7%"),
+        lineHeight: wp("12%"),
+        color: colors.darkBlack,
+    },
+    logginSuccessfullyText: {
+        fontFamily: "AirbnbCerealBook",
+        fontWeight: "400",
+        fontSize: wp("4.2%"),
+        letterSpacing: wp("0.001%"),
+        color: colors.greyTwo,
+        lineHeight: wp("7%"),
     },
 })
 export default SignUpScreen
