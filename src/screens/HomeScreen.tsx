@@ -431,12 +431,14 @@ class HomeScreen extends Component<IProps, Istate> {
         )
     }
 
-    //  commonElement = (food_category:Array<string>,cuisines:Array<string>) =>
-    //     {
-    //      if (food_category.some((item: any) => cuisines.includes(item)))
-
-    //     }
-    // local favourites slider function
+    getDayTime = () => {
+        const date = new Date()
+        const hours = date.getHours()
+        if (hours <= 12) return "morning"
+        else if (hours >= 12 && hours <= 15) return "afternoon"
+        else if (hours >= 15 && hours <= 18) return "evening"
+        else return "night"
+    }
     renderLocalFavourities = () => {
         const { categoryData } = this.state
         console.log(categoryData[0].data, "data from network")
@@ -591,7 +593,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             ]}
                         >
                             <Text style={styles.frappyText}>
-                                Frappy morning
+                                Frappy {this.getDayTime()}
                             </Text>
                             <Pressable
                                 onPress={() =>
@@ -760,7 +762,13 @@ class HomeScreen extends Component<IProps, Istate> {
                                     <Pressable
                                         onPress={() =>
                                             this.props.navigation.navigate(
-                                                "recap"
+                                                "recap",
+                                                {
+                                                    recapList: this.state
+                                                        .categoryData[
+                                                        this.getActiveIndex()
+                                                    ].data.recapList,
+                                                }
                                             )
                                         }
                                     >
@@ -923,7 +931,13 @@ class HomeScreen extends Component<IProps, Istate> {
                                         <Pressable
                                             onPress={() =>
                                                 this.props.navigation.navigate(
-                                                    "hallOfFame"
+                                                    "hallOfFame",
+                                                    {
+                                                        hallOfFameList: this
+                                                            .state.categoryData[
+                                                            this.getActiveIndex()
+                                                        ].data.hallOfFame,
+                                                    }
                                                 )
                                             }
                                         >
