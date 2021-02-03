@@ -1,14 +1,14 @@
 // react
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // react-native
-import { TextInput, StyleSheet } from 'react-native'
+import { TextInput, StyleSheet } from "react-native"
 // react-native-responsive
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
-} from 'react-native-responsive-screen'
+} from "react-native-responsive-screen"
 // colors
-import { colors } from '../../lib/colors'
+import { colors } from "../../lib/colors"
 
 interface ICustomTextFieldProps {
     onChange: (value: any) => void
@@ -23,6 +23,7 @@ interface ICustomTextFieldProps {
     multiline?: boolean
     textAlignVertical?: any
     placeholderTextColor?: any
+    secureText?: boolean
 }
 
 interface ICustomTextFieldState {
@@ -35,7 +36,7 @@ class CustomTextField extends Component<
 > {
     constructor(props: any) {
         super(props)
-        this.state = { text: '' }
+        this.state = { text: "" }
     }
     handleChange = (text: string) => {
         this.props.onChange(text)
@@ -46,16 +47,16 @@ class CustomTextField extends Component<
     render() {
         const styles = StyleSheet.create({
             textInput: {
-                width: '100%',
-                padding: '2%',
+                width: "100%",
+                padding: "2%",
                 borderBottomWidth: 2,
-                borderBottomColor: '#DFE1E6',
-                fontFamily: 'AirbnbCerealBook',
-                fontSize: hp('2%'),
+                borderBottomColor: "#DFE1E6",
+                fontFamily: "AirbnbCerealBook",
+                fontSize: hp("2%"),
                 color: colors.greyTwo,
             },
         })
-        const { style, value, handleChange } = this.props
+        const { style, value, handleChange, secureText } = this.props
 
         return (
             <TextInput
@@ -63,6 +64,7 @@ class CustomTextField extends Component<
                 style={[styles.textInput, style]}
                 onChangeText={handleChange ? handleChange : this.handleChange}
                 value={value ? value : this.state.text}
+                secureTextEntry={secureText ? true : false}
             />
         )
     }

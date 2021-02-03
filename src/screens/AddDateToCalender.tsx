@@ -9,6 +9,7 @@ import {
     Pressable,
     SafeAreaView,
     ScrollView,
+    ActivityIndicator,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -18,8 +19,12 @@ import {
 // DateTimePicker
 import DateTimePicker from "@react-native-community/datetimepicker"
 // icons
-import { BellIcon, Clock, LocationIcon } from "../../assets/svgs/icons"
-import { CurrentLocation } from "../../assets/svgs/icons/icons-profile"
+import {
+    BellIcon,
+    CalenderSvg,
+    Clock,
+    LocationIcon,
+} from "../../assets/svgs/icons"
 // components
 import CustomTextField from "../components/input-controllers/CustomTextField"
 import CustomButton from "../components/buttons/CustomButton"
@@ -27,6 +32,7 @@ import CustomButton from "../components/buttons/CustomButton"
 import { colors } from "../lib/colors"
 import { getFormatedDate } from "../lib/helper"
 import { TextInput } from "react-native-gesture-handler"
+import PlannerService from "../services/planner.service"
 
 interface IProps {
     navigation: any
@@ -41,18 +47,39 @@ interface IState {
         name: string
         on: boolean
     }>
-    fromText: string
-    toText: string
+    fromTime: string
+    toTime: string
+    dateArray: any
+    initialLocation: string
+    destinationLocation: string
+    isLoading: boolean
 }
 
+function getCurrentMonthArray() {
+    const date = new Date()
+    let calculatedArray = new Array(
+        new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+    ).fill(0)
+
+    return calculatedArray.map((ele, index) => {
+        if (index + 1 === date.getDate()) return 1
+        else return 0
+    })
+}
+
+const plannerService = new PlannerService()
 class AddDateToCalender extends Component<IProps, IState> {
+    date: any = new Date()
+    ref: any
     constructor(props: IProps) {
         super(props)
         this.state = {
+            isLoading: false,
             date: new Date(),
             mode: "date",
             show: false,
             description: "",
+            dateArray: getCurrentMonthArray(),
 
             switchArray: [
                 {
@@ -68,9 +95,12 @@ class AddDateToCalender extends Component<IProps, IState> {
                     on: false,
                 },
             ],
-            fromText: "From",
-            toText: "To",
+            fromTime: "",
+            toTime: "",
+            initialLocation: "",
+            destinationLocation: "",
         }
+        this.ref = React.createRef()
     }
 
     showPicker = (mode: string) => {
@@ -82,12 +112,17 @@ class AddDateToCalender extends Component<IProps, IState> {
     }
 
     onChangePicker = (event: any, selectedDate: any) => {
-        console.log(selectedDate, "selectedDate")
-        this.setState({
-            ...this.state,
-            date: selectedDate,
-            show: false,
-        })
+        let stateData = { ...this.state }
+        stateData.show = false
+        if (this.state.mode === "date") stateData.date = selectedDate
+        else {
+            if (this.ref.current === "from")
+                stateData.fromTime = `${selectedDate.getHours()}:${selectedDate.getMinutes()}`
+            else
+                stateData.toTime = `${selectedDate.getHours()}:${selectedDate.getMinutes()}`
+        }
+
+        this.setState(stateData)
     }
 
     toggleSwitch = (index: number) => {
@@ -135,193 +170,341 @@ class AddDateToCalender extends Component<IProps, IState> {
             </>
         )
     }
+    handlePressableDate = (ind: number): any => {
+        const mutatedArray = this.state.dateArray.map(
+            (ele: boolean, index: number) => {
+                if (index === ind) {
+                    return !ele
+                }
+                return 0
+            }
+        )
+        this.setState({
+            ...this.state,
+            dateArray: mutatedArray,
+            date: new Date(
+                this.date.getFullYear(),
+                this.date.getMonth(),
+                ind + 1
+            ),
+        })
+    }
 
     onBlurDescription = () => {}
 
     onPressButton = (name: string) => {}
 
+    setModalStatus = () => {}
+
+    renderDays = () => {
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        return (
+            <ScrollView
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                }}
+                horizontal
+            >
+                {this.state.dateArray.map((ele: any, index: number) => {
+                    let day = new Date(
+                        this.date.getFullYear(),
+                        this.date.getMonth(),
+                        index + 1
+                    )
+                    const dayName = days[day.getDay()]
+                    return (
+                        <View
+                            style={{
+                                marginHorizontal: wp("3%"),
+
+                                alignItems: "center",
+                            }}
+                            key={index}
+                        >
+                            <Text
+                                style={[
+                                    styles.dateTextStyle,
+                                    { color: colors.greyTwo },
+                                ]}
+                            >
+                                {dayName}
+                            </Text>
+
+                            <Text
+                                style={[
+                                    styles.dateTextStyle,
+                                    {
+                                        backgroundColor: ele
+                                            ? colors.orange
+                                            : colors.white,
+                                        color: ele
+                                            ? colors.white
+                                            : colors.darkBlack,
+                                        width: wp("10%"),
+                                        height: wp("10%"),
+                                        borderRadius: wp("5%"),
+                                        textAlign: "center",
+                                        textAlignVertical: "center",
+                                    },
+                                ]}
+                                onPress={() => this.handlePressableDate(index)}
+                            >
+                                {index + 1}
+                            </Text>
+                        </View>
+                    )
+                })}
+            </ScrollView>
+        )
+    }
+
+    pressPlan = () => {
+        const {
+            date,
+            fromTime,
+            toTime,
+            initialLocation,
+            destinationLocation,
+            description,
+        } = this.state
+        const data = {
+            from_time: fromTime,
+            to_time: toTime,
+            date: getFormatedDate(date),
+            start_location: initialLocation,
+            end_location: destinationLocation,
+            category: "Travel",
+            description: description,
+        }
+        console.log(data, "data in add to date")
+        this.setState({ ...this.state, isLoading: true })
+        plannerService
+            .updateUserPlannerData(data)
+            .then((response) => {
+                console.log(response, "response")
+                this.props.navigation.navigate("frappyCalender")
+            })
+            .catch((error) => console.log(error, "error"))
+    }
+
     render() {
         return (
             <SafeAreaView style={{ flex: 1, paddingTop: hp("2%") }}>
                 <ScrollView>
-                    <View style={styles.container}>
-                        <View style={styles.TitleContainer}>
-                            <Text style={styles.titleText}>Frappy planner</Text>
-                            <Pressable
-                                onPress={() =>
-                                    this.props.navigation.navigate(
-                                        "notifications"
-                                    )
-                                }
-                            >
-                                <BellIcon
-                                    width={wp("5.9%")}
-                                    height={wp("5.9%")}
-                                />
-                            </Pressable>
-                        </View>
-                        <Text
-                            style={styles.selectDate}
-                            onPress={() => this.showPicker("Date")}
-                        >
-                            Select Date
-                        </Text>
-                        <Text
-                            style={[
-                                styles.timeText,
-                                { marginBottom: hp("2%") },
-                            ]}
-                        >
-                            {this.state.date &&
-                                getFormatedDate(this.state.date)}
-                        </Text>
-                        <Text
-                            style={styles.selectDate}
-                            onPress={() => this.showPicker("Date")}
-                        >
-                            Set Time
-                        </Text>
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginBottom: wp("4%"),
-                            }}
-                        >
-                            <View style={styles.timeBox}>
-                                <Text style={styles.timeText}>
-                                    {this.state.fromText}
-                                </Text>
-                                <Pressable
-                                    onPress={() => this.showPicker("time")}
-                                >
-                                    <Clock
-                                        width={wp("6.13%")}
-                                        height={hp("3.02%")}
-                                    />
-                                </Pressable>
-                            </View>
-                            <View style={styles.timeBox}>
-                                <Text style={styles.timeText}>
-                                    {this.state.toText}
-                                </Text>
-                                <Pressable
-                                    onPress={() => this.showPicker("time")}
-                                >
-                                    <Clock
-                                        width={wp("6.13%")}
-                                        height={hp("3.02%")}
-                                    />
-                                </Pressable>
-                            </View>
-                        </View>
-                        <Text
-                            style={styles.selectDate}
-                            // onPress={() => this.showPicker('Date')}
-                        >
-                            Location
-                        </Text>
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginBottom: wp("4%"),
-                            }}
-                        >
-                            <View style={styles.timeBox}>
-                                <TextInput
-                                    placeholder="Start"
-                                    style={styles.timeText}
-                                />
-                                {/* {this.state.fromText} */}
-                                {/* </TextInput> */}
-                                <Pressable
-                                // onPress={() => this.showPicker('time')}
-                                >
-                                    <LocationIcon
-                                        width={wp("6.13%")}
-                                        height={hp("3.02%")}
-                                    />
-                                </Pressable>
-                            </View>
-                            <View style={styles.timeBox}>
-                                <TextInput
-                                    placeholder="End"
-                                    style={styles.timeText}
-                                />
-                                {/* {this.state.toText} */}
-                                {/* </Text> */}
-                                <Pressable
-                                // onPress={() => this.showPicker('time')}
-                                >
-                                    <LocationIcon
-                                        width={wp("6.13%")}
-                                        height={hp("3.02%")}
-                                    />
-                                </Pressable>
-                            </View>
-                        </View>
-                        <Text style={styles.selectDate}>Select Category</Text>
-                        {this.renderSelectCategorySwitches()}
-                        <CustomTextField
-                            onChange={() => {
-                                // console.log('date changed')
-                            }}
-                            // onCallBack={this.onBlurDescription}
-                            textAlignVertical="top"
-                            placeholderTextColor={colors.greyTwo}
-                            placeholder={"Description"}
-                            style={{
-                                height: wp("40%"),
-                                borderRadius: wp("2%"),
-                                backgroundColor: colors.lightGreyFour,
-                                borderBottomWidth: 0,
-                                padding: wp("4%"),
-                                marginTop: wp("4%"),
-                            }}
-                        />
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginVertical: wp("7%"),
-                                marginBottom: wp("0%"),
-                            }}
-                        >
-                            <CustomButton
-                                onPressButton={() =>
-                                    this.props.navigation.navigate(
-                                        "frappyCalender"
-                                    )
-                                }
-                                buttonStyles={styles.buttonStyles}
-                                title="Cancel"
-                                buttonTextStyles={styles.buttonTextStyles}
-                            ></CustomButton>
-                            <CustomButton
-                                onPressButton={() =>
-                                    this.props.navigation.navigate(
-                                        "frappyCalender"
-                                    )
-                                }
-                                buttonStyles={[
-                                    styles.buttonStyles,
-                                    {
-                                        backgroundColor: colors.orange,
-                                        borderWidth: 0,
-                                    },
-                                ]}
-                                title="Plan"
-                                buttonTextStyles={[
-                                    styles.buttonTextStyles,
-                                    { color: colors.white },
-                                ]}
+                    {this.state.isLoading ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator
+                                color={colors.darkBlack}
+                                size="large"
                             />
                         </View>
-                    </View>
+                    ) : (
+                        <View style={styles.container}>
+                            <View style={styles.TitleContainer}>
+                                <Text style={styles.titleText}>
+                                    Frappy planner
+                                </Text>
+                                <Pressable
+                                    onPress={() =>
+                                        this.props.navigation.navigate(
+                                            "notifications"
+                                        )
+                                    }
+                                >
+                                    <BellIcon
+                                        width={wp("5.9%")}
+                                        height={wp("5.9%")}
+                                    />
+                                </Pressable>
+                            </View>
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontFamily: "ArchivoRegular",
+                                        fontSize: wp("3.73"),
+                                        color: colors.darkBlack,
+                                        marginRight: wp("4%"),
+                                    }}
+                                >
+                                    Select Date
+                                </Text>
+                                <Pressable
+                                    onPress={() => this.showPicker("date")}
+                                >
+                                    <CalenderSvg
+                                        color={colors.darkGrey}
+                                        width={wp("5%")}
+                                        height={wp("5%")}
+                                    />
+                                </Pressable>
+                            </View>
+
+                            {this.renderDays()}
+                            <Text
+                                style={[
+                                    styles.timeText,
+                                    { marginVertical: hp("2%") },
+                                ]}
+                            >
+                                {this.state.date &&
+                                    getFormatedDate(this.state.date)}
+                            </Text>
+                            <Text
+                                style={styles.selectDate}
+                                onPress={() => this.showPicker("Date")}
+                            >
+                                Set Time
+                            </Text>
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginBottom: wp("4%"),
+                                }}
+                            >
+                                <View style={styles.timeBox}>
+                                    <Text style={styles.timeText}>
+                                        {this.state.fromTime}
+                                    </Text>
+                                    <Pressable
+                                        onPress={() => {
+                                            this.ref.current = "from"
+                                            this.showPicker("time")
+                                        }}
+                                    >
+                                        <Clock
+                                            width={wp("6.13%")}
+                                            height={hp("3.02%")}
+                                        />
+                                    </Pressable>
+                                </View>
+                                <View style={styles.timeBox}>
+                                    <Text style={styles.timeText}>
+                                        {this.state.toTime}
+                                    </Text>
+                                    <Pressable
+                                        onPress={() => {
+                                            this.ref.current = "to"
+                                            this.showPicker("time")
+                                        }}
+                                    >
+                                        <Clock
+                                            width={wp("6.13%")}
+                                            height={hp("3.02%")}
+                                        />
+                                    </Pressable>
+                                </View>
+                            </View>
+                            <Text style={styles.selectDate}>Location</Text>
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginBottom: wp("4%"),
+                                }}
+                            >
+                                <View style={styles.timeBox}>
+                                    <TextInput
+                                        placeholder="Start"
+                                        style={styles.timeText}
+                                        onChangeText={(text) => {
+                                            this.setState({
+                                                ...this.state,
+                                                initialLocation: text,
+                                            })
+                                        }}
+                                    />
+
+                                    <Pressable>
+                                        <LocationIcon
+                                            width={wp("6.13%")}
+                                            height={hp("3.02%")}
+                                        />
+                                    </Pressable>
+                                </View>
+                                <View style={styles.timeBox}>
+                                    <TextInput
+                                        placeholder="End"
+                                        style={styles.timeText}
+                                        onChangeText={(text) => {
+                                            this.setState({
+                                                ...this.state,
+                                                destinationLocation: text,
+                                            })
+                                        }}
+                                    />
+
+                                    <Pressable>
+                                        <LocationIcon
+                                            width={wp("6.13%")}
+                                            height={hp("3.02%")}
+                                        />
+                                    </Pressable>
+                                </View>
+                            </View>
+                            <Text style={styles.selectDate}>
+                                Select Category
+                            </Text>
+                            {this.renderSelectCategorySwitches()}
+                            <CustomTextField
+                                onChange={this.onBlurDescription}
+                                textAlignVertical="top"
+                                placeholderTextColor={colors.greyTwo}
+                                placeholder={"Description"}
+                                style={{
+                                    height: wp("40%"),
+                                    borderRadius: wp("2%"),
+                                    backgroundColor: colors.lightGreyFour,
+                                    borderBottomWidth: 0,
+                                    padding: wp("4%"),
+                                    marginTop: wp("4%"),
+                                }}
+                            />
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginVertical: wp("7%"),
+                                    marginBottom: wp("0%"),
+                                }}
+                            >
+                                <CustomButton
+                                    onPressButton={() =>
+                                        this.props.navigation.navigate(
+                                            "frappyCalender"
+                                        )
+                                    }
+                                    buttonStyles={styles.buttonStyles}
+                                    title="Cancel"
+                                    buttonTextStyles={styles.buttonTextStyles}
+                                ></CustomButton>
+                                <CustomButton
+                                    onPressButton={this.pressPlan}
+                                    buttonStyles={[
+                                        styles.buttonStyles,
+                                        {
+                                            backgroundColor: colors.orange,
+                                            borderWidth: 0,
+                                        },
+                                    ]}
+                                    title="Plan"
+                                    buttonTextStyles={[
+                                        styles.buttonTextStyles,
+                                        { color: colors.white },
+                                    ]}
+                                />
+                            </View>
+                        </View>
+                    )}
                     {this.state.show && (
                         <DateTimePicker
                             testID="dateTimePicker"
@@ -401,5 +584,21 @@ const styles = StyleSheet.create({
         letterSpacing: -wp("0.03%"),
         lineHeight: wp("5.3%"),
         color: colors.greyTwo,
+    },
+    dateTextStyle: {
+        fontSize: wp("4%"),
+        fontFamily: "ArchivoRegular",
+        lineHeight: wp("5%"),
+        letterSpacing: wp("0.05%"),
+        marginVertical: wp("1%"),
+        color: colors.darkBlack,
+    },
+    loadingContainer: {
+        height: hp("90%"),
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex",
+        alignContent: "center",
+        backgroundColor: colors.white,
     },
 })

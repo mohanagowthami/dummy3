@@ -32,12 +32,8 @@ import CustomButton from "../components/buttons/CustomButton"
 import { colors } from "../lib/colors"
 // services
 import RestaurantService from "../services/restaurants.service"
-import UserService from "../services/user.service"
-// endpoints
-import {
-    GET_SPECIFIC_RESTAURANT,
-    REVIEWS_SPECIFIC_RESTAURANTS,
-} from "../lib/endpoints"
+import ReviewService from "../services/review.service"
+
 const image1 =
     "https://pattys-cakes.com/wp-content/uploads/2020/11/colorful-rosette-cake-350x350.jpg"
 const image2 =
@@ -100,7 +96,8 @@ const ItemContent = {
 }
 
 const restaurantService = new RestaurantService()
-const userService = new UserService()
+
+const reviewService = new ReviewService()
 class ItemInDetailScreen extends Component<IProps, Istate> {
     constructor(props: IProps) {
         super(props)
@@ -133,18 +130,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
 
     componentDidMount() {
         const { id } = this.props.route.params
-        console.log(
-            GET_SPECIFIC_RESTAURANT(id),
-            REVIEWS_SPECIFIC_RESTAURANTS(id),
-            id,
-            "id"
-        )
 
         Promise.all([
-            restaurantService.fetcher(GET_SPECIFIC_RESTAURANT(id)),
-            restaurantService.fetcher(REVIEWS_SPECIFIC_RESTAURANTS(id)),
+            restaurantService.getRestaurant(id),
+            reviewService.getReviews(id),
         ])
             .then((values) => {
+                console.log(values, "values in item in detail")
                 const mutatedObject: any = {}
                 mutatedObject["restaurantDetails"] = values[0]
                 mutatedObject["ratingAndReview"] = values[1]
@@ -166,7 +158,9 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             overall_rating,
             likes,
             menu_images,
+            id,
         } = restaurantDetails
+        console.log(restaurantDetails, "restaurantDetails")
         const representImage = menu_images[0] ? menu_images[0].image : image1
         return (
             <ScrollView
@@ -352,12 +346,15 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                 review_images,
                                 updated,
                             } = element
-                            const year = updated.getFullYear()
-                            const month = updated.toLocaleString("default", {
+                            console.log(user.profile_pic, "item in detail")
+                            let dt = new Date(updated)
+                            const year = dt.getFullYear()
+                            const month = dt.toLocaleString("default", {
                                 month: "long",
                             })
 
                             const date = `${month} ${year}`
+
                             return (
                                 <View style={styles.reviewcontainer}>
                                     <View
@@ -372,7 +369,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                                                 height: hp("6.3%"),
                                                 width: wp("12.8%"),
                                             }}
-                                            source={{ uri: image1 }}
+                                            source={{ uri: user.profile_pic }}
                                         />
                                     </View>
                                     <View
@@ -500,7 +497,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                             onFocus={() =>
                                 this.props.navigation.navigate(
                                     "reviewsAndRating",
-                                    { id: restaurantDetails.id }
+                                    { id: id }
                                 )
                             }
                         />

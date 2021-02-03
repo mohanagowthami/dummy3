@@ -30,6 +30,7 @@ import CustomTextField from "../components/input-controllers/CustomTextField"
 import { colors } from "../lib/colors"
 // services
 import AuthService from "../services/auth.service"
+import UserService from "../services/user.service"
 
 // props for login screen
 interface ILoginScreen {
@@ -42,6 +43,7 @@ interface State {
 }
 const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
+const userService = new UserService()
 class LoginScreen extends React.Component<ILoginScreen, State> {
     inputRef: any
     values: any
@@ -69,6 +71,15 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     // navigate to signUp page
     handleNavigation = () => {
         this.props.navigation.navigate("signUp")
+    }
+
+    async componentDidMount() {
+        userService
+            .getUser()
+            .then((res) => {
+                if (res.username) this.props.navigation.navigate("bottomTab")
+            })
+            .catch((error) => console.log(error, "get user"))
     }
 
     renderModalContent = () => {
@@ -222,6 +233,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                                 }
                                 placeholder="Enter Password"
                                 style={styles.inputBox}
+                                secureText={true}
                             />
                             <View>
                                 <CustomButton

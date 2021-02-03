@@ -3,7 +3,14 @@ import { ScrollView } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, TextInput, Pressable } from "react-native"
+import {
+    Text,
+    View,
+    StyleSheet,
+    TextInput,
+    Pressable,
+    ActivityIndicator,
+} from "react-native"
 // react-native-responsive-screen
 import {
     widthPercentageToDP as wp,
@@ -13,11 +20,14 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker"
 // icons
 import Notifications from "../../assets/svgs/icons/icons-profile/Notifications"
-import { SearchIcon, AddIcon } from "../../assets/svgs/icons"
+import { AddIcon } from "../../assets/svgs/icons"
+
+import CalenderSvg from "../../assets/svgs/icons/icons-bottomTab/CalenderSvg"
 // colors
 import { colors } from "../lib/colors"
 
 import { getFormatedDate } from "../lib/helper"
+import PlannerService from "../services/planner.service"
 
 interface IProps {
     navigation: any
@@ -31,80 +41,36 @@ interface IDetailsType {
 interface Istate {
     selectedDate: any
     isModalOpen: boolean
-}
-// data
-const details = {
-    profileDetails: [
-        {
-            name: "Rohit Sharma",
-            image:
-                "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-            place: "Hyderabad",
-        },
-    ],
-    results: [
-        {
-            name: "Saleem",
-            type: "Biryani",
-            address: "Opposite VIT",
-            place: "Vellore",
-            time: 25,
-            rating: 4.3,
-            noOfratings: "200+",
-            photo1:
-                "https://media.istockphoto.com/photos/indian-chicken-biryani-served-in-a-terracotta-bowl-with-yogurt-over-picture-id979891994?k=6&m=979891994&s=612x612&w=0&h=AZUYF4BdDzWeZ6q2puAzcqD0miXvAct42o7Hgump6ZA=",
-            photo2: "",
-            photp3: "",
-            photo4: "",
-        },
-        {
-            name: "McDonald's",
-            type: "Chinese",
-            place: "Hyderabad",
-            time: 25,
-            rating: 4.3,
-            noOfratings: "200+",
-            photo1:
-                "https://media.istockphoto.com/photos/authentic-chicken-biryani-with-onion-raita-picture-id516401834?k=6&m=516401834&s=612x612&w=0&h=GUFCrtpi_MEWzt5RUvBh6v2jsG127n8LG2FyU9IYbbs=",
-            photo2: "",
-            photp3: "",
-            photo4: "",
-        },
-        {
-            name: "McDonald's",
-            type: "Chinese",
-            place: "Hyderabad",
-            time: 25,
-            rating: 4.3,
-            noOfratings: "200+",
-            photo1:
-                "https://media.istockphoto.com/photos/fish-biryani-with-basmati-rice-indian-food-picture-id488481490?k=6&m=488481490&s=612x612&w=0&h=J8lIVq-5pPU-ta0BRZPaHY3WVXf6nbSJqAW9E2J-qDs=",
-            photo2: "",
-            photp3: "",
-            photo4: "",
-        },
-        {
-            name: "McDonald's",
-            type: "Chinese",
-            place: "Hyderabad",
-            time: 25,
-            rating: 4.3,
-            noOfratings: "200+",
-            photo1:
-                "https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=",
-            photo2: "",
-            photp3: "",
-            photo4: "",
-        },
-    ],
+    dateArray: any
+    plannerData: any
+    isLoading: boolean
 }
 
+function getCurrentMonthArray() {
+    const date = new Date()
+    let calculatedArray = new Array(
+        new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+    ).fill(0)
+
+    return calculatedArray.map((ele, index) => {
+        if (index + 1 === date.getDate()) return 1
+        else return 0
+    })
+}
+
+const plannerService = new PlannerService()
+
 class FrappyPlannerCalendar extends Component<IProps, Istate> {
+    date: any
     constructor(props: IProps) {
         super(props)
+        this.date = new Date()
         this.state = {
-            selectedDate: new Date(),
+            selectedDate: this.date,
             isModalOpen: false,
+            dateArray: getCurrentMonthArray(),
+            plannerData: [],
+            isLoading: false,
         }
     }
 
@@ -114,13 +80,130 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
             ...this.state,
             isModalOpen: false,
             selectedDate: selectedDate,
+            dateArray: new Array(
+                new Date(
+                    this.date.getFullYear(),
+                    this.date.getMonth() + 1,
+                    0
+                ).getDate()
+            ).fill(0),
         })
+    }
+
+    fetchData = () => {
+        this.setState({ ...this.state, isLoading: true })
+        plannerService
+            .searchCurrentUserPlannerData(
+                getFormatedDate(this.state.selectedDate)
+            )
+            .then((response) => {
+                this.setState({
+                    ...this.state,
+                    plannerData: response,
+                    isLoading: false,
+                })
+            })
+            .catch((error) => console.log(error, "error"))
+    }
+    async componentDidMount() {
+        this.fetchData()
+    }
+
+    async componentDidUpdate(prevProps: any, prevState: any) {
+        if (prevState.selectedDate !== this.state.selectedDate) {
+            this.fetchData()
+        }
     }
 
     setModalStatus = () => {
         this.setState((prevState) => ({
+            ...this.state,
             isModalOpen: !prevState.isModalOpen,
         }))
+    }
+
+    handlePressableDate = (ind: number): any => {
+        const mutatedArray = this.state.dateArray.map(
+            (ele: boolean, index: number) => {
+                if (index === ind) {
+                    return !ele
+                }
+                return 0
+            }
+        )
+        this.setState({
+            ...this.state,
+            dateArray: mutatedArray,
+            selectedDate: new Date(
+                this.date.getFullYear(),
+                this.date.getMonth(),
+                ind + 1
+            ),
+        })
+    }
+
+    renderDays = () => {
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        return (
+            <ScrollView
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    paddingHorizontal: wp("4%"),
+                }}
+                horizontal
+            >
+                {this.state.dateArray.map((ele: any, index: number) => {
+                    let day = new Date(
+                        this.date.getFullYear(),
+                        this.date.getMonth(),
+                        index + 1
+                    )
+                    const dayName = days[day.getDay()]
+                    return (
+                        <View
+                            style={{
+                                marginHorizontal: wp("4%"),
+
+                                alignItems: "center",
+                            }}
+                            key={index}
+                        >
+                            <Text
+                                style={[
+                                    styles.dateTextStyle,
+                                    { color: colors.greyTwo },
+                                ]}
+                            >
+                                {dayName}
+                            </Text>
+
+                            <Text
+                                style={[
+                                    styles.dateTextStyle,
+                                    {
+                                        backgroundColor: ele
+                                            ? colors.orange
+                                            : colors.white,
+                                        color: ele
+                                            ? colors.white
+                                            : colors.darkBlack,
+                                        width: wp("10%"),
+                                        height: wp("10%"),
+                                        borderRadius: wp("5%"),
+                                        textAlign: "center",
+                                        textAlignVertical: "center",
+                                    },
+                                ]}
+                                onPress={() => this.handlePressableDate(index)}
+                            >
+                                {index + 1}
+                            </Text>
+                        </View>
+                    )
+                })}
+            </ScrollView>
+        )
     }
 
     render() {
@@ -147,151 +230,118 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
                             </Pressable>
                         </View>
                     </View>
-                    <Text
-                        style={styles.selectDate}
-                        onPress={this.setModalStatus}
+                    <View
+                        style={{
+                            paddingLeft: wp("6%"),
+                            display: "flex",
+                            flexDirection: "row",
+                        }}
                     >
-                        Select Date
-                    </Text>
-                    <Text style={[styles.selectDate, { paddingTop: hp("2%") }]}>
+                        <Text
+                            style={{
+                                fontFamily: "ArchivoRegular",
+                                fontSize: wp("3.73"),
+                                color: colors.darkBlack,
+                                marginRight: wp("4%"),
+                            }}
+                        >
+                            Select Date
+                        </Text>
+                        <Pressable onPress={this.setModalStatus}>
+                            <CalenderSvg
+                                color={colors.darkGrey}
+                                width={wp("5%")}
+                                height={wp("5%")}
+                            />
+                        </Pressable>
+                    </View>
+                    <Text
+                        style={{
+                            fontSize: wp("3.73%"),
+                            paddingLeft: wp("6%"),
+                            paddingTop: wp("2%"),
+                            color: colors.darkBlack,
+                        }}
+                    >
                         {getFormatedDate(this.state.selectedDate)}
                     </Text>
+                    {this.renderDays()}
                     <View style={styles.bottomTab}>
                         <Text
                             style={{
                                 fontFamily: "ArchivoRegular",
-                                fontSize: wp("4.5%"),
+                                fontSize: wp("3.73"),
                                 color: colors.darkBlack,
                             }}
                         >
                             Your Visits
                         </Text>
-                        <View
-                            style={{
-                                display: "flex",
-                                flex: 1,
-                                backgroundColor: "#FFE8E7",
-                                borderRadius: wp("2%"),
-                                marginTop: hp("2.76%"),
-                                justifyContent: "space-around",
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontWeight: "500",
-                                    fontSize: wp("3.73%"),
-                                }}
-                            >
-                                Breakfast in Chutney’s
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                Lorem Ipsum copy in various charsets and
-                                languages for layouts.
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                08:00 - 09:00
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                display: "flex",
-                                flex: 1,
-                                backgroundColor: "#E1E2FF",
-                                borderRadius: wp("2%"),
-                                marginTop: hp("2.76%"),
-                                justifyContent: "space-around",
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontWeight: "500",
-                                    fontSize: wp("3.73%"),
-                                }}
-                            >
-                                Lunch in Paradise
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                Lorem Ipsum copy in various charsets and
-                                languages for layouts.
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                13:30 - 14:30
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                display: "flex",
-                                flex: 1,
-                                backgroundColor: "cyan",
-                                borderRadius: wp("2%"),
-                                marginTop: hp("2.76%"),
-                                justifyContent: "space-around",
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontWeight: "500",
-                                    fontSize: wp("3.73%"),
-                                }}
-                            >
-                                Snacks
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                Lorem Ipsum copy in various charsets and
-                                languages for layouts.
-                            </Text>
-                            <Text
-                                style={{
-                                    fontFamily: "ArchivoRegular",
-                                    padding: wp("2%"),
-                                    fontSize: wp("3.73%"),
-                                    color: colors.grey,
-                                }}
-                            >
-                                17:30 - 18:30
-                            </Text>
-                        </View>
+                        {this.state.isLoading ? (
+                            <ActivityIndicator
+                                color={colors.darkBlack}
+                                size="large"
+                            />
+                        ) : (
+                            <>
+                                {this.state.plannerData.map(
+                                    (ele: any, index: number) => {
+                                        const {
+                                            from_time,
+                                            to_time,
+                                            description,
+                                        } = ele
+                                        return (
+                                            <View
+                                                style={{
+                                                    display: "flex",
+                                                    flex: 1,
+                                                    backgroundColor: "#FFE8E7",
+                                                    borderRadius: wp("2%"),
+                                                    marginTop: hp("2.76%"),
+                                                    justifyContent:
+                                                        "space-around",
+                                                }}
+                                                key={index}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        fontFamily:
+                                                            "ArchivoRegular",
+                                                        padding: wp("2%"),
+                                                        fontWeight: "500",
+                                                        fontSize: wp("3.73%"),
+                                                    }}
+                                                >
+                                                    Breakfast in Chutney’s
+                                                </Text>
+                                                <Text
+                                                    style={{
+                                                        fontFamily:
+                                                            "ArchivoRegular",
+                                                        padding: wp("2%"),
+                                                        fontSize: wp("3.73%"),
+                                                        color: colors.grey,
+                                                    }}
+                                                >
+                                                    {description}
+                                                </Text>
+                                                <Text
+                                                    style={{
+                                                        fontFamily:
+                                                            "ArchivoRegular",
+                                                        padding: wp("2%"),
+                                                        fontSize: wp("3.73%"),
+                                                        color: colors.grey,
+                                                    }}
+                                                >
+                                                    {from_time} - {to_time}
+                                                </Text>
+                                            </View>
+                                        )
+                                    }
+                                )}
+                            </>
+                        )}
                     </View>
                 </ScrollView>
 
@@ -333,7 +383,7 @@ const styles = StyleSheet.create({
         display: "flex",
         paddingTop: hp("2%"),
         paddingBottom: hp("2.10%"),
-        paddingLeft: wp("6%"),
+        paddingLeft: wp("7.46%"),
         paddingRight: wp("5.33%"),
         flexDirection: "row",
         justifyContent: "space-between",
@@ -388,6 +438,14 @@ const styles = StyleSheet.create({
     bottomTab: {
         display: "flex",
         padding: wp("6%"),
+    },
+    dateTextStyle: {
+        fontSize: wp("4%"),
+        fontFamily: "ArchivoRegular",
+        lineHeight: wp("5%"),
+        letterSpacing: wp("0.05%"),
+        marginVertical: wp("1%"),
+        color: colors.darkBlack,
     },
 })
 

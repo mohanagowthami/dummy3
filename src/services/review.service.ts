@@ -1,9 +1,11 @@
-// services
+// endpoints
+import { GET_REVIEWS, UPDATE_REVIEW } from "./../lib/endpoints"
+// service
 import APIService from "./api.service"
 
-class HallOfFameService extends APIService {
-    pusher(url: string, data: any): Promise<any> {
-        return this.post(url, data)
+class ReviewService extends APIService {
+    getReviews(id: string): Promise<any> {
+        return this.get(GET_REVIEWS(id))
             .then((response: any) => {
                 return response.data
             })
@@ -11,8 +13,9 @@ class HallOfFameService extends APIService {
                 throw error.response.data
             })
     }
-    fetcher(url: string): Promise<any> {
-        return this.get(url)
+
+    updateReviews(data: any): Promise<any> {
+        return this.post(UPDATE_REVIEW, data)
             .then((response: any) => {
                 return response.data
             })
@@ -21,4 +24,4 @@ class HallOfFameService extends APIService {
             })
     }
 }
-export default HallOfFameService
+export default ReviewService

@@ -9,6 +9,7 @@ import {
     Pressable,
     ScrollView,
     TextInput,
+    ActivityIndicator,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -33,23 +34,12 @@ import {
 import CustomButton from "../components/buttons/CustomButton"
 // colors
 import { colors } from "../lib/colors"
-// endpoints
-import {
-    FAVORITE_RESTAURANTS,
-    FAVORITE_SHOPPINGMALL,
-    FAVORITE_TRAVELPLACES,
-    HALL_OF_FAME_CATEGORY,
-    RECAP_CATEGORY,
-    USER_CURRENT_LOCATION,
-} from "../lib/endpoints"
 // services
 import RestaurantService from "../services/restaurants.service"
 import ShoppingMallService from "../services/shoppingmall.service"
 import TravelService from "../services/travel.service"
-import HallOfFame from "../services/hall-of-fame.service"
-import Recap from "../services/recap.service"
-import HallOfFameService from "../services/hall-of-fame.service"
-import RecapService from "../services/recap.service"
+import UserService from "../services/user.service"
+// helper
 import { deriveArrayFromString } from "../lib/helper"
 
 interface IProps {
@@ -68,6 +58,7 @@ interface Istate {
     category: string
     categoryData: Array<{ isDatafetched: boolean; data: ICategoryType }>
     activeIndex: number
+    isLoading: boolean
 }
 
 const colorsList = [
@@ -179,11 +170,13 @@ const content = {
 }
 // Main class component
 
+const dummyImage =
+    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
+
 const restaurantService = new RestaurantService()
 const travelService = new TravelService()
 const shoppingService = new ShoppingMallService()
-const hallOfFameService = new HallOfFameService()
-const recapService = new RecapService()
+const userService = new UserService()
 
 class HomeScreen extends Component<IProps, Istate> {
     carousel: any
@@ -224,6 +217,7 @@ class HomeScreen extends Component<IProps, Istate> {
                 },
             ],
             activeIndex: 0,
+            isLoading: false,
         }
     }
 
@@ -238,17 +232,15 @@ class HomeScreen extends Component<IProps, Istate> {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             }
-            restaurantService
-                .pusher(USER_CURRENT_LOCATION, locationCoordinates)
+            this.setState({
+                ...this.state,
+                isLoading: true,
+            })
+            userService
+                .updateUserCurrentLocation(locationCoordinates)
                 .then((response) => {
-                    console.log(response, "rensponse in location")
-                    Promise.all([
-                        restaurantService.fetcher(FAVORITE_RESTAURANTS),
-                        hallOfFameService.fetcher(
-                            HALL_OF_FAME_CATEGORY("food")
-                        ),
-                        recapService.fetcher(RECAP_CATEGORY("food")),
-                    ])
+                    restaurantService
+                        .getRestaurantDataFromServer()
                         .then((values) => {
                             let stateData = { ...this.state }
                             stateData.categoryData[0].data.localFavouritesList =
@@ -257,7 +249,9 @@ class HomeScreen extends Component<IProps, Istate> {
                                 values[1]
                             stateData.categoryData[0].data.recapList = values[2]
                             stateData.categoryData[0].isDatafetched = true
-
+                            stateData.categoryData[0].data.trendsList =
+                                content.trendsList
+                            stateData.isLoading = false
                             this.setState(stateData)
                         })
                         .catch((error) =>
@@ -278,33 +272,28 @@ class HomeScreen extends Component<IProps, Istate> {
         else return 0
     }
 
-    getSelectedCategoryData = async (type: string) => {
-        this.setState({
-            ...this.state,
-            category: type,
-        })
-        let url
+    getSelectedCategoryData = async () => {
         let service: any
         let index = 0
         let stateData = { ...this.state }
-        if (type === "travel") {
-            url = FAVORITE_TRAVELPLACES
+        if (stateData.category === "travel") {
             service = travelService
             index = 1
             stateData.category = "travel"
-        } else if (type === "shopping") {
-            url = FAVORITE_TRAVELPLACES
+        } else if (stateData.category === "shopping") {
             service = shoppingService
             index = 2
             stateData.category = "shopping"
         }
         if (!stateData.categoryData[index].isDatafetched) {
-            Promise.all([
-                service.fetcher(url),
-                hallOfFameService.fetcher(HALL_OF_FAME_CATEGORY(type)),
-                recapService.fetcher(RECAP_CATEGORY(type)),
-            ])
-                .then((values) => {
+            console.log("clicking")
+            this.setState({
+                ...this.state,
+                isLoading: true,
+            })
+            service
+                .getDataFromServer()
+                .then((values: any) => {
                     console.log(values, "values123")
                     let stateData = { ...this.state }
                     stateData.categoryData[index].data.localFavouritesList =
@@ -312,18 +301,25 @@ class HomeScreen extends Component<IProps, Istate> {
                     stateData.categoryData[index].data.hallOfFame = values[1]
                     stateData.categoryData[index].data.recapList = values[2]
                     stateData.categoryData[index].isDatafetched = true
-
+                    stateData.categoryData[index].data.trendsList =
+                        content.trendsList
+                    stateData.isLoading = false
                     this.setState(stateData)
                 })
-                .catch((error) => console.log(error, "error in home screen"))
+                .catch((error: any) =>
+                    console.log(error, "error in home screen")
+                )
         }
     }
 
+    async componentDidUpdate(prevProps: any, prevState: any) {
+        if (prevState.category !== this.state.category)
+            this.getSelectedCategoryData()
+    }
+
     // category selection
-    onPressButton = async (type: string) => {
-        this.setState({ ...this.state, category: type }, () =>
-            this.getSelectedCategoryData(type)
-        )
+    onPressButton = (type: string) => {
+        this.setState({ ...this.state, category: type })
     }
     // rendering an item for carousel
     _renderItem({ item, index }: any) {
@@ -452,6 +448,7 @@ class HomeScreen extends Component<IProps, Istate> {
                         this.getActiveIndex()
                     ].data.localFavouritesList.map((item, index) => {
                         const {
+                            id,
                             menu_images,
                             name,
                             overall_rating,
@@ -465,97 +462,108 @@ class HomeScreen extends Component<IProps, Istate> {
                         const formatedCusines = deriveArrayFromString(cuisines)
 
                         return (
-                            <View
-                                style={{
-                                    paddingVertical: wp("6%"),
-                                    width: wp("55%"),
-                                    height: wp("60%"),
-                                    backgroundColor: `${
-                                        colorsList[
-                                            Math.floor(
-                                                Math.random() *
-                                                    colorsList.length
-                                            )
-                                        ]
-                                    }`,
-                                    borderRadius: wp("3%"),
-                                    marginRight: wp("5%"),
-                                    paddingHorizontal: wp("5%"),
-                                    flex: 1,
-                                }}
+                            <Pressable
                                 key={index}
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        "itemInDetail",
+                                        {
+                                            id: id,
+                                        }
+                                    )
+                                }
                             >
-                                <Image
-                                    source={{
-                                        uri: image,
-                                    }}
-                                    style={{
-                                        width: "50%",
-                                        height: "50%",
-                                        display: "flex",
-                                        alignSelf: "center",
-                                    }}
-                                />
                                 <View
                                     style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
+                                        paddingVertical: wp("6%"),
+                                        width: wp("55%"),
+                                        height: wp("60%"),
+                                        backgroundColor: `${
+                                            colorsList[
+                                                Math.floor(
+                                                    Math.random() *
+                                                        colorsList.length
+                                                )
+                                            ]
+                                        }`,
+                                        borderRadius: wp("3%"),
+                                        marginRight: wp("5%"),
+                                        paddingHorizontal: wp("5%"),
                                         flex: 1,
-                                        marginTop: wp("4%"),
                                     }}
                                 >
-                                    <Text
-                                        style={{
-                                            fontFamily: "ArchivoBold",
-                                            fontSize: wp("4.8%"),
-                                            color: colors.darkBlack,
+                                    <Image
+                                        source={{
+                                            uri: image,
                                         }}
-                                    >
-                                        {formatedCusines[0]}
-                                    </Text>
-                                    <Text
                                         style={{
-                                            fontFamily: "ArchivoRegular",
-                                            fontSize: wp("3.8%"),
-                                            color: colors.orange,
+                                            width: "50%",
+                                            height: "50%",
+                                            display: "flex",
+                                            alignSelf: "center",
                                         }}
-                                    >
-                                        {name}
-                                    </Text>
+                                    />
                                     <View
                                         style={{
                                             display: "flex",
-                                            flexDirection: "row",
                                             justifyContent: "space-between",
-                                            alignItems: "center",
+                                            flex: 1,
+                                            marginTop: wp("4%"),
                                         }}
                                     >
+                                        <Text
+                                            style={{
+                                                fontFamily: "ArchivoBold",
+                                                fontSize: wp("4.8%"),
+                                                color: colors.darkBlack,
+                                            }}
+                                        >
+                                            {formatedCusines[0]}
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                fontFamily: "ArchivoRegular",
+                                                fontSize: wp("3.8%"),
+                                                color: colors.orange,
+                                            }}
+                                        >
+                                            {name}
+                                        </Text>
                                         <View
                                             style={{
                                                 display: "flex",
                                                 flexDirection: "row",
+                                                justifyContent: "space-between",
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Rating
-                                                width={wp("4.2%")}
-                                                height={hp("4.2%")}
-                                            />
-                                            <Text
+                                            <View
                                                 style={{
-                                                    marginLeft: wp("2%"),
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
                                                 }}
                                             >
-                                                {overall_rating}
-                                            </Text>
+                                                <Rating
+                                                    width={wp("4.2%")}
+                                                    height={hp("4.2%")}
+                                                />
+                                                <Text
+                                                    style={{
+                                                        marginLeft: wp("2%"),
+                                                    }}
+                                                >
+                                                    {overall_rating}
+                                                </Text>
+                                            </View>
+                                            <NavigationIcon
+                                                width={wp("7.8%")}
+                                                height={hp("3.68%")}
+                                            />
                                         </View>
-                                        <NavigationIcon
-                                            width={wp("7.8%")}
-                                            height={hp("3.68%")}
-                                        />
                                     </View>
                                 </View>
-                            </View>
+                            </Pressable>
                         )
                     })}
                 </View>
@@ -566,326 +574,169 @@ class HomeScreen extends Component<IProps, Istate> {
     render() {
         // Main return function
         return (
-            <ScrollView style={styles.container}>
-                <View>
-                    <View
-                        style={[styles.TitleContainer, { marginTop: wp("0%") }]}
-                    >
-                        <Text style={styles.frappyText}>Frappy morning</Text>
-                        <Pressable
-                            onPress={() =>
-                                this.props.navigation.navigate("notifications")
-                            }
+            <ScrollView style={{ flex: 1 }}>
+                {this.state.isLoading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator
+                            color={colors.darkBlack}
+                            size="large"
+                        />
+                    </View>
+                ) : (
+                    <View style={styles.container}>
+                        <View
+                            style={[
+                                styles.TitleContainer,
+                                { marginTop: wp("0%") },
+                            ]}
                         >
-                            <BellIcon width={wp("6%")} height={wp("6%")} />
-                        </Pressable>
-                    </View>
-                    <View
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            paddingVertical: hp("2%"),
-                            alignItems: "center",
-                        }}
-                    >
-                        <Text style={styles.userName}>User name</Text>
-                        <WavingHand width={wp("5.33%")} height={hp("2.63%")} />
-                    </View>
-                    <View style={styles.searchButton}>
-                        <SearchIcon width={wp("5%")} height={wp("5%")} />
-                        <TextInput
-                            placeholder="Explore spots near you"
-                            style={styles.searchInput}
-                            onChange={() =>
-                                this.props.navigation.navigate(
-                                    "restaurantsNearYou"
-                                )
-                            }
-                        />
-                    </View>
-                    <View style={styles.buttonsContainer}>
-                        <CustomButton
-                            onPressButton={() =>
-                                this.getSelectedCategoryData("food")
-                            }
-                            title="Food"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== "food"
-                                            ? "rgba(255,108,101,0.2)"
-                                            : colors.orange,
-                                    borderColor: colors.orange,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                styles.buttonTextStyles,
-                                {
-                                    color:
-                                        this.state.category !== "food"
-                                            ? colors.orange
-                                            : colors.white,
-                                },
-                            ]}
-                        />
-                        <CustomButton
-                            onPressButton={() =>
-                                this.getSelectedCategoryData("travel")
-                            }
-                            title="Travel"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== "travel"
-                                            ? "rgba(253,210,106,0.2)"
-                                            : colors.yellow,
-                                    borderColor: colors.yellow,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                {
-                                    color:
-                                        this.state.category !== "travel"
-                                            ? colors.yellow
-                                            : colors.white,
-                                },
-                                styles.buttonTextStyles,
-                            ]}
-                        />
-                        <CustomButton
-                            onPressButton={() =>
-                                this.getSelectedCategoryData("shopping")
-                            }
-                            title="Shopping"
-                            buttonStyles={[
-                                styles.smallButton,
-                                {
-                                    backgroundColor:
-                                        this.state.category !== "shopping"
-                                            ? "rgba(102,197,218,0.3)"
-                                            : colors.skyBlue,
-                                    borderColor: colors.skyBlue,
-                                },
-                            ]}
-                            buttonTextStyles={[
-                                {
-                                    color:
-                                        this.state.category !== "shopping"
-                                            ? colors.skyBlue
-                                            : colors.white,
-                                },
-                                styles.buttonTextStyles,
-                            ]}
-                        />
-                    </View>
-                    {/* calling trend slider function*/}
-                    {this.state.categoryData[this.getActiveIndex()].data &&
-                        this.renderTrendsSlider()}
-                    {this.state.categoryData[this.getActiveIndex()].data
-                        .localFavouritesList.length > 0 && (
-                        <>
-                            <View
-                                style={[
-                                    styles.TitleContainer,
-                                    { marginTop: 0, marginBottom: wp("6%") },
-                                ]}
+                            <Text style={styles.frappyText}>
+                                Frappy morning
+                            </Text>
+                            <Pressable
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        "notifications"
+                                    )
+                                }
                             >
-                                <Text style={styles.frappyText}>
-                                    Local Favourites
-                                </Text>
-                                <Pressable
-                                    onPress={() =>
-                                        this.props.navigation.navigate(
-                                            "localFavourites",
-                                            {
-                                                localFavourites: this.state
-                                                    .categoryData[
-                                                    this.getActiveIndex()
-                                                ].data.localFavouritesList,
-                                            }
-                                        )
-                                    }
+                                <BellIcon width={wp("6%")} height={wp("6%")} />
+                            </Pressable>
+                        </View>
+                        <View
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                paddingVertical: hp("2%"),
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={styles.userName}>User name</Text>
+                            <WavingHand
+                                width={wp("5.33%")}
+                                height={hp("2.63%")}
+                            />
+                        </View>
+                        <View style={styles.searchButton}>
+                            <SearchIcon width={wp("5%")} height={wp("5%")} />
+                            <TextInput
+                                placeholder="Explore spots near you"
+                                style={styles.searchInput}
+                                onChange={() =>
+                                    this.props.navigation.navigate(
+                                        "restaurantsNearYou"
+                                    )
+                                }
+                            />
+                        </View>
+                        <View style={styles.buttonsContainer}>
+                            <CustomButton
+                                onPressButton={() => this.onPressButton("food")}
+                                title="Food"
+                                buttonStyles={[
+                                    styles.smallButton,
+                                    {
+                                        backgroundColor:
+                                            this.state.category !== "food"
+                                                ? "rgba(255,108,101,0.2)"
+                                                : colors.orange,
+                                        borderColor: colors.orange,
+                                    },
+                                ]}
+                                buttonTextStyles={[
+                                    styles.buttonTextStyles,
+                                    {
+                                        color:
+                                            this.state.category !== "food"
+                                                ? colors.orange
+                                                : colors.white,
+                                    },
+                                ]}
+                            />
+                            <CustomButton
+                                onPressButton={() =>
+                                    this.onPressButton("travel")
+                                }
+                                title="Travel"
+                                buttonStyles={[
+                                    styles.smallButton,
+                                    {
+                                        backgroundColor:
+                                            this.state.category !== "travel"
+                                                ? "rgba(253,210,106,0.2)"
+                                                : colors.yellow,
+                                        borderColor: colors.yellow,
+                                    },
+                                ]}
+                                buttonTextStyles={[
+                                    {
+                                        color:
+                                            this.state.category !== "travel"
+                                                ? colors.yellow
+                                                : colors.white,
+                                    },
+                                    styles.buttonTextStyles,
+                                ]}
+                            />
+                            <CustomButton
+                                onPressButton={() =>
+                                    this.onPressButton("shopping")
+                                }
+                                title="Shopping"
+                                buttonStyles={[
+                                    styles.smallButton,
+                                    {
+                                        backgroundColor:
+                                            this.state.category !== "shopping"
+                                                ? "rgba(102,197,218,0.3)"
+                                                : colors.skyBlue,
+                                        borderColor: colors.skyBlue,
+                                    },
+                                ]}
+                                buttonTextStyles={[
+                                    {
+                                        color:
+                                            this.state.category !== "shopping"
+                                                ? colors.skyBlue
+                                                : colors.white,
+                                    },
+                                    styles.buttonTextStyles,
+                                ]}
+                            />
+                        </View>
+                        {/* calling trend slider function*/}
+                        {this.state.categoryData[this.getActiveIndex()].data &&
+                            this.renderTrendsSlider()}
+                        {this.state.categoryData[this.getActiveIndex()].data
+                            .localFavouritesList.length > 0 && (
+                            <>
+                                <View
+                                    style={[
+                                        styles.TitleContainer,
+                                        {
+                                            marginTop: 0,
+                                            marginBottom: wp("6%"),
+                                        },
+                                    ]}
                                 >
-                                    <View style={styles.sectionHeaderWrapper}>
-                                        <Text style={styles.showAllText}>
-                                            Show all
-                                        </Text>
-                                        <RightArrow
-                                            width={wp("1.59%")}
-                                            height={hp("1.10%")}
-                                        />
-                                    </View>
-                                </Pressable>
-                            </View>
-                            {this.renderLocalFavourities()}
-                        </>
-                    )}
-
-                    {this.state.categoryData[this.getActiveIndex()].data
-                        .recapList.length > 0 && (
-                        <>
-                            <View style={[styles.TitleContainer]}>
-                                <Text style={styles.frappyText}>Recap</Text>
-                                <Pressable
-                                    onPress={() =>
-                                        this.props.navigation.navigate("recap")
-                                    }
-                                >
-                                    <View style={styles.sectionHeaderWrapper}>
-                                        <Text style={styles.showAllText}>
-                                            Show all
-                                        </Text>
-                                        <RightArrow
-                                            width={wp("1.59%")}
-                                            height={hp("1.10%")}
-                                        />
-                                    </View>
-                                </Pressable>
-                            </View>
-                            <View>
-                                <View>
-                                    {this.state.categoryData[
-                                        this.getActiveIndex()
-                                    ].data.recapList.map((ele, index) => {
-                                        const {
-                                            restaurant,
-                                            user_rating,
-                                            review_images,
-                                        } = ele
-                                        const numberOfRatings = "511"
-                                        const location = "882 Swift Courts Apt"
-                                        return (
-                                            <View key={index}>
-                                                <View
-                                                    style={
-                                                        styles.recapItemContaineer
-                                                    }
-                                                >
-                                                    <Image
-                                                        source={{
-                                                            uri:
-                                                                review_images[0]
-                                                                    .image,
-                                                        }}
-                                                        style={
-                                                            styles.recapImage
-                                                        }
-                                                    />
-                                                    <View
-                                                        style={{
-                                                            flex: 1,
-                                                            padding: wp("5%"),
-                                                            justifyContent:
-                                                                "space-between",
-                                                        }}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                fontFamily:
-                                                                    "ArchivoRegular",
-                                                                fontSize: wp(
-                                                                    "4.2%"
-                                                                ),
-                                                                color:
-                                                                    colors.darkBlack,
-                                                            }}
-                                                        >
-                                                            {restaurant}
-                                                        </Text>
-                                                        <Text
-                                                            style={
-                                                                styles.recapCardText
-                                                            }
-                                                        >
-                                                            {location}
-                                                        </Text>
-                                                        <View
-                                                            style={{
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                    "row",
-                                                            }}
-                                                        >
-                                                            <Rating
-                                                                width={wp(
-                                                                    "4.2%"
-                                                                )}
-                                                                height={hp(
-                                                                    "4.2%"
-                                                                )}
-                                                            />
-                                                            <Text
-                                                                style={[
-                                                                    styles.recapCardText,
-                                                                    {
-                                                                        marginTop: hp(
-                                                                            "1%"
-                                                                        ),
-                                                                        marginLeft: wp(
-                                                                            "2%"
-                                                                        ),
-                                                                    },
-                                                                ]}
-                                                            >
-                                                                {user_rating}(
-                                                                {
-                                                                    numberOfRatings
-                                                                }{" "}
-                                                                ratings)
-                                                            </Text>
-                                                        </View>
-                                                    </View>
-                                                    <View
-                                                        style={{
-                                                            display: "flex",
-                                                            alignSelf:
-                                                                "flex-end",
-                                                        }}
-                                                    >
-                                                        <NavigationIcon
-                                                            width={wp("7.8%")}
-                                                            height={hp("3.68%")}
-                                                        />
-                                                    </View>
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        height: 1,
-                                                        backgroundColor:
-                                                            colors.lightGreyTwo,
-                                                    }}
-                                                ></View>
-                                            </View>
-                                        )
-                                    })}
-                                </View>
-                            </View>
-                        </>
-                    )}
-
-                    {this.state.categoryData[this.getActiveIndex()].data
-                        .hallOfFame.length > 0 && (
-                        <>
-                            <View style={[styles.TitleContainer]}>
-                                <Text style={styles.frappyText}>
-                                    Hall of Fame
-                                </Text>
-                                <View style={styles.sectionHeaderWrapper}>
+                                    <Text style={styles.frappyText}>
+                                        Local Favourites
+                                    </Text>
                                     <Pressable
                                         onPress={() =>
                                             this.props.navigation.navigate(
-                                                "hallOfFame"
+                                                "localFavourites",
+                                                {
+                                                    localFavourites: this.state
+                                                        .categoryData[
+                                                        this.getActiveIndex()
+                                                    ].data.localFavouritesList,
+                                                }
                                             )
                                         }
                                     >
                                         <View
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                            }}
+                                            style={styles.sectionHeaderWrapper}
                                         >
                                             <Text style={styles.showAllText}>
                                                 Show all
@@ -897,35 +748,236 @@ class HomeScreen extends Component<IProps, Istate> {
                                         </View>
                                     </Pressable>
                                 </View>
-                            </View>
-                            <View
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    justifyContent: "space-between",
-                                    marginBottom: wp("15%"),
-                                }}
-                            >
-                                {this.state.categoryData[
-                                    this.getActiveIndex()
-                                ].data.hallOfFame.map((item, index) => {
-                                    const { image } = item
-                                    return (
-                                        <View key={index}>
-                                            <Image
-                                                style={styles.hallOfFameImage}
-                                                source={{
-                                                    uri: image,
-                                                }}
+                                {this.renderLocalFavourities()}
+                            </>
+                        )}
+
+                        {this.state.categoryData[this.getActiveIndex()].data
+                            .recapList.length > 0 && (
+                            <>
+                                <View style={[styles.TitleContainer]}>
+                                    <Text style={styles.frappyText}>Recap</Text>
+                                    <Pressable
+                                        onPress={() =>
+                                            this.props.navigation.navigate(
+                                                "recap"
+                                            )
+                                        }
+                                    >
+                                        <View
+                                            style={styles.sectionHeaderWrapper}
+                                        >
+                                            <Text style={styles.showAllText}>
+                                                Show all
+                                            </Text>
+                                            <RightArrow
+                                                width={wp("1.59%")}
+                                                height={hp("1.10%")}
                                             />
                                         </View>
-                                    )
-                                })}
-                            </View>
-                        </>
-                    )}
-                </View>
+                                    </Pressable>
+                                </View>
+                                <View>
+                                    <View>
+                                        {this.state.categoryData[
+                                            this.getActiveIndex()
+                                        ].data.recapList.map((ele, index) => {
+                                            const {
+                                                restaurant,
+                                                user_rating,
+                                                review_images,
+                                            } = ele
+                                            const numberOfRatings = "511"
+                                            const location =
+                                                "882 Swift Courts Apt"
+                                            return (
+                                                <View key={index}>
+                                                    <View
+                                                        style={
+                                                            styles.recapItemContaineer
+                                                        }
+                                                    >
+                                                        <Image
+                                                            source={{
+                                                                uri:
+                                                                    review_images.length >
+                                                                    0
+                                                                        ? review_images[0]
+                                                                              .image
+                                                                        : dummyImage,
+                                                            }}
+                                                            style={
+                                                                styles.recapImage
+                                                            }
+                                                        />
+                                                        <View
+                                                            style={{
+                                                                flex: 1,
+                                                                padding: wp(
+                                                                    "5%"
+                                                                ),
+                                                                justifyContent:
+                                                                    "space-between",
+                                                            }}
+                                                        >
+                                                            <Text
+                                                                style={{
+                                                                    fontFamily:
+                                                                        "ArchivoRegular",
+                                                                    fontSize: wp(
+                                                                        "4.2%"
+                                                                    ),
+                                                                    color:
+                                                                        colors.darkBlack,
+                                                                }}
+                                                            >
+                                                                {restaurant}
+                                                            </Text>
+                                                            <Text
+                                                                style={
+                                                                    styles.recapCardText
+                                                                }
+                                                            >
+                                                                {location}
+                                                            </Text>
+                                                            <View
+                                                                style={{
+                                                                    display:
+                                                                        "flex",
+                                                                    flexDirection:
+                                                                        "row",
+                                                                }}
+                                                            >
+                                                                <Rating
+                                                                    width={wp(
+                                                                        "4.2%"
+                                                                    )}
+                                                                    height={hp(
+                                                                        "4.2%"
+                                                                    )}
+                                                                />
+                                                                <Text
+                                                                    style={[
+                                                                        styles.recapCardText,
+                                                                        {
+                                                                            marginTop: hp(
+                                                                                "1%"
+                                                                            ),
+                                                                            marginLeft: wp(
+                                                                                "2%"
+                                                                            ),
+                                                                        },
+                                                                    ]}
+                                                                >
+                                                                    {
+                                                                        user_rating
+                                                                    }
+                                                                    (
+                                                                    {
+                                                                        numberOfRatings
+                                                                    }{" "}
+                                                                    ratings)
+                                                                </Text>
+                                                            </View>
+                                                        </View>
+                                                        <View
+                                                            style={{
+                                                                display: "flex",
+                                                                alignSelf:
+                                                                    "flex-end",
+                                                            }}
+                                                        >
+                                                            <NavigationIcon
+                                                                width={wp(
+                                                                    "7.8%"
+                                                                )}
+                                                                height={hp(
+                                                                    "3.68%"
+                                                                )}
+                                                            />
+                                                        </View>
+                                                    </View>
+                                                    <View
+                                                        style={{
+                                                            height: 1,
+                                                            backgroundColor:
+                                                                colors.lightGreyTwo,
+                                                        }}
+                                                    ></View>
+                                                </View>
+                                            )
+                                        })}
+                                    </View>
+                                </View>
+                            </>
+                        )}
+
+                        {this.state.categoryData[this.getActiveIndex()].data
+                            .hallOfFame.length > 0 && (
+                            <>
+                                <View style={[styles.TitleContainer]}>
+                                    <Text style={styles.frappyText}>
+                                        Hall of Fame
+                                    </Text>
+                                    <View style={styles.sectionHeaderWrapper}>
+                                        <Pressable
+                                            onPress={() =>
+                                                this.props.navigation.navigate(
+                                                    "hallOfFame"
+                                                )
+                                            }
+                                        >
+                                            <View
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <Text
+                                                    style={styles.showAllText}
+                                                >
+                                                    Show all
+                                                </Text>
+                                                <RightArrow
+                                                    width={wp("1.59%")}
+                                                    height={hp("1.10%")}
+                                                />
+                                            </View>
+                                        </Pressable>
+                                    </View>
+                                </View>
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        flexWrap: "wrap",
+                                        justifyContent: "space-between",
+                                        marginBottom: wp("15%"),
+                                    }}
+                                >
+                                    {this.state.categoryData[
+                                        this.getActiveIndex()
+                                    ].data.hallOfFame.map((item, index) => {
+                                        const { image } = item
+                                        return (
+                                            <View key={index}>
+                                                <Image
+                                                    style={
+                                                        styles.hallOfFameImage
+                                                    }
+                                                    source={{
+                                                        uri: image,
+                                                    }}
+                                                />
+                                            </View>
+                                        )
+                                    })}
+                                </View>
+                            </>
+                        )}
+                    </View>
+                )}
             </ScrollView>
         )
     }
@@ -1044,5 +1096,12 @@ const styles = StyleSheet.create({
         fontFamily: "ArchivoRegular",
         fontSize: wp("3.8%"),
         color: colors.lightGreyThree,
+    },
+    loadingContainer: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+        marginTop: hp("45%"),
     },
 })

@@ -26,7 +26,7 @@ import CustomButton from "../components/buttons/CustomButton"
 // colors
 import { colors } from "../lib/colors"
 // service
-import FavoriteService from "../services/favorites.service"
+import UserService from "../services/user.service"
 // endpoints
 import { FAVORITES } from "../lib/endpoints"
 
@@ -131,7 +131,7 @@ export const shoppingList = [
     { Svg: handicrafts, name: "Handicrafts", checked: false },
 ]
 
-const favoriteService = new FavoriteService()
+const userService = new UserService()
 
 class PickYourChoice extends Component<IProps, IState> {
     constructor(props: IProps) {
@@ -176,8 +176,8 @@ class PickYourChoice extends Component<IProps, IState> {
             const selectedShoppingList = this.filterByChecked(
                 this.state.shoppingList
             )
-            favoriteService
-                .pusher(FAVORITES, {
+            userService
+                .updateUserFavorites({
                     food_category: selectedFoodList,
                     travel_category: selectedTravelist,
                     shopping_category: selectedShoppingList,

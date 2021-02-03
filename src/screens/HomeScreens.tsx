@@ -28,6 +28,12 @@ class HomeScreens extends Component {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
+                    name="notifications"
+                    component={Notifications}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
                     name="itemInDetail"
                     component={ItemInDetailScreen}
                     options={{
@@ -73,12 +79,6 @@ class HomeScreens extends Component {
                 <Stack.Screen
                     name="searchFoodResults"
                     component={FoodSearchResults}
-                    options={{ headerShown: false }}
-                />
-
-                <Stack.Screen
-                    name="notifications"
-                    component={Notifications}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

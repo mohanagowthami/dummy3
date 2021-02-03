@@ -1,6 +1,6 @@
 // axios
 import axios, { AxiosPromise } from "axios"
-
+// async storage
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 abstract class APIService {
@@ -9,7 +9,6 @@ abstract class APIService {
         const token = await AsyncStorage.getItem("accessToken")
         return {
             Authorization: token ? `Bearer ${token}` : "",
-            "Content-Type": "application/json",
         }
     }
     // Setting access token

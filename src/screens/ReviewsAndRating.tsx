@@ -9,7 +9,6 @@ import {
     Platform,
     Image,
     ScrollView,
-    TextInput,
     SafeAreaView,
 } from "react-native"
 // react-native-responsive-screen
@@ -27,8 +26,8 @@ import CustomStarRating from "../components/star-rating/CustomStarRating"
 // colors
 import { colors } from "../lib/colors"
 import RestaurantService from "../services/restaurants.service"
-import { CATEGORY_LEVEL_REVIEW } from "../lib/endpoints"
 import CustomTextField from "../components/input-controllers/CustomTextField"
+import ReviewService from "../services/review.service"
 
 interface IProps {
     navigation: any
@@ -41,6 +40,7 @@ interface IState {
 }
 
 const restaurantService = new RestaurantService()
+const reviewService = new ReviewService()
 class ReviewsAndRating extends Component<IProps, IState> {
     data: any = {}
     constructor(props: IProps) {
@@ -56,17 +56,20 @@ class ReviewsAndRating extends Component<IProps, IState> {
             ...this.state,
             showModal: !this.state.showModal,
         })
-        const data = {
-            restaurant_id: this.props.route.params.id,
-            review_images: [...this.state.selectedImages],
-            category: "food",
-            review: this.data.review,
-            user_rating: this.data.user_rating,
-        }
-        console.log(data, "data")
-        restaurantService
-            .pusher(CATEGORY_LEVEL_REVIEW, this.data)
+        const formData = new FormData()
+        formData.append("listing_id", this.props.route.params.id)
+        formData.append("category", "food")
+        formData.append("review", this.data.review)
+        formData.append("user_rating", this.data.user_rating)
+        this.state.selectedImages.forEach((img) =>
+            formData.append(`review_images[]`, img)
+        )
+
+        console.log(formData, "data")
+        reviewService
+            .updateReviews(formData)
             .then((response) => {
+                console.log(response, "response in review and ratings")
                 this.setState({
                     ...this.state,
                     showModal: !this.state.showModal,
@@ -198,6 +201,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     }
 
     onChange = (name: string, value: any) => {
+        console.log(value, "value")
         this.data[name] = value
         console.log(this.data[name], " this.data[name]")
     }
@@ -309,7 +313,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
                         </View>
                         <CustomButton
                             title="Submit"
-                            onPressButton={this.showModal}
+                            onPressButton={this.onPressSubmit}
                             buttonStyles={{
                                 display: "flex",
                                 alignSelf: "center",

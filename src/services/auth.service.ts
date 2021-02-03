@@ -1,11 +1,9 @@
-import { LOGIN, SIGN_UP } from './../lib/endpoints'
 // endpoints
-
-// services
-
+import { LOGIN, SIGN_UP } from "./../lib/endpoints"
 // axios
-import axios from 'axios'
-import APIService from './api.service'
+import axios from "axios"
+// service
+import APIService from "./api.service"
 
 class AuthService extends APIService {
     // TODO: Validate Incoming service data with an interface

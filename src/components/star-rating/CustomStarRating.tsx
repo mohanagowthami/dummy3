@@ -23,7 +23,7 @@ class CustomStarRating extends Component<IProps, IState> {
             starArray: [false, false, false, false, false],
         }
     }
-    getRating = () => {
+    getRating = (): any => {
         let rating = 0
         this.state.starArray.forEach((ele) => {
             if (ele) rating = rating + 1
@@ -33,18 +33,18 @@ class CustomStarRating extends Component<IProps, IState> {
 
     changeStarStaus = (index: number) => {
         let mutatedArray = [...this.state.starArray]
-        // console.log(mutatedArray[index])
+
         if (mutatedArray[index]) {
-            mutatedArray[index] = !mutatedArray[index]
+            for (let i = index; i < mutatedArray.length; i++) {
+                mutatedArray[i] = false
+            }
         } else {
             for (let i = 0; i <= index; i++) {
-                // console.log(index)
                 mutatedArray[i] = true
             }
         }
-        // console.log(mutatedArray)
-        this.setState({ starArray: mutatedArray })
-        this.getRating()
+
+        this.setState({ starArray: mutatedArray }, () => this.getRating())
     }
 
     render() {
