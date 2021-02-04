@@ -19,70 +19,66 @@ import HallOfFame from "./HallOfFameScreen"
 const Stack = createStackNavigator()
 
 class HomeScreens extends Component {
-    render() {
-        return (
-            <Stack.Navigator>
-                <Stack.Screen
-                    name="home"
-                    component={HomeScreen}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="notifications"
-                    component={Notifications}
-                    options={{ headerShown: false }}
-                />
+  render() {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name="home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="notifications"
+          component={Notifications}
+          options={{ headerShown: false }}
+        />
 
-                <Stack.Screen
-                    name="itemInDetail"
-                    component={ItemInDetailScreen}
-                    options={{
-                        headerShown: false,
-                    }}
-                />
-                <Stack.Screen
-                    name="feedBack"
-                    component={FeedBackScreen}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="reviewsAndRating"
-                    component={ReviewsAndRating}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="restaurantsNearYou"
-                    component={RestaurantsNearYou}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="navigation"
-                    component={Navigation}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="localFavourites"
-                    component={LocalFavourites}
-                    options={{ headerShown: false }}
-                />
+        <Stack.Screen
+          name="itemInDetail"
+          component={ItemInDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="feedBack"
+          component={FeedBackScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="reviewsAndRating"
+          component={ReviewsAndRating}
+          options={{ headerShown: false }}
+        />
 
-                <Stack.Screen
-                    name="recap"
-                    component={Recap}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="hallOfFame"
-                    component={HallOfFame}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="searchFoodResults"
-                    component={FoodSearchResults}
-                    options={{ headerShown: false }}
-                />
-            </Stack.Navigator>
-        )
-    }
+        <Stack.Screen
+          name="navigation"
+          component={Navigation}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="localFavourites"
+          component={LocalFavourites}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="recap"
+          component={Recap}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="hallOfFame"
+          component={HallOfFame}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="searchFoodResults"
+          component={FoodSearchResults}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    )
+  }
 }
 export default HomeScreens

@@ -1,75 +1,77 @@
 // react
 import React, { Component } from "react"
 // react-native
-import { Pressable, View } from "react-native"
+import { Pressable, View, StyleSheet } from "react-native"
 // icons
 import { Rating, UnfilledStar } from "../../../assets/svgs/icons"
 
 interface IProps {
-    width: number
-    height: number
-    style?: any
-    elementStyle?: any
-    onChange: (value: number) => void
+  width: number
+  height: number
+  style?: any
+  elementStyle?: any
+  onChange: (value: number) => void
 }
 
 interface IState {
-    starArray: Array<boolean>
+  starArray: Array<boolean>
 }
 class CustomStarRating extends Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props)
-        this.state = {
-            starArray: [false, false, false, false, false],
-        }
+  constructor(props: IProps) {
+    super(props)
+    this.state = {
+      starArray: [false, false, false, false, false],
     }
-    getRating = (): any => {
-        let rating = 0
-        this.state.starArray.forEach((ele) => {
-            if (ele) rating = rating + 1
-        })
-        this.props.onChange(rating)
-    }
+  }
+  getRating = (): any => {
+    let rating = 0
+    this.state.starArray.forEach((ele) => {
+      if (ele) rating = rating + 1
+    })
+    this.props.onChange(rating)
+  }
 
-    changeStarStaus = (index: number) => {
-        let mutatedArray = [...this.state.starArray]
+  changeStarStaus = (index: number) => {
+    let mutatedArray = [...this.state.starArray]
 
-        if (mutatedArray[index]) {
-            for (let i = index; i < mutatedArray.length; i++) {
-                mutatedArray[i] = false
-            }
-        } else {
-            for (let i = 0; i <= index; i++) {
-                mutatedArray[i] = true
-            }
-        }
-
-        this.setState({ starArray: mutatedArray }, () => this.getRating())
+    if (mutatedArray[index]) {
+      for (let i = index; i < mutatedArray.length; i++) {
+        mutatedArray[i] = false
+      }
+    } else {
+      for (let i = 0; i <= index; i++) {
+        mutatedArray[i] = true
+      }
     }
 
-    render() {
-        const { width, height, style, elementStyle } = this.props
-        return (
-            <View style={[{ display: "flex", flexDirection: "row" }, style]}>
-                {this.state.starArray.map((item, index) => (
-                    <View style={elementStyle} key={index}>
-                        {item ? (
-                            <Pressable
-                                onPress={() => this.changeStarStaus(index)}
-                            >
-                                <Rating width={width} height={height} />
-                            </Pressable>
-                        ) : (
-                            <Pressable
-                                onPress={() => this.changeStarStaus(index)}
-                            >
-                                <UnfilledStar width={width} height={height} />
-                            </Pressable>
-                        )}
-                    </View>
-                ))}
-            </View>
-        )
-    }
+    this.setState({ starArray: mutatedArray }, () => this.getRating())
+  }
+
+  render() {
+    const { width, height, style, elementStyle } = this.props
+    return (
+      <View style={[styles.container, style]}>
+        {this.state.starArray.map((item, index) => (
+          <View style={elementStyle} key={index}>
+            {item ? (
+              <Pressable onPress={() => this.changeStarStaus(index)}>
+                <Rating width={width} height={height} />
+              </Pressable>
+            ) : (
+              <Pressable onPress={() => this.changeStarStaus(index)}>
+                <UnfilledStar width={width} height={height} />
+              </Pressable>
+            )}
+          </View>
+        ))}
+      </View>
+    )
+  }
 }
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+  },
+})
 export default CustomStarRating

@@ -4,32 +4,31 @@ import React, { Component } from "react"
 import { Text, StyleSheet } from "react-native"
 // react-native-responsive-screen
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
+// react-native-safe-area-context
 import { SafeAreaView } from "react-native-safe-area-context"
+// colors
 import { colors } from "../lib/colors"
 
 class LuckyCardsScreen extends Component<{}, {}> {
-    render() {
-        return (
-            <SafeAreaView style={styles.container}>
-                <Text
-                    style={{ fontFamily: "ArchivoRegular", fontSize: wp("6%") }}
-                >
-                    Lucky Cards Screen
-                </Text>
-            </SafeAreaView>
-        )
-    }
+  render() {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.text}>Lucky Cards Screen</Text>
+      </SafeAreaView>
+    )
+  }
 }
 const styles = StyleSheet.create({
-    container: {
-        display: "flex",
-        flex: 1,
-        paddingTop: hp("0.5%"),
-        padding: wp("1%"),
-        backgroundColor: colors.white,
-    },
+  container: {
+    display: "flex",
+    flex: 1,
+    paddingTop: hp("0.5%"),
+    padding: wp("1%"),
+    backgroundColor: colors.white,
+  },
+  text: { fontFamily: "ArchivoRegular", fontSize: wp("6%") },
 })
 export default LuckyCardsScreen

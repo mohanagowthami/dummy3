@@ -23,69 +23,74 @@ const userService = new UserService()
 
 // loading fonts using useFonts()
 export default function App() {
-    const [isSignedIn, setSignedIn] = useState(false)
-    useEffect(() => {
-        async function getUser() {
-            try {
-                const response = await userService.getUser()
-                if (response) {
-                    console.log(response, "response")
-                    setSignedIn(true)
-                }
-            } catch (error) {
-                console.log(error, "in  error")
-            }
+  const [isSignedIn, setSignedIn] = useState(false)
+  useEffect(() => {
+    async function getUser() {
+      try {
+        const response = await userService.getUser()
+        if (response) {
+          console.log(response, "response")
+          if (response.id) setSignedIn(true)
         }
-        getUser()
-    }, [])
-    const [loaded] = Font.useFonts({
-        AirbnbCerealBold: require("./assets/fonts/AirbnbCerealBold.ttf"),
-        AirbnbCerealBook: require("./assets/fonts/AirbnbCerealBook.ttf"),
-        ArchivoRegular: require("./assets/fonts/ArchivoRegular.ttf"),
-        ArchivoBold: require("./assets/fonts/ArchivoBold.ttf"),
-    })
-
-    // conditioning to check loaded fonts
-    if (!loaded) {
-        return <Text>Loading</Text>
+      } catch (error) {
+        console.log(error, "in  error")
+      }
     }
-    console.log(isSignedIn)
-    return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                {isSignedIn ? (
-                    <Stack.Screen
-                        name="bottomTab"
-                        component={BottomTab}
-                        options={{ headerShown: false }}
-                    />
-                ) : (
-                    <>
-                        <Stack.Screen
-                            name="onBoarding"
-                            component={OnboardingScreens}
-                            options={{ headerShown: false }}
-                        />
+    getUser()
+  }, [])
+  const [loaded] = Font.useFonts({
+    AirbnbCerealBold: require("./assets/fonts/AirbnbCerealBold.ttf"),
+    AirbnbCerealBook: require("./assets/fonts/AirbnbCerealBook.ttf"),
+    ArchivoRegular: require("./assets/fonts/ArchivoRegular.ttf"),
+    ArchivoBold: require("./assets/fonts/ArchivoBold.ttf"),
+  })
 
-                        <Stack.Screen
-                            name="login"
-                            component={LoginScreen}
-                            options={{ headerShown: false }}
-                        />
+  // conditioning to check loaded fonts
+  if (!loaded) {
+    return <Text>Loading</Text>
+  }
+  console.log(isSignedIn)
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {isSignedIn ? (
+          <Stack.Screen
+            name="bottomTab"
+            component={BottomTab}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <>
+            <Stack.Screen
+              name="onBoarding"
+              component={OnboardingScreens}
+              options={{ headerShown: false }}
+            />
 
-                        <Stack.Screen
-                            name="signUp"
-                            component={SignUpScreen}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name="pickYourChoice"
-                            component={PickYourChoice}
-                            options={{ headerShown: false }}
-                        />
-                    </>
-                )}
-            </Stack.Navigator>
-        </NavigationContainer>
-    )
+            <Stack.Screen
+              name="login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="signUp"
+              component={SignUpScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="pickYourChoice"
+              component={PickYourChoice}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="bottomTab"
+              component={BottomTab}
+              options={{ headerShown: false }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 }
