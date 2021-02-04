@@ -10,6 +10,7 @@ import {
     ScrollView,
     TextInput,
     ActivityIndicator,
+    ImageBackground,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -41,6 +42,7 @@ import TravelService from "../services/travel.service"
 import UserService from "../services/user.service"
 // helper
 import { deriveArrayFromString } from "../lib/helper"
+import { dishesList, recapList } from "../lib/content"
 
 interface IProps {
     navigation: any
@@ -323,6 +325,9 @@ class HomeScreen extends Component<IProps, Istate> {
     }
     // rendering an item for carousel
     _renderItem({ item, index }: any) {
+        const img = dishesList[0]
+
+        console.log(img, "gowthami")
         return (
             <View
                 style={[
@@ -362,11 +367,13 @@ class HomeScreen extends Component<IProps, Istate> {
                     <NavigationIcon width={wp("7.8")} height={hp("3.68%")} />
                 </View>
 
-                <Image
+                <ImageBackground
                     style={styles.sliderImage}
-                    source={{
-                        uri: item.image,
-                    }}
+                    source={
+                        dishesList[
+                            Math.floor(Math.random() * dishesList.length)
+                        ]
+                    }
                 />
             </View>
         )
@@ -449,19 +456,10 @@ class HomeScreen extends Component<IProps, Istate> {
                     {categoryData[
                         this.getActiveIndex()
                     ].data.localFavouritesList.map((item, index) => {
-                        const {
-                            id,
-                            menu_images,
-                            name,
-                            overall_rating,
-                            cuisines,
-                        } = item
-                        const image =
-                            menu_images.length > 0
-                                ? menu_images[0].image
-                                : "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
-                        console.log(image, "image")
-                        const formatedCusines = deriveArrayFromString(cuisines)
+                        const { id, menu_images, name, rating, tags } = item
+
+                        const formatedCusines = deriveArrayFromString(tags)
+                        console.log(formatedCusines, "formatedCusines")
 
                         return (
                             <Pressable
@@ -477,9 +475,8 @@ class HomeScreen extends Component<IProps, Istate> {
                             >
                                 <View
                                     style={{
-                                        paddingVertical: wp("6%"),
                                         width: wp("55%"),
-                                        height: wp("60%"),
+                                        height: wp("65%"),
                                         backgroundColor: `${
                                             colorsList[
                                                 Math.floor(
@@ -488,29 +485,58 @@ class HomeScreen extends Component<IProps, Istate> {
                                                 )
                                             ]
                                         }`,
-                                        borderRadius: wp("3%"),
-                                        marginRight: wp("5%"),
-                                        paddingHorizontal: wp("5%"),
+                                        borderRadius: wp("3.2%"),
+                                        marginRight: wp("3%"),
+
                                         flex: 1,
                                     }}
                                 >
-                                    <Image
-                                        source={{
-                                            uri: image,
-                                        }}
-                                        style={{
-                                            width: "50%",
-                                            height: "50%",
-                                            display: "flex",
-                                            alignSelf: "center",
-                                        }}
-                                    />
+                                    {menu_images.length > 0 ? (
+                                        <ImageBackground
+                                            source={{
+                                                uri: menu_images[0].image,
+                                            }}
+                                            style={{
+                                                width: "100%",
+                                                height: "50%",
+                                                display: "flex",
+                                                borderTopLeftRadius: wp("3.2%"),
+                                                borderTopRightRadius: wp(
+                                                    "3.2%"
+                                                ),
+                                            }}
+                                        />
+                                    ) : (
+                                        <ImageBackground
+                                            source={
+                                                dishesList[
+                                                    Math.floor(
+                                                        Math.random() *
+                                                            dishesList.length
+                                                    )
+                                                ]
+                                            }
+                                            style={{
+                                                width: "80%",
+
+                                                borderTopLeftRadius: wp("3.2%"),
+                                                borderTopRightRadius: wp(
+                                                    "3.2%"
+                                                ),
+                                                display: "flex",
+                                                alignSelf: "center",
+                                                aspectRatio: 3 / 2,
+                                            }}
+                                            resizeMode="contain"
+                                        />
+                                    )}
                                     <View
                                         style={{
                                             display: "flex",
                                             justifyContent: "space-between",
                                             flex: 1,
-                                            marginTop: wp("4%"),
+
+                                            paddingHorizontal: wp("5%"),
                                         }}
                                     >
                                         <Text
@@ -518,6 +544,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                 fontFamily: "ArchivoBold",
                                                 fontSize: wp("4.8%"),
                                                 color: colors.darkBlack,
+                                                marginTop: wp("5%"),
                                             }}
                                         >
                                             {formatedCusines[0]}
@@ -537,6 +564,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                 flexDirection: "row",
                                                 justifyContent: "space-between",
                                                 alignItems: "center",
+                                                marginBottom: hp("2%"),
                                             }}
                                         >
                                             <View
@@ -555,7 +583,7 @@ class HomeScreen extends Component<IProps, Istate> {
                                                         marginLeft: wp("2%"),
                                                     }}
                                                 >
-                                                    {overall_rating}
+                                                    {rating}
                                                 </Text>
                                             </View>
                                             <NavigationIcon
@@ -805,19 +833,33 @@ class HomeScreen extends Component<IProps, Istate> {
                                                             styles.recapItemContaineer
                                                         }
                                                     >
-                                                        <Image
-                                                            source={{
-                                                                uri:
-                                                                    review_images.length >
-                                                                    0
-                                                                        ? review_images[0]
-                                                                              .image
-                                                                        : dummyImage,
-                                                            }}
-                                                            style={
-                                                                styles.recapImage
-                                                            }
-                                                        />
+                                                        {review_images.length >
+                                                        0 ? (
+                                                            <Image
+                                                                source={{
+                                                                    uri:
+                                                                        review_images[0]
+                                                                            .image,
+                                                                }}
+                                                                style={
+                                                                    styles.recapImage
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <Image
+                                                                source={
+                                                                    recapList[
+                                                                        Math.floor(
+                                                                            Math.random() *
+                                                                                recapList.length
+                                                                        )
+                                                                    ]
+                                                                }
+                                                                style={
+                                                                    styles.recapImage
+                                                                }
+                                                            />
+                                                        )}
                                                         <View
                                                             style={{
                                                                 flex: 1,
@@ -1065,8 +1107,8 @@ const styles = StyleSheet.create({
     },
     sliderImage: {
         marginRight: wp("9%"),
-        width: wp("25%"),
-        height: wp("25%"),
+        width: wp("30%"),
+        height: wp("30%"),
     },
     renderItemContainer: {
         padding: wp("5%"),

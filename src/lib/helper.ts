@@ -13,10 +13,13 @@ export const getFormatedDate = (date: any) => {
 }
 
 export const deriveArrayFromString = (name: string) => {
+    console.log(name, "name")
     if (typeof name === "string" && name !== "") {
         try {
+            console.log("try")
             return JSON.parse(name.replace(/'/g, '"'))
         } catch (error) {
+            console.log(error, "error")
             return []
         }
     } else if (name === "") {

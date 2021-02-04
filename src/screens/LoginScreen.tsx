@@ -74,14 +74,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         this.props.navigation.navigate("signUp")
     }
 
-    async componentDidMount() {
-        // userService
-        //     .getUser()
-        //     .then((res) => {
-        //         if (res.username) this.props.navigation.navigate("bottomTab")
-        //     })
-        //     .catch((error) => console.log(error, "get user"))
-    }
+    async componentDidMount() {}
 
     renderModalContent = () => {
         return (
