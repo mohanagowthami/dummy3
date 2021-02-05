@@ -42,6 +42,7 @@ import UserService from "../services/user.service"
 // helper
 import { deriveArrayFromString } from "../lib/helper"
 import { dishesList, recapList } from "../lib/content"
+import ReadMoreComponent from "../components/elements/ReadMore"
 
 interface IProps {
   navigation: any
@@ -226,43 +227,50 @@ class HomeScreen extends Component<IProps, Istate> {
     }
   }
 
+  getFormatedRecapList = (recapList: any) => {
+    return recapList.map((ele: any) => {
+      return { ...ele, showFullAddress: false }
+    })
+  }
+
   async componentDidMount() {
     let { status } = await Location.requestPermissionsAsync()
     if (status !== "granted") {
       alert("please grant permission to access current location")
     } else {
-      let location = await Location.getCurrentPositionAsync({})
-      console.log("user location", location)
-      const locationCoordinates = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      }
+      // let location = await Location.getCurrentPositionAsync({})
+      // console.log("user location", location)
+      // const locationCoordinates = {
+      //   latitude: location.coords.latitude,
+      //   longitude: location.coords.longitude,
+      // }
       this.setState({
         ...this.state,
         isLoading: true,
       })
-      userService
-        .updateUserCurrentLocation(locationCoordinates)
-        .then((response) => {
-          restaurantService
-            .getRestaurantDataFromServer()
-            .then((values) => {
-              let stateData = { ...this.state }
-              stateData.categoryData[0].data.localFavouritesList =
-                values[0].results
-              stateData.categoryData[0].data.hallOfFame = values[1]
-              stateData.categoryData[0].data.recapList = values[2]
-              stateData.categoryData[0].isDatafetched = true
-              stateData.categoryData[0].data.trendsList = content.trendsList
-              stateData.isLoading = false
-              stateData.username = values[3].username
-              this.setState(stateData)
-            })
-            .catch((error) => console.log(error, "error in home screen"))
+      // userService
+      //   .updateUserCurrentLocation(locationCoordinates)
+      //   .then((response) => {
+      restaurantService
+        .getRestaurantDataFromServer()
+        .then((values) => {
+          let stateData = { ...this.state }
+          stateData.categoryData[0].data.localFavouritesList = values[0].results
+          stateData.categoryData[0].data.hallOfFame = values[1]
+          stateData.categoryData[0].data.recapList = this.getFormatedRecapList(
+            values[2]
+          )
+          stateData.categoryData[0].isDatafetched = true
+          stateData.categoryData[0].data.trendsList = content.trendsList
+          stateData.isLoading = false
+          stateData.username = values[3].username
+          this.setState(stateData)
         })
-        .catch((error) =>
-          console.log(error, "error in user current location saving")
-        )
+        .catch((error) => console.log(error, "error in home screen"))
+      // })
+      // .catch((error) =>
+      //   console.log(error, "error in user current location saving")
+      // )
     }
   }
 
@@ -301,7 +309,9 @@ class HomeScreen extends Component<IProps, Istate> {
           stateData.categoryData[index].data.localFavouritesList =
             values[0].results
           stateData.categoryData[index].data.hallOfFame = values[1]
-          stateData.categoryData[index].data.recapList = values[2]
+          stateData.categoryData[
+            index
+          ].data.recapList = this.getFormatedRecapList(values[2])
           stateData.categoryData[index].isDatafetched = true
           stateData.categoryData[index].data.trendsList = content.trendsList
           stateData.isLoading = false
@@ -309,21 +319,6 @@ class HomeScreen extends Component<IProps, Istate> {
         })
         .catch((error: any) => console.log(error, "error in home screen"))
     }
-  }
-
-  getDataFromSearchAPI = () => {
-    const { category, searchText } = this.state
-    let service
-    if (category === "food") service = restaurantService
-    else if (category === "travel") service = travelService
-    else service = shoppingService
-
-    service
-      .search(searchText)
-      .then((response) => {
-        console.log(response.results, "results")
-      })
-      .catch((error) => console.log(error, "in search API"))
   }
 
   async componentDidUpdate(prevProps: any, prevState: any) {
@@ -412,6 +407,7 @@ class HomeScreen extends Component<IProps, Istate> {
               activeIndex: index,
             })
           }}
+          // autoplay={true}
         />
         {categoryData[this.getActiveIndex()].data.trendsList && this.pagination}
       </>
@@ -551,6 +547,15 @@ class HomeScreen extends Component<IProps, Istate> {
     this.setState({ ...this.state, searchText: text })
   }
 
+  onPressReadMore = (index: number) => {
+    const stateData = { ...this.state }
+    console.log(stateData, "stateData")
+    stateData.categoryData[this.getActiveIndex()].data.recapList[
+      index
+    ].showFullAddress = true
+    this.setState(stateData)
+  }
+
   render() {
     // Main return function
     const { isLoading, username } = this.state
@@ -576,7 +581,9 @@ class HomeScreen extends Component<IProps, Istate> {
                 </Pressable>
               </View>
               <View style={styles.userNameContainer}>
-                <Text style={styles.userName}>{username}</Text>
+                <Text style={styles.userName}>
+                  {username.charAt(0).toUpperCase() + username.slice(1)}
+                </Text>
                 <WavingHand width={wp("5.33%")} height={hp("2.63%")} />
               </View>
               <View style={styles.searchButton}>
@@ -584,7 +591,9 @@ class HomeScreen extends Component<IProps, Istate> {
                 <TextInput
                   placeholder="Explore spots near you"
                   style={styles.searchInput}
-                  onChangeText={this.onChangeSearch}
+                  onFocus={() =>
+                    this.props.navigation.navigate("searchFoodResults")
+                  }
                 />
               </View>
               <View style={styles.buttonsContainer}>
@@ -715,6 +724,7 @@ class HomeScreen extends Component<IProps, Istate> {
                           user_rating,
                           review_images,
                           address,
+                          showFullAddress,
                         } = ele
                         const numberOfRatings = this.state.categoryData[
                           this.getActiveIndex()
@@ -747,24 +757,56 @@ class HomeScreen extends Component<IProps, Istate> {
                                 <Text style={styles.restaurantTitle}>
                                   {name}
                                 </Text>
-                                <Text style={styles.recapCardText}>
-                                  {address}
-                                </Text>
-                                <View style={styles.ratingContainer}>
-                                  <Rating
-                                    width={wp("4.2%")}
-                                    height={hp("4.2%")}
-                                  />
-                                  <Text style={styles.noOfRatings}>
-                                    {user_rating}({numberOfRatings} ratings)
+                                {!showFullAddress ? (
+                                  <View
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "flex-end",
+                                      flexWrap: "wrap",
+                                    }}
+                                  >
+                                    <Text
+                                      style={styles.recapCardText}
+                                      numberOfLines={1}
+                                    >
+                                      {address}
+                                    </Text>
+                                    <ReadMoreComponent
+                                      onPressReadmore={() =>
+                                        this.onPressReadMore(index)
+                                      }
+                                    />
+                                  </View>
+                                ) : (
+                                  <Text style={styles.recapCardText}>
+                                    {address}
                                   </Text>
+                                )}
+                                <View style={styles.ratingContainer}>
+                                  <View
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Rating
+                                      width={wp("4.2%")}
+                                      height={hp("4.2%")}
+                                    />
+                                    <Text style={styles.noOfRatings}>
+                                      {user_rating}({numberOfRatings} ratings)
+                                    </Text>
+                                  </View>
+
+                                  <View style={styles.navigationIcon}>
+                                    <NavigationIcon
+                                      width={wp("7.8%")}
+                                      height={hp("3.68%")}
+                                    />
+                                  </View>
                                 </View>
-                              </View>
-                              <View style={styles.navigationIcon}>
-                                <NavigationIcon
-                                  width={wp("7.8%")}
-                                  height={hp("3.68%")}
-                                />
                               </View>
                             </View>
                             <View style={styles.borderLine}></View>
@@ -1035,12 +1077,14 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.8%"),
     color: colors.lightGreyThree,
-    marginTop: hp("1%"),
+
     marginLeft: wp("2%"),
   },
   ratingContainer: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   navigationIcon: {
     display: "flex",

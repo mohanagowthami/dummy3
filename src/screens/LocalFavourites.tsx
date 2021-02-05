@@ -107,6 +107,7 @@ interface IState {}
 class LocalFavourites extends Component<IProps, IState> {
   renderLocalFavouritesList = () => {
     const { localFavourites } = this.props.route.params
+    console.log(localFavourites, "in lfscreen")
     return (
       <ScrollView>
         {localFavourites &&

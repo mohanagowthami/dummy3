@@ -29,6 +29,7 @@ import {
 import { BackIcon, RightArrow } from "../../assets/svgs/icons/icons-directions"
 // components
 import CustomButton from "../components/buttons/CustomButton"
+import ReadMoreComponent from "../components/elements/ReadMore"
 // colors
 import { colors } from "../lib/colors"
 import { dishesList } from "../lib/content"
@@ -51,51 +52,7 @@ interface Istate {
   restaurantDetails: any
   ratingAndReview: Array<any>
   isLoading: boolean
-}
-const ItemContent = {
-  photos: [
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-  ],
-  ratingAndReview: [
-    {
-      id: 1,
-      photo:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      rating: 4.5,
-      address: "03 Kukatpally 291, 4th Phase",
-      review:
-        "Dummy text is text that is used in the publishing industry or by web designers to occupy.",
-      distance: 4.8,
-      time: 33,
-    },
-    {
-      id: 2,
-      photo:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      rating: 4.5,
-      address: "03 Kukatpally 291, 4th Phase",
-      review:
-        "Dummy text is text that is used in the publishing industry or by web designers to occupy.",
-      distance: 4.8,
-      time: 33,
-    },
-    {
-      id: 3,
-      photo:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      rating: 4.5,
-      address: "03 Kukatpally 291, 4th Phase",
-      review:
-        "Dummy text is text that is used in the publishing industry or by web designers to occupy.",
-      distance: 4.8,
-      time: 33,
-    },
-  ],
+  showFullAddress: boolean
 }
 
 const restaurantService = new RestaurantService()
@@ -117,6 +74,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       },
       ratingAndReview: [],
       isLoading: false,
+       false,
     }
   }
   onPressGetDirections = () => {
@@ -141,8 +99,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       })
       .catch((error) => console.log(error, "in item in detail"))
   }
+
+  pressReadMore = () => {
+    console.log("in call press ")
+    this.setState({ ...this.state, showFullAddress: true })
+  }
   render() {
-    const { restaurantDetails } = this.state
+    const { restaurantDetails,showFullAddress } = this.state
     const allImages = [
       ...restaurantDetails.menu_images,
       ...restaurantDetails.gallery_images,
@@ -156,8 +119,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       likes,
       menu_images,
       isLoading,
+      
     } = restaurantDetails
 
+    console.log(showFullAddress, "address")
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -175,9 +140,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               <View style={styles.container2}>
                 <View style={styles.container3}>
                   <Pressable
-                    onPress={() =>
-                      this.props.navigation.navigate("localFavourites")
-                    }
+                    onPress={() => this.props.navigation.navigate("home")}
                   >
                     <BackIcon width={wp("2.62%")} height={hp("2.26%")} />
                   </Pressable>
@@ -205,7 +168,24 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             <View style={styles.details}>
               <Text style={styles.restaurantname}>{name}</Text>
               <View style={styles.addressgetdirectionbutton}>
-                <Text style={styles.address}>{address}</Text>
+                <View style={styles.addressWrapper}>
+                  {!showFullAddress ? (
+                    <>
+                      <Text style={styles.address} numberOfLines={2}>
+                        gggggggggggggggggggggggggggggg ggggggggggggggggggggggg
+                        gggggggg ggg hhh gfggvf bvg
+                      </Text>
+
+                      <ReadMoreComponent onPressReadmore={this.pressReadMore} />
+                    </>
+                  ) : (
+                    <Text style={styles.address}>
+                      gggggggggggggggggggggggggggggg ggggggggggggggggggggggg
+                      gggggggg ggg hhh gfggvf bvg
+                    </Text>
+                  )}
+                </View>
+
                 <View style={styles.getdirectionbutton}>
                   <CustomButton
                     title="Get Directions"
@@ -429,9 +409,19 @@ const styles = StyleSheet.create({
   address: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("4%"),
-    paddingTop: hp("1.44%"),
+   
     color: colors.grey,
-    width: wp("70%"),
+
+    textAlign: "justify",
+  },
+  addressWrapper: {
+    width: wp("60%"),
+
+    marginBottom: hp("4%"),
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    flexWrap: "wrap",
   },
   addressTwo: {
     fontFamily: "ArchivoRegular",
@@ -457,6 +447,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   time: {
     fontFamily: "AirbnbCerealBook",

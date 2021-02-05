@@ -169,6 +169,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 onChange={(value) => this.onChange("password", value)}
                 placeholder="Enter Password"
                 style={styles.inputBox}
+                secureText={true}
               />
               <View>
                 <CustomButton

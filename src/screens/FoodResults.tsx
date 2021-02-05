@@ -3,7 +3,14 @@ import { ScrollView } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, Image, Pressable } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  TextInput,
+} from "react-native"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -16,24 +23,27 @@ import {
   NavigationIcon,
   BackIcon,
 } from "../../assets/svgs/icons/icons-directions"
-import { Rating, ClockIcon } from "../../assets/svgs/icons"
+import { Rating, ClockIcon, SearchIcon } from "../../assets/svgs/icons"
 // colors
 import { colors } from "../lib/colors"
+import CustomButton from "../components/buttons/CustomButton"
+import RestaurantService from "../services/restaurants.service"
+import TravelService from "../services/travel.service"
+import ShoppingMallService from "../services/shoppingmall.service"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { deriveArrayFromString } from "../lib/helper"
+import { add } from "react-native-reanimated"
 
 interface IProps {
   navigation: any
 }
 // divisioning of the screen
-interface IDetailsType {
-  profileDetails: Array<any>
-  results: Array<any>
-}
+
 // state - data
 interface Istate {
-  keyWord: string
-  categoryData: IDetailsType
-  activeIndex: number
-  resultsCount: number
+  category: string
+  categorySearchResults: []
+  searchText: string
 }
 // data
 const details = {
@@ -93,8 +103,7 @@ const details = {
       time: 25,
       rating: 4.3,
       noOfratings: "200+",
-      photo1:
-        "https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=",
+      photo1: "",
       photo2: "",
       photp3: "",
       photo4: "",
@@ -102,15 +111,22 @@ const details = {
   ],
 }
 
+const imagesList = [
+  "https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=",
+  "https://media.istockphoto.com/photos/fish-biryani-with-basmati-rice-indian-food-picture-id488481490?k=6&m=488481490&s=612x612&w=0&h=J8lIVq-5pPU-ta0BRZPaHY3WVXf6nbSJqAW9E2J-qDs=",
+  "https://media.istockphoto.com/photos/indian-chicken-biryani-served-in-a-terracotta-bowl-with-yogurt-over-picture-id979891994?k=6&m=979891994&s=612x612&w=0&h=AZUYF4BdDzWeZ6q2puAzcqD0miXvAct42o7Hgump6ZA=",
+]
+const restaurantService = new RestaurantService()
+const travelService = new TravelService()
+const shoppingService = new ShoppingMallService()
 class FoodSearchResults extends Component<IProps, Istate> {
   carousel: any
   constructor(props: IProps) {
     super(props)
     this.state = {
-      keyWord: "Biryani",
-      categoryData: details,
-      activeIndex: 0,
-      resultsCount: 80,
+      category: "food",
+      categorySearchResults: [],
+      searchText: "",
     }
   }
 
@@ -122,116 +138,265 @@ class FoodSearchResults extends Component<IProps, Istate> {
             <BackIcon width={wp("3.13%")} height={hp("2.84%")} />
           </Pressable>
         </View>
-        <Text style={styles.title}>{this.state.keyWord}</Text>
+        {/* <Text style={styles.title}>{this.state.keyWord}</Text> */}
         <Text style={[styles.filter, { paddingTop: hp("0.4%") }]}>Filter</Text>
       </>
     )
   }
+
+  getShuffleImagesList = () => {
+    return imagesList.map((image) => {
+      return imagesList[Math.floor(Math.random() * imagesList.length)]
+    })
+  }
   _renderItem({ item, index }: any) {
+    console.log(item, "item")
+    const image = item.image ? item.image : item
     return (
       <View style={styles.renderItemsContainer}>
         <Image
           style={styles.sliderImage}
           source={{
-            uri: item.photo1,
+            uri: image,
           }}
         />
-        <View style={styles.paginationContainer}>{this.pagination}</View>
+        {/* <View style={styles.paginationContainer}>{this.pagination}</View> */}
       </View>
     )
   }
-  get pagination() {
-    const { activeIndex, categoryData } = this.state
-    // const index = this.getActiveIndex()
-    return (
-      <Pagination
-        dotsLength={categoryData.results.length}
-        activeDotIndex={activeIndex}
-        inactiveDotStyle={styles.inactiveDotStyles}
-        inactiveDotOpacity={0.3}
-        inactiveDotScale={1}
-        dotStyle={styles.activeDotStyles}
-      />
-    )
+  // get pagination() {
+  //   // const { activeIndex, categoryData } = this.state
+  //   // const index = this.getActiveIndex()
+  //   return (
+  //     <Pagination
+  //       dotsLength={categoryData.results.length}
+  //       activeDotIndex={activeIndex}
+  //       inactiveDotStyle={styles.inactiveDotStyles}
+  //       inactiveDotOpacity={0.3}
+  //       inactiveDotScale={1}
+  //       dotStyle={styles.activeDotStyles}
+  //     />
+  //   )
+  // }
+
+  getDataFromSearchAPI = () => {
+    const { category, searchText } = this.state
+    let service
+    if (category === "food") service = restaurantService
+    else if (category === "travel") service = travelService
+    else service = shoppingService
+
+    service
+      .search(searchText)
+      .then((response: any) => {
+        console.log(response.results, "results")
+        this.setState({
+          ...this.state,
+          categorySearchResults: response.results,
+        })
+      })
+      .catch((error: any) => console.log(error, "in search API"))
   }
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevState.searchText !== this.state.searchText) {
+      setTimeout(this.getDataFromSearchAPI, 300)
+    }
+  }
+
   renderResults = () => {
+    const { categorySearchResults } = this.state
+    const number_of_ratings = categorySearchResults.length
     return (
       <>
-        <Carousel
-          layout={"default"}
-          ref={(ref: any) => (this.carousel = ref)}
-          data={this.state.categoryData.results}
-          sliderWidth={wp("100%")}
-          itemWidth={wp("100%")}
-          renderItem={this._renderItem.bind(this)}
-          onSnapToItem={(index: number) => {
-            this.setState({
-              ...this.state,
-              activeIndex: index,
-            })
-          }}
-        />
-        <View style={styles.carouselContainer}>
-          <View>
-            <Text style={styles.restaurantName}>{/* {item.name} */}Saleem</Text>
-          </View>
-          <View style={styles.detailsContainer}>
-            <Text style={styles.restaurantType}>
-              {/* {item.type} */} Biryani
-            </Text>
-            <View style={styles.address} />
-            <Text style={styles.addressText}>
-              {/* {item.address} */} Opposite VIT
-            </Text>
-            <View style={styles.location} />
-            <Text style={styles.locationText}>
-              {/* {item.place} */} Vellore
-            </Text>
-            <View style={styles.navigationIcon}>
-              <NavigationIcon width={wp("7.46%")} height={hp("3.68%")} />
-            </View>
-          </View>
-          <View>
-            <View style={styles.rating}>
-              <Text style={styles.ratingNumber}>{/* {item.rating} */} 4.3</Text>
-              <View style={styles.ratingIcon}>
-                <Rating width={wp("3.096%")} height={hp("1.461%")} />
+        {categorySearchResults.map((ele: any, index) => {
+          const { menu_images, name, tags, dining_rating, address } = ele
+          const images =
+            menu_images.length > 0 ? menu_images : this.getShuffleImagesList()
+          const place = address.split(",")
+          const formattedTags = deriveArrayFromString(tags)
+
+          return (
+            <View key={index}>
+              <Carousel
+                layout={"default"}
+                ref={(ref: any) => (this.carousel = ref)}
+                data={images}
+                sliderWidth={wp("100%")}
+                itemWidth={wp("100%")}
+                renderItem={this._renderItem.bind(this)}
+                onSnapToItem={(index: number) => {}}
+              />
+              <View style={styles.carouselContainer}>
+                <View>
+                  <Text style={styles.restaurantName}>{name}</Text>
+                </View>
+                <View style={styles.detailsContainer}>
+                  {formattedTags.map((tag: string) => {
+                    return (
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        <View style={styles.dotStyle}></View>
+                        <Text style={styles.restaurantType}>
+                          {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                        </Text>
+                      </View>
+                    )
+                  })}
+
+                  <View style={styles.navigationIcon}>
+                    <NavigationIcon width={wp("7.46%")} height={hp("3.68%")} />
+                  </View>
+                </View>
+                <View>
+                  <View style={styles.rating}>
+                    <Text style={styles.ratingNumber}>{dining_rating}</Text>
+                    <View style={styles.ratingIcon}>
+                      <Rating width={wp("3.096%")} height={hp("1.461%")} />
+                    </View>
+                    <Text style={styles.ratingText}>
+                      {`${number_of_ratings} Ratings`}
+                    </Text>
+                    <View style={styles.time}>
+                      <ClockIcon width={wp("3.096%")} height={hp("1.461%")} />
+                    </View>
+                    <Text style={styles.timeText}>
+                      {/* {item.time} min */}25 min
+                    </Text>
+                  </View>
+                </View>
               </View>
-              <Text style={styles.ratingText}>
-                {/* {item.noOfratings} Ratings */} 200+ Ratings
-              </Text>
-              <View style={styles.time}>
-                <ClockIcon width={wp("3.096%")} height={hp("1.461%")} />
-              </View>
-              <Text style={styles.timeText}>{/* {item.time} min */}25 min</Text>
             </View>
-          </View>
-        </View>
+          )
+        })}
       </>
     )
   }
+
+  onChangeText = (text: string) => {
+    this.setState({ ...this.state, searchText: text })
+  }
+
+  updateCategory = (category: string) => {
+    this.setState({ ...this.state, category: category, searchText: "" })
+  }
   render() {
     return (
-      <ScrollView style={styles.mainContainer}>
-        <View style={styles.heading}>{this.heading()}</View>
-        <View>
-          <Text style={styles.searchCount}>
-            {this.state.resultsCount} Results found
-          </Text>
-        </View>
-        <View>{this.renderResults()}</View>
-        <View>{this.renderResults()}</View>
-        <View>{this.renderResults()}</View>
-      </ScrollView>
+      <SafeAreaView style={styles.safeAreaViewStyles}>
+        <ScrollView
+          style={styles.mainContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.searchButton}>
+            <SearchIcon width={wp("5%")} height={wp("5%")} />
+            <TextInput
+              placeholder="Explore spots near you"
+              style={styles.searchInput}
+              onChangeText={this.onChangeText}
+              autoFocus={true}
+              value={this.state.searchText}
+            />
+          </View>
+          <View style={styles.buttonsContainer}>
+            <CustomButton
+              onPressButton={() => this.updateCategory("food")}
+              title="Food"
+              buttonStyles={[
+                styles.smallButton,
+                {
+                  backgroundColor:
+                    this.state.category !== "food"
+                      ? "rgba(255,108,101,0.2)"
+                      : colors.orange,
+                  borderColor: colors.orange,
+                },
+              ]}
+              buttonTextStyles={[
+                styles.buttonTextStyles,
+                {
+                  color:
+                    this.state.category !== "food"
+                      ? colors.orange
+                      : colors.white,
+                },
+              ]}
+            />
+            <CustomButton
+              onPressButton={() => this.updateCategory("travel")}
+              title="Travel"
+              buttonStyles={[
+                styles.smallButton,
+                {
+                  backgroundColor:
+                    this.state.category !== "travel"
+                      ? "rgba(253,210,106,0.2)"
+                      : colors.yellow,
+                  borderColor: colors.yellow,
+                },
+              ]}
+              buttonTextStyles={[
+                {
+                  color:
+                    this.state.category !== "travel"
+                      ? colors.yellow
+                      : colors.white,
+                },
+                styles.buttonTextStyles,
+              ]}
+            />
+            <CustomButton
+              onPressButton={() => this.updateCategory("shopping")}
+              title="Shopping"
+              buttonStyles={[
+                styles.smallButton,
+                {
+                  backgroundColor:
+                    this.state.category !== "shopping"
+                      ? "rgba(102,197,218,0.3)"
+                      : colors.skyBlue,
+                  borderColor: colors.skyBlue,
+                },
+              ]}
+              buttonTextStyles={[
+                {
+                  color:
+                    this.state.category !== "shopping"
+                      ? colors.skyBlue
+                      : colors.white,
+                },
+                styles.buttonTextStyles,
+              ]}
+            />
+          </View>
+
+          {this.renderResults()}
+        </ScrollView>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  dotStyle: {
+    width: hp("2%"),
+    height: hp("2%"),
+    borderRadius: hp("1%"),
+    backgroundColor: colors.greyTwo,
+    marginRight: wp("2%"),
+  },
+  safeAreaViewStyles: {
+    flex: 1,
+  },
   mainContainer: {
     display: "flex",
-    paddingTop: hp("2%"),
+    flex: 1,
     backgroundColor: colors.white,
+    padding: wp("4%"),
   },
   heading: {
     display: "flex",
@@ -319,6 +484,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     paddingTop: hp("0.789%"),
+    flexWrap: "wrap",
   },
   restaurantType: {
     fontFamily: "ArchivoRegular",
@@ -391,6 +557,46 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.2%"),
     color: colors.namecolor,
+  },
+  searchButton: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 1,
+    padding: "2%",
+    backgroundColor: colors.lightGrey,
+    borderRadius: wp("3%"),
+    alignItems: "center",
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: wp("3%"),
+    fontSize: wp("4%"),
+    fontFamily: "ArchivoRegular",
+    color: colors.grey,
+  },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  smallButton: {
+    width: wp("27%"),
+    borderRadius: wp("5%"),
+    marginTop: wp("5.3%"),
+    paddingVertical: wp("3%"),
+    marginBottom: wp("4%"),
+    borderWidth: wp("0.3%"),
+  },
+  buttonTitle: {
+    fontFamily: "AirbnbCerealBold",
+    fontSize: wp("4%"),
+    lineHeight: wp("5%"),
+  },
+  buttonTextStyles: {
+    fontFamily: "AirbnbCerealBook",
+    fontSize: wp("4%"),
+    lineHeight: wp("5%"),
   },
 })
 
