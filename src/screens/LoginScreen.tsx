@@ -41,6 +41,8 @@ interface ILoginScreen {
 interface State {
   modalVisible: any
   isLoading: boolean
+  showError: boolean
+  errorText: string
 }
 const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
@@ -53,6 +55,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     this.state = {
       modalVisible: false,
       isLoading: false,
+      showError: false,
+      errorText: "",
     }
     this.inputRef = Array(4).fill(React.createRef())
     this.values = {}
@@ -104,17 +108,31 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       .logIn(this.values)
       .then((response) => {
         // console.log(response)
-        authService.authenticateUser(response.access, response.refresh)
-      })
-      .then(() => {
-        this.props.navigation.navigate("pickYourChoice")
-      })
-      .catch((error) => {
-        console.log(error, "error")
-        alert(error)
         this.setState({
           ...this.state,
           isLoading: false,
+          modalVisible: true,
+        })
+
+        authService.authenticateUser(response.access, response.refresh)
+      })
+      .then(() => {
+        setTimeout(() => {
+          this.setState({
+            ...this.state,
+            isLoading: false,
+            modalVisible: false,
+          })
+          this.props.navigation.navigate("pickYourChoice")
+        }, 100)
+      })
+      .catch((error) => {
+        console.log(error, "error")
+        this.setState({
+          ...this.state,
+          isLoading: false,
+          showError: true,
+          errorText: error.detail,
         })
       })
   }
@@ -126,13 +144,13 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
   render() {
     // navigation as prop
     const { navigation } = this.props
-    const { isLoading } = this.state
+    const { isLoading, errorText, showError } = this.state
     return (
       <>
         {isLoading ? (
           <View style={styles.loaderContainer}>
             {/* {this.renderModalContent()} */}
-            <ActivityIndicator />
+            <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
           <ScrollView
@@ -160,6 +178,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                 source={Welcome}
               />
               <Text style={styles.loginText}>Login</Text>
+              {showError && <Text style={styles.errorStyles}>{errorText}</Text>}
               <CustomTextField
                 onChange={(value) => this.onChange("email", value)}
                 placeholder="Enter Email Id"
@@ -201,6 +220,12 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
   }
 }
 const styles = StyleSheet.create({
+  errorStyles: {
+    color: colors.orange,
+    fontSize: wp("6%"),
+    fontFamily: "AirbnbCerealBold",
+  },
+
   mainContainer: { backgroundColor: colors.white },
   welcome: {
     // marginTop: hp('6.47%'),

@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Pressable,
   ActivityIndicator,
+  FlatList,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -24,7 +25,7 @@ import CalenderSvg from "../../assets/svgs/icons/icons-bottomTab/CalenderSvg"
 // colors
 import { colors } from "../lib/colors"
 // date
-import { getFormatedDate } from "../lib/helper"
+import { getFormatedDate, getCurrentMonthArray } from "../lib/helper"
 import PlannerService from "../services/planner.service"
 
 interface IProps {
@@ -39,22 +40,11 @@ interface Istate {
   isLoading: boolean
 }
 
-function getCurrentMonthArray() {
-  const date = new Date()
-  let calculatedArray = new Array(
-    new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-  ).fill(0)
-
-  return calculatedArray.map((ele, index) => {
-    if (index + 1 === date.getDate()) return 1
-    else return 0
-  })
-}
-
 const plannerService = new PlannerService()
 
 class FrappyPlannerCalendar extends Component<IProps, Istate> {
   date: any
+  subscribe: any
   constructor(props: IProps) {
     super(props)
     this.date = new Date()
@@ -93,13 +83,21 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
       .catch((error) => console.log(error, "error"))
   }
   async componentDidMount() {
+    const { navigation } = this.props
     this.fetchData()
+    this.subscribe = navigation.addListener("focus", () => {
+      this.fetchData()
+    })
   }
 
   async componentDidUpdate(prevProps: any, prevState: any) {
     if (prevState.selectedDate !== this.state.selectedDate) {
       this.fetchData()
     }
+  }
+
+  componentWillUnmount() {
+    this.subscribe()
   }
   setModalStatus = () => {
     this.setState((prevState) => ({
@@ -127,57 +125,56 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     })
   }
 
-  renderDays = () => {
+  flatListRenderItem = (item: any, index: number) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    let day = new Date(this.date.getFullYear(), this.date.getMonth(), index + 1)
+    const dayName = days[day.getDay()]
     return (
-      <ScrollView
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          paddingHorizontal: wp("2%"),
-        }}
-        horizontal
-      >
-        {this.state.dateArray.map((ele: any, index: number) => {
-          let day = new Date(
-            this.date.getFullYear(),
-            this.date.getMonth(),
-            index + 1
-          )
-          const dayName = days[day.getDay()]
-          return (
-            <View
-              style={{
-                marginHorizontal: wp("3%"),
-                alignItems: "center",
-              }}
-              key={index}
-            >
-              <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
-                {dayName}
-              </Text>
+      <View style={styles.renderItemWrapper}>
+        <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
+          {dayName}
+        </Text>
 
-              <Text
-                style={[
-                  styles.dateTextStyle,
-                  {
-                    backgroundColor: ele ? colors.orange : colors.white,
-                    color: ele ? colors.white : colors.darkBlack,
-                    width: wp("10%"),
-                    height: wp("10%"),
-                    borderRadius: wp("5%"),
-                    textAlign: "center",
-                    textAlignVertical: "center",
-                  },
-                ]}
-                onPress={() => this.handlePressableDate(index)}
-              >
-                {index + 1}
-              </Text>
-            </View>
-          )
-        })}
-      </ScrollView>
+        <Text
+          style={[
+            styles.dateTextStyle,
+            {
+              backgroundColor: item ? colors.orange : colors.white,
+              color: item ? colors.white : colors.darkBlack,
+              width: wp("10%"),
+              height: wp("10%"),
+              borderRadius: wp("5%"),
+              textAlign: "center",
+              textAlignVertical: "center",
+            },
+          ]}
+          onPress={() => this.handlePressableDate(index)}
+        >
+          {index + 1}
+        </Text>
+      </View>
+    )
+  }
+
+  getItemLayout(data: any, index: number) {
+    return {
+      length: wp("10%"),
+      offset: wp("13%") * index,
+      index,
+    }
+  }
+
+  renderDays = () => {
+    const { dateArray } = this.state
+    return (
+      <FlatList
+        data={dateArray}
+        renderItem={({ item, index }) => this.flatListRenderItem(item, index)}
+        horizontal
+        keyExtractor={(item, index) => "key" + index}
+        initialScrollIndex={this.date.getDate() - 1}
+        getItemLayout={this.getItemLayout.bind(this)}
+      />
     )
   }
 
@@ -196,23 +193,8 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
               </Pressable>
             </View>
           </View>
-          <View
-            style={{
-              paddingLeft: wp("6%"),
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "ArchivoRegular",
-                fontSize: wp("3.73"),
-                color: colors.darkBlack,
-                marginRight: wp("4%"),
-              }}
-            >
-              Select Date
-            </Text>
+          <View style={styles.dateWrapper}>
+            <Text style={styles.dateTextStyle2}>Select Date</Text>
             <Pressable onPress={this.setModalStatus}>
               <CalenderSvg
                 color={colors.darkGrey}
@@ -272,6 +254,21 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
   }
 }
 const styles = StyleSheet.create({
+  dateTextStyle2: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("3.73"),
+    color: colors.darkBlack,
+    marginRight: wp("4%"),
+  },
+  dateWrapper: {
+    paddingLeft: wp("6%"),
+    display: "flex",
+    flexDirection: "row",
+  },
+  renderItemWrapper: {
+    marginHorizontal: wp("3%"),
+    alignItems: "center",
+  },
   container: { display: "flex", flex: 1, backgroundColor: "white" },
   mainContainer: {
     display: "flex",

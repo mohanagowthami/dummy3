@@ -65,7 +65,6 @@ class ReviewsAndRating extends Component<IProps, IState> {
       formData.append(`review_images[]`, img)
     )
 
-    console.log(formData, "data")
     reviewService
       .updateReviews(formData)
       .then((response) => {
@@ -74,7 +73,6 @@ class ReviewsAndRating extends Component<IProps, IState> {
           ...this.state,
           showModal: !this.state.showModal,
         })
-        this.props.navigation.navigate("home")
       })
       .catch((error) => {
         console.log(error, " in submission in ratings and reviews screen ")
@@ -82,7 +80,11 @@ class ReviewsAndRating extends Component<IProps, IState> {
           ...this.state,
           showModal: !this.state.showModal,
         })
-        this.props.navigation.navigate("home")
+      })
+      .finally(() => {
+        this.props.navigation.navigate("itemInDetail", {
+          id: this.props.route.params.id,
+        })
       })
   }
   showModal = () => {
@@ -157,33 +159,10 @@ class ReviewsAndRating extends Component<IProps, IState> {
           <View style={styles.modalContainer}>
             <Image
               source={require("../../assets/images/thankYou.png")}
-              style={{
-                width: wp("60%"),
-                height: wp("50%"),
-              }}
+              style={styles.modalImage}
             />
-            <Text
-              style={{
-                fontFamily: "ArchivoBold",
-                fontSize: wp("6%"),
-                lineHeight: wp("8%"),
-                color: colors.grey,
-                marginTop: wp("6%"),
-                marginBottom: 0,
-              }}
-            >
-              Thankyou!
-            </Text>
-            <Text
-              style={{
-                fontFamily: "ArchivoRegular",
-                fontSize: wp("4.5%"),
-                lineHeight: wp("6.2%"),
-                marginVertical: wp("2%"),
-                textAlign: "center",
-                color: colors.grey,
-              }}
-            >
+            <Text style={styles.thankYouTextStyles}>Thankyou!</Text>
+            <Text style={styles.descriptionModalStyles}>
               Dummy text is text that is used in the publishing industry
             </Text>
           </View>
@@ -201,7 +180,10 @@ class ReviewsAndRating extends Component<IProps, IState> {
     return (
       <SafeAreaView style={styles.container}>
         {this.state.showModal && this.renderModal()}
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
+        >
           <View>
             <Text style={styles.titleText}>Reviews and ratings</Text>
             <CustomStarRating
@@ -211,12 +193,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
               elementStyle={{ marginRight: wp("2%") }}
               onChange={(value) => this.onChange("user_rating", value)}
             />
-            <View
-              style={{
-                height: 1,
-                backgroundColor: colors.lightGreyTwo,
-              }}
-            />
+            <View style={styles.descriptionModalStyles} />
 
             <CustomTextField
               style={styles.commentStyles}
@@ -227,70 +204,39 @@ class ReviewsAndRating extends Component<IProps, IState> {
               onChange={(value) => this.onChange("review", value)}
             />
 
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                marginVertical: wp("8%"),
-                alignItems: "center",
-                marginBottom: 0,
-              }}
-            >
+            <View style={styles.captureImageStyles}>
               <Pressable onPress={this.captureImage}>
                 <View style={styles.plusButton}>
                   <Text style={styles.plus}>+</Text>
                 </View>
               </Pressable>
-              <Text
-                style={{
-                  fontFamily: "AirbnbCerealBook",
-                  fontSize: wp("4.2%"),
-                  letterSpacing: 0.5,
-                  color: colors.grey,
-                }}
-              >
-                Upload Pictures
-              </Text>
+              <Text style={styles.uploadPictureStyle}>Upload Pictures</Text>
             </View>
             <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent:
-                  this.state.selectedImages.length % 3 === 0 &&
-                  this.state.selectedImages.length !== 0
-                    ? "space-between"
-                    : "space-around",
-                marginTop: wp("7%"),
-              }}
+              style={[
+                styles.selectedImagesWrapper,
+                {
+                  justifyContent:
+                    this.state.selectedImages.length % 3 === 0 &&
+                    this.state.selectedImages.length !== 0
+                      ? "space-between"
+                      : "space-around",
+                },
+              ]}
             >
               {this.state.selectedImages.map((image, index) => {
                 return (
                   <View key={index}>
                     <Image
                       source={{ uri: image }}
-                      style={{
-                        width: wp("30%"),
-                        height: wp("30%"),
-                        position: "relative",
-                        marginBottom: wp("2.5%"),
-                      }}
+                      style={styles.selectedImageStyles}
                     />
 
                     <Pressable
                       style={styles.removeIcon}
                       onPress={() => this.removeImage(index)}
                     >
-                      <Text
-                        style={{
-                          color: colors.white,
-                          fontSize: wp("3.5%"),
-                          fontWeight: "900",
-                        }}
-                      >
-                        X
-                      </Text>
+                      <Text style={styles.crossX}>X</Text>
                     </Pressable>
                   </View>
                 )
@@ -318,6 +264,56 @@ class ReviewsAndRating extends Component<IProps, IState> {
 }
 export default ReviewsAndRating
 const styles = StyleSheet.create({
+  selectedImagesWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: wp("7%"),
+  },
+  crossX: {
+    color: colors.white,
+    fontSize: wp("3.5%"),
+    fontWeight: "900",
+  },
+  selectedImageStyles: {
+    width: wp("30%"),
+    height: wp("30%"),
+    position: "relative",
+    marginBottom: wp("2.5%"),
+  },
+  uploadPictureStyle: {
+    fontFamily: "AirbnbCerealBook",
+    fontSize: wp("4.2%"),
+    letterSpacing: 0.5,
+    color: colors.grey,
+  },
+  captureImageStyles: {
+    display: "flex",
+    flexDirection: "row",
+    marginVertical: wp("8%"),
+    alignItems: "center",
+    marginBottom: 0,
+  },
+  descriptionModalStyles: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("4.5%"),
+    lineHeight: wp("6.2%"),
+    marginVertical: wp("2%"),
+    textAlign: "center",
+    color: colors.grey,
+  },
+  thankYouTextStyles: {
+    fontFamily: "ArchivoBold",
+    fontSize: wp("6%"),
+    lineHeight: wp("8%"),
+    color: colors.grey,
+    marginTop: wp("6%"),
+    marginBottom: 0,
+  },
+  modalImage: {
+    width: wp("60%"),
+    height: wp("50%"),
+  },
   titleText: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("6.5%"),

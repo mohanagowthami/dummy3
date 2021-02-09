@@ -56,3 +56,17 @@ export function decode(t?: any, e?: any) {
     return { latitude: t[0], longitude: t[1] }
   }))
 }
+
+export function getCurrentMonthArray(day?: number) {
+  const date = new Date()
+  let calculatedArray = new Array(
+    new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  ).fill(0)
+
+  return calculatedArray.map((ele, index) => {
+    const computatedDay = day ? day : date.getDate()
+
+    if (index + 1 === computatedDay) return 1
+    else return 0
+  })
+}

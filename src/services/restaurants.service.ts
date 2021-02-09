@@ -13,7 +13,7 @@ import UserService from "./user.service"
 
 const userService = new UserService()
 class RestaurantService extends APIService {
-  getCurrentUserLocationBasedRestaurants(): Promise<any> {
+  getCurrentUserLocationBasedData(): Promise<any> {
     return this.get(FAVORITE_RESTAURANTS)
       .then((response: any) => {
         return response.data
@@ -64,7 +64,7 @@ class RestaurantService extends APIService {
 
   getRestaurantDataFromServer(): Promise<any> {
     return Promise.all([
-      this.getCurrentUserLocationBasedRestaurants(),
+      this.getCurrentUserLocationBasedData(),
       this.getRestaurantsHallOfFame(),
       this.getRestaurantsRecap(),
       userService.getUser(),

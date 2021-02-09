@@ -42,15 +42,7 @@ class HallOfFame extends Component<IProps, Istate> {
           <View style={[styles.TitleContainer]}>
             <Text style={styles.frappyText}>Hall of Fame</Text>
           </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-              marginBottom: wp("15%"),
-            }}
-          >
+          <View style={styles.hallOfFameWrapper}>
             {hallOfFameList &&
               hallOfFameList.map((item: any, index: number) => {
                 return (
@@ -72,6 +64,13 @@ class HallOfFame extends Component<IProps, Istate> {
 }
 
 const styles = StyleSheet.create({
+  hallOfFameWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: wp("15%"),
+  },
   TitleContainer: {
     display: "flex",
     flexDirection: "row",
@@ -85,7 +84,8 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     display: "flex",
-    padding: "2%",
+    padding: wp("5%"),
+    backgroundColor: colors.white,
   },
   heading: {
     display: "flex",
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     color: colors.lightGreyThree,
   },
   hallOfFameImage: {
-    width: wp("25%"),
-    height: wp("25%"),
+    width: wp("28%"),
+    height: wp("28%"),
     marginTop: wp("5%"),
     borderRadius: wp("5%"),
   },

@@ -1,36 +1,39 @@
 {
-    "expo": {
-        "name": "frappy",
-        "slug": "frappy",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "updates": {
-            "fallbackToCacheTimeout": 0
-        },
-        "assetBundlePatterns": ["**/*"],
-        "ios": {
-            "supportsTablet": true
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#FFFFFF"
-            },
-            "package": "com.gowthami579.frappy",
-            "config": {
-                "googleMaps": {
-                    "apiKey": "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk"
-                }
-            }
-        },
-        "web": {
-            "favicon": "./assets/icon.png"
+  "expo": {
+    "name": "frappy",
+    "slug": "frappy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gowthami579.frappy"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.gowthami579.frappy",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk"
         }
+      }
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
     }
+  }
 }

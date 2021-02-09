@@ -41,7 +41,7 @@ import TravelService from "../services/travel.service"
 import UserService from "../services/user.service"
 // helper
 import { deriveArrayFromString } from "../lib/helper"
-import { dishesList, recapList } from "../lib/content"
+import { dishesList, recapList, rectangleImageList } from "../lib/content"
 import ReadMoreComponent from "../components/elements/ReadMore"
 
 interface IProps {
@@ -184,11 +184,13 @@ const userService = new UserService()
 
 class HomeScreen extends Component<IProps, Istate> {
   carousel: any
+  scrollRef: any
+  subscribe: any
 
   // destructuring props and state
   constructor(props: IProps) {
     super(props)
-
+    this.scrollRef = React.createRef()
     this.state = {
       category: "food",
       categoryData: [
@@ -238,40 +240,48 @@ class HomeScreen extends Component<IProps, Istate> {
     if (status !== "granted") {
       alert("please grant permission to access current location")
     } else {
-      // let location = await Location.getCurrentPositionAsync({})
-      // console.log("user location", location)
-      // const locationCoordinates = {
-      //   latitude: location.coords.latitude,
-      //   longitude: location.coords.longitude,
-      // }
+      let location = await Location.getCurrentPositionAsync({})
+      console.log("user location", location)
+      const locationCoordinates = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }
       this.setState({
         ...this.state,
         isLoading: true,
       })
-      // userService
-      //   .updateUserCurrentLocation(locationCoordinates)
-      //   .then((response) => {
-      restaurantService
-        .getRestaurantDataFromServer()
-        .then((values) => {
-          let stateData = { ...this.state }
-          stateData.categoryData[0].data.localFavouritesList = values[0].results
-          stateData.categoryData[0].data.hallOfFame = values[1]
-          stateData.categoryData[0].data.recapList = this.getFormatedRecapList(
-            values[2]
-          )
-          stateData.categoryData[0].isDatafetched = true
-          stateData.categoryData[0].data.trendsList = content.trendsList
-          stateData.isLoading = false
-          stateData.username = values[3].username
-          this.setState(stateData)
+      userService
+        .updateUserCurrentLocation(locationCoordinates)
+        .then((response) => {
+          restaurantService
+            .getRestaurantDataFromServer()
+            .then((values) => {
+              let stateData = { ...this.state }
+              stateData.categoryData[0].data.localFavouritesList =
+                values[0].results
+              stateData.categoryData[0].data.hallOfFame = values[1]
+              stateData.categoryData[0].data.recapList = this.getFormatedRecapList(
+                values[2]
+              )
+              stateData.categoryData[0].isDatafetched = true
+              stateData.categoryData[0].data.trendsList = content.trendsList
+              stateData.isLoading = false
+              stateData.username = values[3].username
+              this.setState(stateData)
+            })
+            .catch((error) => console.log(error, "error in home screen"))
         })
-        .catch((error) => console.log(error, "error in home screen"))
-      // })
-      // .catch((error) =>
-      //   console.log(error, "error in user current location saving")
-      // )
+        .catch((error) =>
+          console.log(error, "error in user current location saving")
+        )
     }
+    this.subscribe = this.props.navigation.addListener("focus", () => {
+      this.scrollRef.scrollTo({ x: 0, y: 0, animated: true })
+    })
+  }
+
+  componentWillUnmount() {
+    this.subscribe()
   }
 
   getActiveIndex = () => {
@@ -324,9 +334,6 @@ class HomeScreen extends Component<IProps, Istate> {
   async componentDidUpdate(prevProps: any, prevState: any) {
     if (prevState.category !== this.state.category)
       this.getSelectedCategoryData()
-    if (prevState.searchText !== this.state.searchText) {
-      setTimeout(this.getDataFromSearchAPI, 300)
-    }
   }
 
   // greeting function
@@ -356,8 +363,11 @@ class HomeScreen extends Component<IProps, Istate> {
         ]}
       >
         <View style={styles.descriptionContainer}>
-          <Text style={styles.titleText}>{item.title}</Text>
-          <Text style={styles.description}>{item.description}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.titleText}>{item.title}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+          </View>
+
           <NavigationIcon width={wp("7.8")} height={hp("3.68%")} />
         </View>
 
@@ -397,8 +407,8 @@ class HomeScreen extends Component<IProps, Istate> {
           layout={"default"}
           ref={(ref: any) => (this.carousel = ref)}
           data={categoryData[this.getActiveIndex()].data.trendsList}
-          sliderWidth={wp("100%")}
-          itemWidth={wp("100%")}
+          sliderWidth={wp("90%")}
+          itemWidth={wp("90%")}
           renderItem={this._renderItem}
           loop={true}
           onSnapToItem={(index: number) => {
@@ -436,103 +446,54 @@ class HomeScreen extends Component<IProps, Istate> {
                       id: id,
                     })
                   }
-                >
-                  <View
-                    style={{
-                      width: wp("55%"),
-                      height: wp("70%"),
+                  style={[
+                    styles.renderLocalFavouritesItemWrapper,
+                    {
                       backgroundColor: `${
                         colorsList[
                           Math.floor(Math.random() * colorsList.length)
                         ]
                       }`,
-                      borderRadius: wp("3.2%"),
-                      marginRight: wp("3%"),
-                      padding: 0,
-
-                      flex: 1,
-                    }}
-                  >
-                    {menu_images.length > 0 ? (
-                      <ImageBackground
-                        source={{
-                          uri: menu_images[0].image,
-                        }}
-                        style={{
-                          width: "100%",
-
-                          display: "flex",
-                          borderTopLeftRadius: wp("3.2%"),
-                          borderTopRightRadius: wp("3.2%"),
-                          aspectRatio: 3 / 2,
-                        }}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <ImageBackground
-                        source={require("../../assets/images/Burger.png")}
-                        style={{
-                          width: "100%",
-
-                          borderTopLeftRadius: wp("3.2%"),
-                          borderTopRightRadius: wp("3.2%"),
-                          display: "flex",
-                          alignSelf: "center",
-                          aspectRatio: 3 / 2,
-                        }}
-                        resizeMode="cover"
-                      />
-                    )}
-                    <View
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        flex: 1,
-
-                        paddingHorizontal: wp("5%"),
+                    },
+                  ]}
+                >
+                  {menu_images.length > 0 ? (
+                    <ImageBackground
+                      source={{
+                        uri: menu_images[0].image,
                       }}
-                    >
+                      style={styles.localFavouriteBackgroundImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <ImageBackground
+                      source={
+                        rectangleImageList[
+                          Math.floor(Math.random() * rectangleImageList.length)
+                        ]
+                      }
+                      style={styles.localFavouriteBackgroundImage}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <View style={styles.renderLocalImagePortion2}>
+                    <Text style={styles.formattedCuisinesText}>
+                      {formatedCusines[0]}
+                    </Text>
+                    <Text style={styles.name}>{name}</Text>
+
+                    <View style={styles.ratingWrapper}>
+                      <Rating width={wp("4.2%")} height={hp("4.2%")} />
                       <Text
                         style={{
-                          fontFamily: "ArchivoBold",
-                          fontSize: wp("4.8%"),
-                          color: colors.darkBlack,
-                          marginTop: wp("5%"),
+                          marginLeft: wp("2%"),
                         }}
                       >
-                        {formatedCusines[0]}
+                        {Math.round(rating)}
                       </Text>
-                      <Text style={styles.name}>{name}</Text>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: hp("3%"),
-                        }}
-                      >
-                        <View
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Rating width={wp("4.2%")} height={hp("4.2%")} />
-                          <Text
-                            style={{
-                              marginLeft: wp("2%"),
-                            }}
-                          >
-                            {rating}
-                          </Text>
-                        </View>
-                        <NavigationIcon
-                          width={wp("7.8%")}
-                          height={hp("3.68%")}
-                        />
-                      </View>
+                    </View>
+                    <View style={styles.navigationWrapperStyles}>
+                      <NavigationIcon width={wp("7.8%")} height={hp("3.68%")} />
                     </View>
                   </View>
                 </Pressable>
@@ -556,6 +517,11 @@ class HomeScreen extends Component<IProps, Istate> {
     this.setState(stateData)
   }
 
+  onPressLocalFavorites = () => {
+    this.props.navigation.navigate("localFavourites", {
+      category: this.state.category,
+    })
+  }
   render() {
     // Main return function
     const { isLoading, username } = this.state
@@ -566,7 +532,10 @@ class HomeScreen extends Component<IProps, Istate> {
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
-          <ScrollView style={styles.container}>
+          <ScrollView
+            style={styles.container}
+            ref={(ref) => (this.scrollRef = ref)}
+          >
             <View>
               <View style={styles.heading}>
                 <Text style={styles.frappyText}>
@@ -681,15 +650,7 @@ class HomeScreen extends Component<IProps, Istate> {
                 <>
                   <View style={styles.localFavouritesContainer}>
                     <Text style={styles.frappyText}>Local Favourites</Text>
-                    <Pressable
-                      onPress={() =>
-                        this.props.navigation.navigate("localFavourites", {
-                          localFavourites: this.state.categoryData[
-                            this.getActiveIndex()
-                          ].data.localFavouritesList,
-                        })
-                      }
-                    >
+                    <Pressable onPress={this.onPressLocalFavorites}>
                       <View style={styles.sectionHeaderWrapper}>
                         <Text style={styles.showAllText}>Show all</Text>
                         <RightArrow width={wp("1.59%")} height={hp("1.10%")} />
@@ -706,7 +667,13 @@ class HomeScreen extends Component<IProps, Istate> {
                   <View style={[styles.TitleContainer]}>
                     <Text style={styles.frappyText}>Recap</Text>
                     <Pressable
-                      onPress={() => this.props.navigation.navigate("recap")}
+                      onPress={() =>
+                        this.props.navigation.navigate("recap", {
+                          recapList: this.state.categoryData[
+                            this.getActiveIndex()
+                          ].data.recapList,
+                        })
+                      }
                     >
                       <View style={styles.sectionHeaderWrapper}>
                         <Text style={styles.showAllText}>Show all</Text>
@@ -718,101 +685,90 @@ class HomeScreen extends Component<IProps, Istate> {
                     <View>
                       {this.state.categoryData[
                         this.getActiveIndex()
-                      ].data.recapList.map((ele, index) => {
-                        const {
-                          name,
-                          user_rating,
-                          review_images,
-                          address,
-                          showFullAddress,
-                        } = ele
-                        const numberOfRatings = this.state.categoryData[
-                          this.getActiveIndex()
-                        ].data.recapList.length
+                      ].data.recapList
+                        .slice(0, 1)
+                        .map((ele, index) => {
+                          const {
+                            name,
+                            user_rating,
+                            review_images,
+                            address,
+                            showFullAddress,
+                          } = ele
+                          const numberOfRatings = this.state.categoryData[
+                            this.getActiveIndex()
+                          ].data.recapList.length
 
-                        return (
-                          <View key={index}>
-                            <View style={styles.recapItemContaineer}>
-                              {review_images.length > 0 ? (
-                                <Image
-                                  source={{
-                                    uri: review_images[0].image,
-                                  }}
-                                  style={styles.recapImage}
-                                />
-                              ) : (
-                                <Image
-                                  source={
-                                    recapList[
-                                      Math.floor(
-                                        Math.random() * recapList.length
-                                      )
-                                    ]
-                                  }
-                                  style={styles.recapImage}
-                                />
-                              )}
-
-                              <View style={styles.restaurantTitleContainer}>
-                                <Text style={styles.restaurantTitle}>
-                                  {name}
-                                </Text>
-                                {!showFullAddress ? (
-                                  <View
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "flex-end",
-                                      flexWrap: "wrap",
+                          return (
+                            <React.Fragment key={index}>
+                              <View style={styles.recapItemContaineer}>
+                                {review_images.length > 0 ? (
+                                  <Image
+                                    source={{
+                                      uri: review_images[0].image,
                                     }}
-                                  >
-                                    <Text
-                                      style={styles.recapCardText}
-                                      numberOfLines={1}
-                                    >
+                                    style={styles.recapImage}
+                                  />
+                                ) : (
+                                  <Image
+                                    source={
+                                      recapList[
+                                        Math.floor(
+                                          Math.random() * recapList.length
+                                        )
+                                      ]
+                                    }
+                                    style={styles.recapImage}
+                                  />
+                                )}
+
+                                <View style={styles.restaurantTitleContainer}>
+                                  <Text style={styles.restaurantTitle}>
+                                    {name}
+                                  </Text>
+                                  {!showFullAddress ? (
+                                    <View style={styles.showFullAddressWrapper}>
+                                      <Text
+                                        style={styles.recapCardText}
+                                        numberOfLines={1}
+                                      >
+                                        {address}
+                                      </Text>
+                                      <ReadMoreComponent
+                                        onPressReadmore={() =>
+                                          this.onPressReadMore(index)
+                                        }
+                                      />
+                                    </View>
+                                  ) : (
+                                    <Text style={styles.recapCardText}>
                                       {address}
                                     </Text>
-                                    <ReadMoreComponent
-                                      onPressReadmore={() =>
-                                        this.onPressReadMore(index)
-                                      }
-                                    />
-                                  </View>
-                                ) : (
-                                  <Text style={styles.recapCardText}>
-                                    {address}
-                                  </Text>
-                                )}
-                                <View style={styles.ratingContainer}>
-                                  <View
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Rating
-                                      width={wp("4.2%")}
-                                      height={hp("4.2%")}
-                                    />
-                                    <Text style={styles.noOfRatings}>
-                                      {user_rating}({numberOfRatings} ratings)
-                                    </Text>
-                                  </View>
+                                  )}
+                                  <View style={styles.ratingContainer}>
+                                    <View style={styles.ratingInnerWrapper}>
+                                      <Rating
+                                        width={wp("4.2%")}
+                                        height={hp("4.2%")}
+                                      />
+                                      <Text style={styles.noOfRatings}>
+                                        {user_rating}({numberOfRatings} ratings)
+                                      </Text>
+                                    </View>
 
-                                  <View style={styles.navigationIcon}>
-                                    <NavigationIcon
-                                      width={wp("7.8%")}
-                                      height={hp("3.68%")}
-                                    />
+                                    <View style={styles.navigationIcon}>
+                                      <NavigationIcon
+                                        width={wp("7.8%")}
+                                        height={hp("3.68%")}
+                                      />
+                                    </View>
                                   </View>
                                 </View>
                               </View>
-                            </View>
-                            <View style={styles.borderLine}></View>
-                          </View>
-                        )
-                      })}
+                              <View style={styles.borderLine}></View>
+                            </React.Fragment>
+                          )
+                        })}
                     </View>
                   </View>
                 </>
@@ -826,7 +782,11 @@ class HomeScreen extends Component<IProps, Istate> {
                     <View style={styles.sectionHeaderWrapper}>
                       <Pressable
                         onPress={() =>
-                          this.props.navigation.navigate("hallOfFame")
+                          this.props.navigation.navigate("hallOfFame", {
+                            hallOfFameList: this.state.categoryData[
+                              this.getActiveIndex()
+                            ].data.hallOfFame,
+                          })
                         }
                       >
                         <View style={styles.showAll}>
@@ -851,6 +811,7 @@ class HomeScreen extends Component<IProps, Istate> {
                             source={{
                               uri: image,
                             }}
+                            resizeMode="cover"
                           />
                         </View>
                       )
@@ -867,6 +828,55 @@ class HomeScreen extends Component<IProps, Istate> {
 }
 export default HomeScreen
 const styles = StyleSheet.create({
+  ratingInnerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  showFullAddressWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    flexWrap: "wrap",
+  },
+  navigationWrapperStyles: {
+    position: "absolute",
+    bottom: hp("2%"),
+    right: hp("2%"),
+  },
+  formattedCuisinesText: {
+    fontFamily: "ArchivoBold",
+    fontSize: wp("4.8%"),
+    color: colors.darkBlack,
+  },
+  ratingWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  renderLocalImagePortion2: {
+    display: "flex",
+    flex: 1,
+    padding: wp("5%"),
+  },
+
+  localFavouriteBackgroundImage: {
+    width: "100%",
+
+    display: "flex",
+    borderTopLeftRadius: wp("3.2%"),
+    borderTopRightRadius: wp("3.2%"),
+    aspectRatio: 3 / 2,
+  },
+  renderLocalFavouritesItemWrapper: {
+    width: wp("55%"),
+    height: wp("70%"),
+    borderRadius: wp("3.2%"),
+    marginRight: wp("3%"),
+    padding: 0,
+    overflow: "hidden",
+    position: "relative",
+  },
   TitleContainer: {
     display: "flex",
     flexDirection: "row",
@@ -929,7 +939,7 @@ const styles = StyleSheet.create({
   },
   frappyText: {
     fontFamily: "ArchivoRegular",
-    fontSize: wp("6.5%"),
+    fontSize: wp("6%"),
   },
   container: {
     padding: "5%",
@@ -973,18 +983,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    flex: 1,
   },
   smallButton: {
-    width: wp("27%"),
     borderRadius: wp("5%"),
     marginTop: wp("5.3%"),
-    paddingVertical: wp("3%"),
+    paddingVertical: wp("2.5%"),
     marginBottom: wp("4%"),
     borderWidth: wp("0.3%"),
+    width: wp("29%"),
   },
   buttonTitle: {
     fontFamily: "AirbnbCerealBold",
-    fontSize: wp("4%"),
+    fontSize: wp("5%"),
     lineHeight: wp("5%"),
   },
   showAll: {
@@ -994,25 +1005,25 @@ const styles = StyleSheet.create({
   },
   buttonTextStyles: {
     fontFamily: "AirbnbCerealBook",
-    fontSize: wp("4%"),
-    lineHeight: wp("5%"),
+    fontSize: wp("4.5%"),
   },
   sliderImage: {
-    marginRight: wp("9%"),
-    width: wp("25%"),
-    height: wp("25%"),
+    width: wp("30%"),
+    height: wp("30%"),
   },
   overallRating: {
     marginLeft: wp("2%"),
   },
   renderItemContainer: {
-    padding: wp("3%"),
+    padding: wp("4%"),
     display: "flex",
     flexDirection: "row",
     borderRadius: wp("3%"),
     justifyContent: "space-between",
     height: wp("34%"),
     alignItems: "center",
+    overflow: "hidden",
+    width: "100%",
   },
   localFavourites: { display: "flex", flexDirection: "row" },
   name: {
@@ -1042,8 +1053,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   hallOfFameImage: {
-    width: wp("25%"),
-    height: wp("25%"),
+    width: wp("28%"),
+    height: wp("28%"),
     marginTop: wp("5%"),
     borderRadius: wp("5%"),
   },
@@ -1126,7 +1137,7 @@ const styles = StyleSheet.create({
     fontSize: wp("5%"),
     color: colors.grey,
   },
-  descriptionContainer: { display: "flex", justifyContent: "space-between" },
+  descriptionContainer: { display: "flex", flex: 1 },
   activity: {
     marginTop: hp("45%"),
     display: "flex",
@@ -1137,5 +1148,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1,
     justifyContent: "center",
+    backgroundColor: colors.white,
+    alignItems: "center",
   },
 })

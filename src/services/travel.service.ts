@@ -10,7 +10,7 @@ import {
 import APIService from "./api.service"
 
 class TravelService extends APIService {
-  getCurrentUserLocationBasedTravel(): Promise<any> {
+  getCurrentUserLocationBasedData(): Promise<any> {
     return this.get(FAVORITE_TRAVELPLACES)
       .then((response: any) => {
         return response.data
@@ -61,7 +61,7 @@ class TravelService extends APIService {
 
   getDataFromServer(): Promise<any> {
     return Promise.all([
-      this.getCurrentUserLocationBasedTravel(),
+      this.getCurrentUserLocationBasedData(),
       this.getTravelPlacesHallOfFame(),
       this.getTravelPlacesRecap(),
     ])

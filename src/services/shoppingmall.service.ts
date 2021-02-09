@@ -10,7 +10,7 @@ import {
 import APIService from "./api.service"
 
 class ShoppingMallService extends APIService {
-  getCurrentUserLocationBasedShoppingMalls(): Promise<any> {
+  getCurrentUserLocationBasedData(): Promise<any> {
     return this.get(FAVORITE_SHOPPINGMALL)
       .then((response: any) => {
         return response.data
@@ -61,7 +61,7 @@ class ShoppingMallService extends APIService {
 
   getDataFromServer(): Promise<any> {
     return Promise.all([
-      this.getCurrentUserLocationBasedShoppingMalls(),
+      this.getCurrentUserLocationBasedData(),
       this.getShoppingMallsHallOfFame(),
       this.getShoppingMallsRecap(),
     ])

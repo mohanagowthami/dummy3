@@ -11,6 +11,7 @@ import {
   ScrollView,
   ActivityIndicator,
   TextInput,
+  FlatList,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -31,7 +32,7 @@ import CustomTextField from "../components/input-controllers/CustomTextField"
 import CustomButton from "../components/buttons/CustomButton"
 // colors
 import { colors } from "../lib/colors"
-import { getFormatedDate } from "../lib/helper"
+import { getFormatedDate, getCurrentMonthArray } from "../lib/helper"
 import PlannerService from "../services/planner.service"
 
 // props
@@ -56,23 +57,12 @@ interface IState {
   isLoading: boolean
 }
 
-function getCurrentMonthArray() {
-  const date = new Date()
-  let calculatedArray = new Array(
-    new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-  ).fill(0)
-
-  return calculatedArray.map((ele, index) => {
-    if (index + 1 === date.getDate()) return 1
-    else return 0
-  })
-}
-
 const plannerService = new PlannerService()
 
 class AddDateToCalender extends Component<IProps, IState> {
   date: any = new Date()
   ref: any
+  flatListRef: any
   constructor(props: IProps) {
     super(props)
     this.state = {
@@ -86,7 +76,7 @@ class AddDateToCalender extends Component<IProps, IState> {
       switchArray: [
         {
           name: "Food",
-          on: false,
+          on: true,
         },
         {
           name: "Travel",
@@ -103,6 +93,7 @@ class AddDateToCalender extends Component<IProps, IState> {
       destinationLocation: "",
     }
     this.ref = React.createRef()
+    this.flatListRef = React.createRef()
   }
 
   showPicker = (mode: string) => {
@@ -116,13 +107,33 @@ class AddDateToCalender extends Component<IProps, IState> {
   onChangePicker = (event: any, selectedDate: any) => {
     let stateData = { ...this.state }
     stateData.show = false
-    if (this.state.mode === "date") stateData.date = selectedDate
-    else {
+    if (this.state.mode === "date") {
+      stateData.date = selectedDate
+      if (
+        selectedDate.getMonth() === this.date.getMonth() &&
+        selectedDate.getFullYear() === this.date.getFullYear()
+      ) {
+        stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
+        this.flatListRef.scrollToIndex({
+          animated: true,
+          index: selectedDate.getDate() - 1,
+        })
+      } else {
+        stateData.dateArray = new Array(
+          new Date(
+            this.date.getFullYear(),
+            this.date.getMonth() + 1,
+            0
+          ).getDate()
+        ).fill(0)
+      }
+    } else {
       if (this.ref.current === "from")
         stateData.fromTime = `${selectedDate.getHours()} : ${selectedDate.getMinutes()}`
       else
         stateData.toTime = `${selectedDate.getHours()} : ${selectedDate.getMinutes()}`
     }
+
     this.setState(stateData)
   }
 
@@ -177,62 +188,57 @@ class AddDateToCalender extends Component<IProps, IState> {
     })
   }
 
-  onBlurDescription = () => {}
+  flatListRenderItem = (item: any, index: number) => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    let day = new Date(this.date.getFullYear(), this.date.getMonth(), index + 1)
+    const dayName = days[day.getDay()]
+    return (
+      <View style={styles.flatListRenderItemContainer}>
+        <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
+          {dayName}
+        </Text>
 
-  onPressButton = (name: string) => {}
-
-  setModalStatus = () => {}
+        <Text
+          style={[
+            styles.dateTextStyle,
+            {
+              backgroundColor: item ? colors.orange : colors.white,
+              color: item ? colors.white : colors.darkBlack,
+              width: wp("10%"),
+              height: wp("10%"),
+              borderRadius: wp("5%"),
+              textAlign: "center",
+              textAlignVertical: "center",
+            },
+          ]}
+          onPress={() => this.handlePressableDate(index)}
+        >
+          {index + 1}
+        </Text>
+      </View>
+    )
+  }
+  getItemLayout(data: any, index: number) {
+    return {
+      length: wp("10%"),
+      offset: wp("13%") * index,
+      index,
+    }
+  }
 
   renderDays = () => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    const { dateArray } = this.state
+    console.log(this.state.date.getDate(), "dategow")
     return (
-      <ScrollView
-        style={{
-          display: "flex",
-          flexDirection: "row",
-        }}
+      <FlatList
+        data={dateArray}
+        renderItem={({ item, index }) => this.flatListRenderItem(item, index)}
         horizontal
-      >
-        {this.state.dateArray.map((ele: any, index: number) => {
-          let day = new Date(
-            this.date.getFullYear(),
-            this.date.getMonth(),
-            index + 1
-          )
-          const dayName = days[day.getDay()]
-          return (
-            <View
-              style={{
-                marginHorizontal: wp("2.5%"),
-                alignItems: "center",
-              }}
-              key={index}
-            >
-              <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
-                {dayName}
-              </Text>
-
-              <Text
-                style={[
-                  styles.dateTextStyle,
-                  {
-                    backgroundColor: ele ? colors.orange : colors.white,
-                    color: ele ? colors.white : colors.darkBlack,
-                    width: wp("10%"),
-                    height: wp("10%"),
-                    borderRadius: wp("5%"),
-                    textAlign: "center",
-                    textAlignVertical: "center",
-                  },
-                ]}
-                onPress={() => this.handlePressableDate(index)}
-              >
-                {index + 1}
-              </Text>
-            </View>
-          )
-        })}
-      </ScrollView>
+        keyExtractor={(item, index) => "key" + index}
+        initialScrollIndex={this.state.date.getDate() - 1}
+        getItemLayout={this.getItemLayout.bind(this)}
+        ref={(ref) => (this.flatListRef = ref)}
+      />
     )
   }
 
@@ -244,17 +250,22 @@ class AddDateToCalender extends Component<IProps, IState> {
       initialLocation,
       destinationLocation,
       description,
+      switchArray,
     } = this.state
+    const category = switchArray.find((ele) => {
+      if (ele) return ele.name
+    })
     const data = {
-      from_time: fromTime,
-      to_time: toTime,
+      from_time: fromTime.replace(/\s/g, ""),
+      to_time: toTime.replace(/\s/g, ""),
       date: getFormatedDate(date),
       start_location: initialLocation,
       end_location: destinationLocation,
-      category: "Travel",
+      category: category!.name,
       description: description,
     }
 
+    console.log(data, "data")
     this.setState({ ...this.state, isLoading: true })
     plannerService
       .updateUserPlannerData(data)
@@ -264,10 +275,17 @@ class AddDateToCalender extends Component<IProps, IState> {
       })
       .catch((error) => console.log(error, "error"))
   }
+
+  onChangeDescription = (text: string) => {
+    this.setState({ ...this.setState, description: text })
+  }
+  onPressDate = () => {
+    this.showPicker("date")
+  }
   render() {
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled">
           {this.state.isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator color={colors.darkBlack} size="large" />
@@ -284,31 +302,10 @@ class AddDateToCalender extends Component<IProps, IState> {
                   <BellIcon width={wp("5.9%")} height={wp("5.9%")} />
                 </Pressable>
               </View>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Pressable onPress={() => this.showPicker("date")}>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginBottom: hp("1%"),
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "ArchivoRegular",
-                        fontSize: wp("5%"),
-                        color: colors.darkBlack,
-                        marginRight: wp("4%"),
-                      }}
-                    >
-                      Select Date
-                    </Text>
+              <View style={styles.containerDirection}>
+                <Pressable onPress={this.onPressDate}>
+                  <View style={styles.dateWrapper}>
+                    <Text style={styles.dateTextStyle}>Select Date</Text>
                     <CalenderSvg
                       color={colors.darkGrey}
                       width={wp("5%")}
@@ -317,12 +314,11 @@ class AddDateToCalender extends Component<IProps, IState> {
                   </View>
                 </Pressable>
               </View>
-
-              {this.renderDays()}
-              <Text style={styles.timeTextMargin}>
-                {/* marginVertical:hp("2%") */}
-                {/* {this.state.date && getFormatedDate(this.state.date)} */}
+              <Text style={styles.formattedDate}>
+                {getFormatedDate(this.state.date)}
               </Text>
+              {this.renderDays()}
+
               <Text
                 style={styles.selectDate}
                 onPress={() => this.showPicker("Date")}
@@ -332,12 +328,7 @@ class AddDateToCalender extends Component<IProps, IState> {
               <View style={styles.setTimeContainer}>
                 <View style={styles.timeBox}>
                   <Pressable
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
+                    style={styles.timeBoxItem}
                     onPress={() => {
                       this.ref.current = "from"
                       this.showPicker("time")
@@ -349,12 +340,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                 </View>
                 <View style={styles.timeBox}>
                   <Pressable
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
+                    style={styles.timeBoxItem}
                     onPress={() => {
                       this.ref.current = "to"
                       this.showPicker("time")
@@ -402,7 +388,7 @@ class AddDateToCalender extends Component<IProps, IState> {
               <Text style={styles.selectDate}>Select Category</Text>
               {this.renderSelectCategorySwitches()}
               <CustomTextField
-                onChange={this.onBlurDescription}
+                onChange={this.onChangeDescription}
                 textAlignVertical="top"
                 placeholderTextColor={colors.greyTwo}
                 placeholder={"Description"}
@@ -444,6 +430,40 @@ class AddDateToCalender extends Component<IProps, IState> {
 export default AddDateToCalender
 
 const styles = StyleSheet.create({
+  timeBoxItem: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dateTextStyle2: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("5%"),
+    color: colors.darkBlack,
+    marginRight: wp("4%"),
+  },
+
+  dateWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: hp("1%"),
+  },
+  formattedDate: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("5%"),
+    color: colors.greyTwo,
+    paddingVertical: hp("1%"),
+    paddingTop: 0,
+  },
+  flatListRenderItemContainer: {
+    marginHorizontal: wp("3%"),
+    alignItems: "center",
+  },
+  containerDirection: {
+    display: "flex",
+    flexDirection: "row",
+  },
   safeAreaContainer: {
     flex: 1,
     paddingTop: hp("2%"),

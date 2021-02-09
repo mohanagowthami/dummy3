@@ -10,6 +10,8 @@ import {
   TextInput,
   Pressable,
   ImageBackground,
+  ActivityIndicator,
+  FlatList,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -23,6 +25,9 @@ import { BellIcon, SearchIcon } from "../../assets/svgs/icons"
 import { colors } from "../lib/colors"
 import { deriveArrayFromString } from "../lib/helper"
 import { dishesList } from "../lib/content"
+import RestaurantService from "../services/restaurants.service"
+import TravelService from "../services/travel.service"
+import ShoppingMallService from "../services/shoppingmall.service"
 
 const colorsList = [
   "#FFEA75",
@@ -103,104 +108,163 @@ interface IProps {
   route: any
 }
 
-interface IState {}
-class LocalFavourites extends Component<IProps, IState> {
-  renderLocalFavouritesList = () => {
-    const { localFavourites } = this.props.route.params
-    console.log(localFavourites, "in lfscreen")
-    return (
-      <ScrollView>
-        {localFavourites &&
-          localFavourites.map((ele: any, index: number) => {
-            const { menu_images, overall_rating, name, cuisines, id } = ele
-            const formatedCusines = deriveArrayFromString(cuisines)
-            return (
-              <Pressable
-                onPress={() =>
-                  this.props.navigation.navigate("itemInDetail", {
-                    id: id,
-                  })
-                }
-                key={index}
-              >
-                <View
-                  style={[
-                    styles.backgroundcolorContainer,
-                    {
-                      backgroundColor: `${
-                        colorsList[
-                          Math.floor(Math.random() * colorsList.length)
-                        ]
-                      }`,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flex: 1,
-                    }}
-                  >
-                    <View>
-                      <Text style={styles.cusine}>{formatedCusines[0]}</Text>
-                      <Text style={styles.restaurantName}>{name}</Text>
-                    </View>
-                    <NavigationIcon width={wp("7.8")} height={wp("7.8%")} />
-                  </View>
+interface IState {
+  localFavourites: any
+  isLoading: boolean
+}
 
-                  {menu_images.length > 0 ? (
-                    <ImageBackground
-                      source={{
-                        uri: menu_images[0].image,
-                      }}
-                      style={styles.image}
-                    />
-                  ) : (
-                    <ImageBackground
-                      source={
-                        dishesList[
-                          Math.floor(Math.random() * dishesList.length)
-                        ]
-                      }
-                      style={styles.image}
-                    />
-                  )}
-                </View>
-              </Pressable>
-            )
-          })}
-      </ScrollView>
+const restaurantService = new RestaurantService()
+const travelService = new TravelService()
+const shoppingService = new ShoppingMallService()
+class LocalFavourites extends Component<IProps, IState> {
+  refCategory: any
+  constructor(props: IProps) {
+    super(props)
+    {
+      this.state = {
+        localFavourites: [],
+        isLoading: false,
+      }
+      this.refCategory = React.createRef()
+    }
+  }
+  componentDidMount() {
+    const category = this.props.route.params
+      ? this.props.route.params.category
+      : this.refCategory.current
+
+    this.setState({ ...this.state, isLoading: true })
+    let service
+    if (category === "food") {
+      this.refCategory.current = "food"
+      service = restaurantService
+    } else if (category === "travel") {
+      this.refCategory.current = "travel"
+      service = travelService
+    } else {
+      service = shoppingService
+      this.refCategory.current = "shopping"
+    }
+    service
+      .getCurrentUserLocationBasedData()
+      .then((response) => {
+        this.setState({ localFavourites: response.results })
+      })
+      .catch((error) => {
+        console.log(error, "error")
+      })
+      .finally(() => {
+        this.setState({ ...this.state, isLoading: false })
+      })
+  }
+
+  flatListRenderItem = ({ item }: any) => {
+    const { menu_images, overall_rating, name, tags, id } = item
+    const formatedCusines = deriveArrayFromString(tags)
+    return (
+      <Pressable
+        onPress={() =>
+          this.props.navigation.navigate("itemInDetail", {
+            id: id,
+          })
+        }
+        style={[
+          styles.backgroundcolorContainer,
+          {
+            backgroundColor: `${
+              colorsList[Math.floor(Math.random() * colorsList.length)]
+            }`,
+          },
+        ]}
+      >
+        <View style={styles.pressableInnerWrapper}>
+          <View style={styles.fullHeight}>
+            <Text style={styles.cusine}>{formatedCusines[0]}</Text>
+            <Text style={styles.restaurantName} numberOfLines={2}>
+              {name}
+            </Text>
+          </View>
+          <NavigationIcon width={wp("7.8")} height={wp("7.8%")} />
+        </View>
+
+        {menu_images.length > 0 ? (
+          <ImageBackground
+            source={{
+              uri: menu_images[0].image,
+            }}
+            style={styles.image}
+          />
+        ) : (
+          <ImageBackground
+            source={dishesList[Math.floor(Math.random() * dishesList.length)]}
+            style={styles.image}
+          />
+        )}
+      </Pressable>
     )
   }
 
+  renderLocalFavouritesList = () => {
+    const category = this.props.route.params
+      ? this.props.route.params.category
+      : this.refCategory.current
+    const { localFavourites } = this.state
+    return (
+      <FlatList
+        data={localFavourites}
+        renderItem={this.flatListRenderItem}
+        keyExtractor={(item: any) => item.id.toString()}
+        extraData={category}
+      />
+    )
+  }
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Local Favourites</Text>
-          <Pressable
-            onPress={() => this.props.navigation.navigate("notifications")}
-          >
-            <BellIcon width={wp("6%")} height={wp("6%")} />
-          </Pressable>
-        </View>
-        <View style={styles.searchButton}>
-          <SearchIcon width={wp("5%")} height={wp("5%")} />
-          <TextInput
-            placeholder="Search Restaurants"
-            style={styles.searchInput}
-            onChange={() => this.props.navigation.navigate("searchFoodResults")}
-          />
-        </View>
-        {this.renderLocalFavouritesList()}
-      </View>
+      <>
+        {this.state.isLoading ? (
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator color={colors.darkBlack} size="large" />
+          </View>
+        ) : (
+          <View style={styles.container}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>Local Favourites</Text>
+              <Pressable
+                onPress={() => this.props.navigation.navigate("notifications")}
+              >
+                <BellIcon width={wp("6%")} height={wp("6%")} />
+              </Pressable>
+            </View>
+            <View style={styles.searchButton}>
+              <SearchIcon width={wp("5%")} height={wp("5%")} />
+              <TextInput
+                placeholder="Search Restaurants"
+                style={styles.searchInput}
+                onChange={() =>
+                  this.props.navigation.navigate("searchFoodResults")
+                }
+              />
+            </View>
+            {this.renderLocalFavouritesList()}
+          </View>
+        )}
+      </>
     )
   }
 }
 export default LocalFavourites
 
 const styles = StyleSheet.create({
+  fullHeight: {
+    flex: 1,
+  },
+  pressableInnerWrapper: { width: "65%", justifyContent: "flex-start" },
+  activityIndicator: {
+    display: "flex",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   titleContainer: {
     display: "flex",
     flexDirection: "row",

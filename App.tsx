@@ -15,6 +15,7 @@ import PickYourChoice from "./src/screens/PickYourChoice"
 // components
 import BottomTab from "./src/components/elements/BottomTab"
 import UserService from "./src/services/user.service"
+import LogoScreen from "./src/screens/LogoScreen"
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -23,20 +24,31 @@ const userService = new UserService()
 
 // loading fonts using useFonts()
 export default function App() {
+  let isMounted: boolean = false
   const [isSignedIn, setSignedIn] = useState(false)
+  const [isLoading, setLoadingStatus] = useState(true)
   useEffect(() => {
+    isMounted = true
     async function getUser() {
       try {
         const response = await userService.getUser()
         if (response) {
           console.log(response, "response")
-          if (response.id) setSignedIn(true)
+          if (response.id && isMounted) {
+            setSignedIn(true)
+            setLoadingStatus(false)
+          }
         }
       } catch (error) {
         console.log(error, "in  error")
+      } finally {
+        setLoadingStatus(false)
       }
     }
     getUser()
+    return () => {
+      isMounted = false
+    }
   }, [])
   const [loaded] = Font.useFonts({
     AirbnbCerealBold: require("./assets/fonts/AirbnbCerealBold.ttf"),
@@ -53,7 +65,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {isSignedIn ? (
+        {isLoading ? (
+          <Stack.Screen
+            name="logoScreen"
+            component={LogoScreen}
+            options={{ headerShown: false }}
+          />
+        ) : isSignedIn ? (
           <Stack.Screen
             name="bottomTab"
             component={BottomTab}

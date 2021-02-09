@@ -15,6 +15,8 @@ import { NavigationIcon } from "../../assets/svgs/icons/icons-directions"
 import { Rating } from "../../assets/svgs/icons"
 // colors
 import { colors } from "../lib/colors"
+import ReadMoreComponent from "../components/elements/ReadMore"
+import { recapList as imagesList } from "../lib/content"
 
 interface IProps {
   navigation: any
@@ -22,7 +24,9 @@ interface IProps {
   recapList: any
 }
 
-interface Istate {}
+interface Istate {
+  recapList: any
+}
 
 const colorsList = [
   "#FFEA75",
@@ -37,9 +41,22 @@ const colorsList = [
 const dummyImage =
   "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
 class Recap extends Component<IProps, Istate> {
+  constructor(props: IProps) {
+    super(props)
+    {
+      this.state = {
+        recapList: this.props.route.params.recapList,
+      }
+    }
+  }
+  onPressReadMore = (index: number) => {
+    let stateData = { ...this.state }
+
+    stateData.recapList[index].showFullAddress = true
+    this.setState(stateData)
+  }
   render() {
-    const { recapList } = this.props.route.params
-    console.log(recapList, "recapList")
+    const { recapList } = this.state
     return (
       <ScrollView style={styles.mainContainer}>
         <View>
@@ -55,73 +72,68 @@ class Recap extends Component<IProps, Istate> {
                   averageRatings,
                   numberOfRatings,
                   review_images,
+                  showFullAddress,
+                  user_rating,
                 } = ele
                 return (
-                  <View key={index}>
+                  <React.Fragment key={index}>
                     <View style={styles.recapItemContaineer}>
-                      <Image
-                        source={{
-                          uri: review_images[0]
-                            ? review_images[0].image
-                            : dummyImage,
-                        }}
-                        style={styles.recapImage}
-                      />
-                      <View
-                        style={{
-                          flex: 1,
-                          padding: wp("5%"),
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontFamily: "ArchivoRegular",
-                            fontSize: wp("4.2%"),
-                            color: colors.darkBlack,
+                      {review_images.length > 0 ? (
+                        <Image
+                          source={{
+                            uri: review_images[0].image,
                           }}
-                        >
-                          {name}
-                        </Text>
-                        <Text style={styles.recapCardText}>{address}</Text>
-                        <View
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Rating width={wp("4.2")} height={wp("4.2")} />
-                          <Text
-                            style={[
-                              styles.recapCardText,
-                              {
-                                marginLeft: wp("2%"),
-                              },
-                            ]}
-                          >
-                            {averageRatings}({numberOfRatings} ratings)
-                          </Text>
+                          style={styles.recapImage}
+                        />
+                      ) : (
+                        <Image
+                          source={
+                            imagesList[
+                              Math.floor(Math.random() * imagesList.length)
+                            ]
+                          }
+                          style={styles.recapImage}
+                        />
+                      )}
+
+                      <View style={styles.restaurantTitleContainer}>
+                        <Text style={styles.restaurantTitle}>{name}</Text>
+                        {!showFullAddress ? (
+                          <View style={styles.showFullAddressWrapper}>
+                            <Text
+                              style={styles.recapCardText}
+                              numberOfLines={1}
+                            >
+                              {address}
+                            </Text>
+                            <ReadMoreComponent
+                              onPressReadmore={() =>
+                                this.onPressReadMore(index)
+                              }
+                            />
+                          </View>
+                        ) : (
+                          <Text style={styles.recapCardText}>{address}</Text>
+                        )}
+                        <View style={styles.ratingContainer}>
+                          <View style={styles.ratingInnerWrapper}>
+                            <Rating width={wp("4.2%")} height={hp("4.2%")} />
+                            <Text style={styles.noOfRatings}>
+                              {user_rating}({numberOfRatings} ratings)
+                            </Text>
+                          </View>
+
+                          <View style={styles.navigationIcon}>
+                            <NavigationIcon
+                              width={wp("7.8%")}
+                              height={hp("3.68%")}
+                            />
+                          </View>
                         </View>
                       </View>
-                      <View
-                        style={{
-                          display: "flex",
-                          alignSelf: "flex-end",
-                        }}
-                      >
-                        <NavigationIcon
-                          width={wp("7.8%")}
-                          height={hp("3.68%")}
-                        />
-                      </View>
                     </View>
-                    <View
-                      style={{
-                        height: 1,
-                        backgroundColor: colors.lightGreyTwo,
-                      }}
-                    ></View>
-                  </View>
+                    <View style={styles.borderLine}></View>
+                  </React.Fragment>
                 )
               })}
           </View>
@@ -132,6 +144,39 @@ class Recap extends Component<IProps, Istate> {
 }
 
 const styles = StyleSheet.create({
+  showFullAddressWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    flexWrap: "wrap",
+  },
+  ratingInnerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  noOfRatings: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("3.8%"),
+    color: colors.lightGreyThree,
+
+    marginLeft: wp("2%"),
+  },
+  navigationIcon: {
+    display: "flex",
+    alignSelf: "flex-end",
+  },
+  restaurantTitle: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("4.2%"),
+    color: colors.darkBlack,
+  },
+  ratingContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   TitleContainer: {
     display: "flex",
     flexDirection: "row",
@@ -173,12 +218,22 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
     paddingVertical: wp("5%"),
   },
   recapCardText: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.8%"),
     color: colors.lightGreyThree,
+  },
+  restaurantTitleContainer: {
+    flex: 1,
+    padding: wp("5%"),
+    justifyContent: "space-between",
+  },
+  borderLine: {
+    height: 1,
+    backgroundColor: colors.lightGreyTwo,
   },
 })
 
