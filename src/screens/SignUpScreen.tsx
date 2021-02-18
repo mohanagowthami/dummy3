@@ -129,17 +129,17 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
   }
   // render
   render() {
-    const { isLoading } = this.state
+    const { isLoading, modalVisible } = this.state
     return (
       <SafeAreaView>
         {isLoading ? (
           <ActivityIndicator />
         ) : (
           <View style={styles.modal}>
-            {this.state.modalVisible && (
+            {modalVisible && (
               <View>
                 <Modal
-                  isVisible={this.state.modalVisible}
+                  isVisible={modalVisible}
                   backdropColor={colors.white}
                   backdropOpacity={0.9}
                 >

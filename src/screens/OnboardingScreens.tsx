@@ -87,6 +87,7 @@ class OnboardingScreens extends React.Component<Props, State> {
     //carousel data as props to item
     const { SVG, title, subHeading, backgroundColor } = item
     const { navigation } = this.props
+    const { carouselItems } = this.state
     return (
       <View
         style={[styles.mainContainer, { backgroundColor: backgroundColor }]}
@@ -115,7 +116,7 @@ class OnboardingScreens extends React.Component<Props, State> {
                 onPress={() => {
                   const temp = { ...this.state }
                   temp.activeIndex = temp.activeIndex + 1
-                  temp.activeIndex < this.state.carouselItems.length
+                  temp.activeIndex < carouselItems.length
                     ? this.carousel.snapToNext()
                     : navigation.navigate("login")
                   this.setState(temp)
@@ -134,12 +135,13 @@ class OnboardingScreens extends React.Component<Props, State> {
 
   render() {
     const currentObject = this
+    const { carouselItems } = this.state
     return (
       <Carousel
         scrollEnabled={true}
         layout={"default"}
         ref={(ref: any) => (this.carousel = ref)}
-        data={this.state.carouselItems}
+        data={carouselItems}
         sliderWidth={wp("100%")}
         itemWidth={wp("100%")}
         renderItem={this._renderItem.bind(this)}
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     // backgroundColor:
     //     activeIndex < carouselItems.length
-    //         ? this.state.carouselItems[activeIndex]
+    //         ? carouselItems[activeIndex]
     //               .backgroundColor
     //         : colors.white,
   },

@@ -13,8 +13,8 @@ import UserService from "./user.service"
 
 const userService = new UserService()
 class RestaurantService extends APIService {
-  getCurrentUserLocationBasedData(): Promise<any> {
-    return this.get(FAVORITE_RESTAURANTS)
+  getCurrentUserLocationBasedData(page?: number): Promise<any> {
+    return this.get(FAVORITE_RESTAURANTS((page = 1)))
       .then((response: any) => {
         return response.data
       })
@@ -32,7 +32,7 @@ class RestaurantService extends APIService {
       })
   }
 
-  getRestaurantsHallOfFame(): Promise<any> {
+  getHallOfFame(): Promise<any> {
     return this.get(HALL_OF_FAME_CATEGORY("food"))
       .then((response: any) => {
         return response.data
@@ -42,7 +42,7 @@ class RestaurantService extends APIService {
       })
   }
 
-  getRestaurantsRecap(): Promise<any> {
+  getRecap(): Promise<any> {
     return this.get(RECAP_CATEGORY("food"))
       .then((response: any) => {
         return response.data
@@ -52,8 +52,8 @@ class RestaurantService extends APIService {
       })
   }
 
-  search(searchText: string): Promise<any> {
-    return this.get(SEARCH("food", searchText))
+  search(searchText: string, page: number): Promise<any> {
+    return this.get(SEARCH("food", searchText, page))
       .then((response: any) => {
         return response.data
       })
@@ -65,8 +65,8 @@ class RestaurantService extends APIService {
   getRestaurantDataFromServer(): Promise<any> {
     return Promise.all([
       this.getCurrentUserLocationBasedData(),
-      this.getRestaurantsHallOfFame(),
-      this.getRestaurantsRecap(),
+      this.getHallOfFame(),
+      this.getRecap(),
       userService.getUser(),
     ])
       .then((values) => values)
@@ -75,8 +75,8 @@ class RestaurantService extends APIService {
       })
   }
 
-  getUniversalSearchData(searchText: string): Promise<any> {
-    return this.get(UNIVERSAL_SEARCH(searchText))
+  getUniversalSearchData(searchText: string, page: number): Promise<any> {
+    return this.get(UNIVERSAL_SEARCH(searchText, page))
       .then((response) => {
         return response.data
       })
@@ -84,7 +84,6 @@ class RestaurantService extends APIService {
         throw error.response.data
       })
   }
-
   updateListingLike(data: any): Promise<any> {
     return this.post(LIKE, data)
       .then((response) => {

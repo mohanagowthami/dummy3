@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Pressable,
+  ActivityIndicator,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -15,68 +16,169 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
 // react-native-maps
-import MapView from "react-native-maps"
+import MapView, { Marker, Polyline } from "react-native-maps"
 //icons
-import { SearchIcon } from "../../assets/svgs/icons"
+import {
+  CircleIcon,
+  FrappyIcon,
+  Logo,
+  SearchIcon,
+} from "../../assets/svgs/icons"
 import { Notifications } from "../../assets/svgs/icons/icons-profile"
 // colors
 import { colors } from "../lib/colors"
+import * as Location from "expo-location"
+import { decode } from "../lib/helper"
+import Loader from "../components/elements/Loader"
+import MapService from "../services/map.service"
 
 interface IProps {
   navigation: any
+  route: any
 }
 // state - data
 interface Istate {
-  selectedDate: any
-  isModalOpen: boolean
+  latitude: number | null
+  longitude: number | null
+  finalLatitude: number | null
+  finalLongitude: number | null
+  coords: any
+  isLoading: boolean
 }
 
+const mapService = new MapService()
 class Navigation extends Component<IProps, Istate> {
   constructor(props: IProps) {
     super(props)
     this.state = {
-      selectedDate: new Date(),
-      isModalOpen: false,
+      latitude: null,
+      longitude: null,
+      coords: null,
+      finalLatitude: null,
+      finalLongitude: null,
+      isLoading: true,
     }
   }
+
+  async componentDidMount() {
+    const { address } = this.props.route.params
+
+    let { status } = await Location.requestPermissionsAsync()
+    if (status !== "granted") {
+      alert("please grant permission to access current location")
+    } else {
+      let location = await Location.getCurrentPositionAsync({})
+
+      if (location) {
+        mapService
+          .getPath({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            destination: address,
+          })
+          .then((response) => {
+            if (response.routes.length) {
+              this.setState({
+                ...this.state,
+                coords: decode(response.routes[0].overview_polyline.points),
+                finalLatitude: response.routes[0].legs[0].end_location.lat,
+                finalLongitude: response.routes[0].legs[0].end_location.lng,
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                isLoading: false,
+              })
+            }
+          })
+          .catch((e) => {
+            console.warn(e)
+            this.setState({ ...this.state, isLoading: false })
+          })
+      }
+    }
+  }
+
   render() {
+    const {
+      latitude,
+      finalLatitude,
+      finalLongitude,
+      longitude,
+      isLoading,
+      coords,
+    } = this.state
+
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.mainContainer}>
-          <View style={styles.borders}>
-            <View style={styles.heading}>
-              <Text style={styles.title}>Navigation</Text>
-              <View style={styles.notificationIcon}>
-                <Pressable
-                  onPress={() =>
-                    this.props.navigation.navigate("notifications")
-                  }
-                >
-                  <Notifications width={wp("5.86%")} height={hp("2.89%")} />
-                </Pressable>
+      <>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <View style={styles.container}>
+            <ScrollView style={styles.mainContainer}>
+              <View style={styles.borders}>
+                <View style={styles.heading}>
+                  <Text style={styles.title}>Navigation</Text>
+                  <View style={styles.notificationIcon}>
+                    <Pressable
+                      onPress={() =>
+                        this.props.navigation.navigate("notifications")
+                      }
+                    >
+                      <Notifications width={wp("5.86%")} height={hp("2.89%")} />
+                    </Pressable>
+                  </View>
+                </View>
+                <View style={styles.searchButton}>
+                  <SearchIcon width={wp("5%")} height={wp("5%")} />
+                  <TextInput placeholder="Search" style={styles.searchInput} />
+                </View>
               </View>
-            </View>
-            <View style={styles.searchButton}>
-              <SearchIcon width={wp("5%")} height={wp("5%")} />
-              <TextInput placeholder="Search" style={styles.searchInput} />
-            </View>
+              <View>
+                {latitude !== null &&
+                  longitude !== null &&
+                  finalLatitude !== null &&
+                  finalLongitude !== null && (
+                    <MapView
+                      showsCompass={true}
+                      showsMyLocationButton={true}
+                      showsBuildings={true}
+                      initialRegion={{
+                        latitude: latitude,
+                        longitude: longitude,
+                        latitudeDelta: 0.1,
+                        longitudeDelta: 0.1,
+                      }}
+                      style={styles.mapview}
+                    >
+                      <Marker
+                        coordinate={{
+                          latitude: latitude,
+                          longitude: longitude,
+                        }}
+                        title={"Your Location"}
+                      >
+                        <CircleIcon width={wp("6%")} height={wp("6%")} />
+                      </Marker>
+                      <Marker
+                        coordinate={{
+                          latitude: finalLatitude,
+                          longitude: finalLongitude,
+                        }}
+                        title={"Your Location"}
+                      >
+                        <FrappyIcon width={wp("10%")} height={wp("10%")} />
+                      </Marker>
+                      <Polyline
+                        coordinates={[...coords]}
+                        strokeWidth={4}
+                        strokeColor={colors.orange}
+                      />
+                    </MapView>
+                  )}
+              </View>
+            </ScrollView>
           </View>
-          <View>
-            <MapView
-              showsCompass={true}
-              showsMyLocationButton={true}
-              showsBuildings={true}
-              initialRegion={{
-                latitude: 17.423184,
-                longitude: 78.491684,
-                latitudeDelta: 0.5,
-                longitudeDelta: 0.5,
-              }}
-              style={styles.mapview}
-            />
-          </View>
-        </ScrollView>
-      </View>
+        )}
+      </>
     )
   }
 }

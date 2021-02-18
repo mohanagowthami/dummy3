@@ -35,17 +35,14 @@ import CustomButton from "../components/buttons/CustomButton"
 import ReadMoreComponent from "../components/elements/ReadMore"
 // colors
 import { colors } from "../lib/colors"
-import { dishesList } from "../lib/content"
+import { Context, dishesList } from "../lib/content"
+import { getMonthInDetail } from "../lib/helper"
+import MapService from "../services/map.service"
 // services
 import RestaurantService from "../services/restaurants.service"
 import ReviewService from "../services/review.service"
+import UserService from "../services/user.service"
 
-const image1 =
-  "https://pattys-cakes.com/wp-content/uploads/2020/11/colorful-rosette-cake-350x350.jpg"
-const image2 =
-  "https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-const image3 =
-  "https://www.mockofun.com/wp-content/uploads/2019/12/circle-photo.jpg"
 interface IProps {
   navigation: any
   route: any
@@ -57,13 +54,19 @@ interface Istate {
   isLoading: boolean
   showFullAddress: boolean
   isLoadMorePressed: boolean
+  time: any
+  distance: any
 }
 
 const restaurantService = new RestaurantService()
+const userService = new UserService()
 
 const reviewService = new ReviewService()
+const mapService = new MapService()
+const replaceImage = dishesList[Math.floor(Math.random() * dishesList.length)]
 class ItemInDetailScreen extends Component<IProps, Istate> {
   subscribe: any
+
   constructor(props: IProps) {
     super(props)
     this.state = {
@@ -76,47 +79,102 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         menu_images: [],
         gallery_images: [],
         washroom_images: [],
+        user_liked: false,
+        total_likes: false,
       },
       ratingAndReview: [],
       isLoading: false,
       showFullAddress: false,
       isLoadMorePressed: false,
+      time: 0,
+      distance: 0,
     }
   }
-  onPressGetDirections = () => {
-    this.props.navigation.navigate("navigation")
+  onPressGetDirections = (address: string) => {
+    this.props.navigation.navigate("navigation", { address: address })
   }
 
   fetchData = () => {
-    const { id } = this.props.route.params
+    const { id, address } = this.props.route.params
     this.setState({ ...this.state, isLoading: true })
     Promise.all([
       restaurantService.getRestaurant(id),
       reviewService.getReviews(id),
+      mapService.getPath({
+        latitude: this.context.latitude,
+        longitude: this.context.longitude,
+        destination: address,
+      }),
     ])
       .then((values) => {
-        console.log(values, "values in item in detail")
+        console.log(values, "values")
         let mutatedObject = { ...this.state }
         mutatedObject.restaurantDetails = values[0]
+
         mutatedObject.ratingAndReview = values[1]
         mutatedObject.isLoading = false
+        // mutatedObject.distance = values[2].routes[0].legs[0].distance.text
+        // mutatedObject.time = values[2].routes[0].legs[0].duration.text
+
         this.setState(mutatedObject)
       })
-      .catch((error) => console.log(error, "in item in detail"))
+      .catch((error) => {})
   }
 
   componentDidMount() {
-    this.fetchData()
-    this.subscribe = this.props.navigation.addListener("focus", () => {
+    if (this.context.latitue !== null) {
       this.fetchData()
-    })
+      this.subscribe = this.props.navigation.addListener("focus", () => {
+        this.fetchData()
+      })
+    }
+  }
+
+  changeLikeStatusInServer = () => {
+    const { restaurantDetails } = this.state
+    if (restaurantDetails.user_liked) {
+      userService
+        .likeListing({
+          listing: restaurantDetails.id,
+        })
+        .then((response: any) => {})
+        .catch((error: any) => {
+          const stateData = { ...this.state }
+          stateData.restaurantDetails.user_liked = !stateData.restaurantDetails
+            .user_liked
+          stateData.restaurantDetails.total_likes =
+            stateData.restaurantDetails.total_likes - 1
+          this.setState(stateData)
+        })
+    } else {
+      userService
+        .disLikeListing({
+          listing: restaurantDetails.id,
+        })
+        .then((response: any) => {})
+        .catch((error: any) => {
+          const stateData = { ...this.state }
+          stateData.restaurantDetails.user_liked = !stateData.restaurantDetails
+            .user_liked
+          stateData.restaurantDetails.total_likes =
+            stateData.restaurantDetails.total_likes + 1
+          this.setState(stateData)
+        })
+    }
+  }
+  componentDidUpdate(prevProps: any, prevState: any) {
+    const { restaurantDetails } = this.state
+    if (
+      prevState.restaurantDetails.user_liked !== restaurantDetails.user_liked
+    ) {
+      this.changeLikeStatusInServer()
+    }
   }
 
   componentWillUnmount() {
     this.subscribe()
   }
   pressReadMore = () => {
-    console.log("in call press ")
     this.setState({ ...this.state, showFullAddress: true })
   }
   onPressBackIcon = () => {
@@ -135,59 +193,80 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     } = item
 
     let updatedDate = new Date(updated)
+    const presentDate = new Date()
+    const diff = presentDate.getDate() - updatedDate.getDate()
+    console.log("diff", diff)
     const year = updatedDate.getFullYear()
-    const month = updatedDate.toLocaleString("default", {
-      month: "long",
-    })
+    const month = getMonthInDetail(updatedDate.getMonth())
 
+    const reviewImagesLength = review_images.length
+    const imagesAlignment =
+      reviewImagesLength % 3 === 0 && reviewImagesLength !== 0
     const date = `${month} ${year}`
-    console.log(review_images, "review image")
+
     return (
       <View style={styles.reviewcontainer} key={index}>
-        <View style={styles.reviewContainerDirection}>
-          {/* {profile_pic !== "" && profile_pic !== null ? (
-                          <Image
-                            resizeMode="contain"
-                            style={{
-                              height: hp("6.3%"),
-                              width: wp("12.8%"),
-                            }}
-                            source={{ uri: profile_pic }}
-                          />
-                        ) : ( */}
-          <Profile width={wp("10%")} height={wp("10%")} />
-          {/* )} */}
+        <View
+          style={[
+            styles.reviewContainerDirection,
+            { width: "15%", display: "flex", alignItems: "center" },
+          ]}
+        >
+          {profile_pic !== "" && profile_pic !== null && index !== 0 ? (
+            <Image
+              resizeMode="cover"
+              style={styles.ProfilePicStyles}
+              source={{ uri: profile_pic }}
+            />
+          ) : (
+            <Profile width={wp("9%")} height={wp("9%")} />
+          )}
         </View>
         <View style={styles.userNameContainer}>
-          <Text style={styles.userName}>{username}</Text>
-          <Text style={styles.addressTwo}>
-            {date}
-            <View style={styles.lineMore} />
-            <Text style={styles.readmore}> New</Text>
+          <Text style={styles.userName}>
+            {username.charAt(0).toUpperCase() + username.slice(1)}
           </Text>
-          <Text style={styles.reviewText}>
-            {review}
-            {review !== "" && (
-              <Text style={styles.readmore}>
-                {" "}
-                Readmore <ReadMore />
-              </Text>
+          <View style={styles.dateContainer}>
+            <Text style={styles.addressTwo}>{date}</Text>
+            {diff < 5 && (
+              <>
+                <View style={styles.lineMore} />
+                <Text style={styles.readmore}> New</Text>
+              </>
             )}
-          </Text>
-          <View style={styles.reviewImages}>
+          </View>
+
+          <View
+            style={[
+              styles.reviewImages,
+              {
+                justifyContent: imagesAlignment
+                  ? "space-between"
+                  : "flex-start",
+                marginRight: imagesAlignment ? 0 : wp("5%"),
+              },
+            ]}
+          >
             {review_images.map((item: any, index: number) => {
               const { id, image } = item
-              console.log(image, " images")
+
               return (
-                <View key={index}>
+                <Pressable
+                  key={index}
+                  onPress={() =>
+                    this.props.navigation.navigate("fullImage", {
+                      imageUrl: image,
+                    })
+                  }
+                >
                   <Image
-                    resizeMode="contain"
+                    resizeMode="cover"
                     style={styles.hallOfFameImageMore}
                     source={{
                       uri: image,
                     }}
                   />
-                </View>
+                </Pressable>
               )
             })}
           </View>
@@ -196,17 +275,25 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     )
   }
 
+  onPressLike = () => {
+    const stateData = { ...this.state }
+    stateData.restaurantDetails.user_liked = !stateData.restaurantDetails
+      .user_liked
+    if (stateData.restaurantDetails.user_liked)
+      stateData.restaurantDetails.total_likes =
+        stateData.restaurantDetails.total_likes + 1
+    else
+      stateData.restaurantDetails.total_likes =
+        stateData.restaurantDetails.total_likes - 1
+    this.setState(stateData)
+  }
+
   renderFooter = () => {
     const { ratingAndReview, isLoadMorePressed, restaurantDetails } = this.state
-    const flatListData =
-      ratingAndReview.length > 5
-        ? isLoadMorePressed
-          ? ratingAndReview
-          : ratingAndReview.slice(0, 5)
-        : ratingAndReview
+
     return (
       <>
-        {!this.state.isLoadMorePressed && flatListData.length === 5 && (
+        {!isLoadMorePressed && ratingAndReview.length > 5 && (
           <Pressable
             style={styles.loadmorecontainer}
             onPress={this.changeloadMoreStatus}
@@ -238,7 +325,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   }
 
   renderHeader = () => {
-    const { restaurantDetails, showFullAddress } = this.state
+    const {
+      restaurantDetails,
+      showFullAddress,
+      time,
+      distance,
+      ratingAndReview,
+    } = this.state
     const allImages = [
       ...restaurantDetails.menu_images,
       ...restaurantDetails.gallery_images,
@@ -249,8 +342,9 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       address,
       description,
       overall_rating,
-      likes,
+      user_liked,
       menu_images,
+      total_likes,
     } = restaurantDetails
     return (
       <View style={styles.maincontainer}>
@@ -270,12 +364,16 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 <Image
                   style={styles.image}
                   resizeMode="cover"
-                  source={
-                    dishesList[Math.floor(Math.random() * dishesList.length)]
-                  }
+                  source={replaceImage}
                 />
               )}
-              <LoveIcon width={wp("7.46%")} height={hp("3.015%")} />
+              <Pressable onPress={this.onPressLike}>
+                <LoveIcon
+                  width={wp("7.46%")}
+                  height={hp("3.015%")}
+                  color={user_liked ? colors.orange : colors.greyTwo}
+                />
+              </Pressable>
             </View>
           </View>
         </View>
@@ -285,11 +383,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             <View style={styles.addressWrapper}>
               {!showFullAddress ? (
                 <>
-                  <Text style={styles.address} numberOfLines={2}>
+                  <Text
+                    style={styles.address}
+                    numberOfLines={2}
+                    onPress={this.pressReadMore}
+                  >
                     {address}
                   </Text>
-
-                  <ReadMoreComponent onPressReadmore={this.pressReadMore} />
                 </>
               ) : (
                 <Text style={styles.address}>{address}</Text>
@@ -301,13 +401,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 title="Get Directions"
                 buttonStyles={styles.getdirec}
                 buttonTextStyles={styles.addressButton}
-                onPressButton={this.onPressGetDirections}
+                onPressButton={() => this.onPressGetDirections(address)}
               />
             </View>
           </View>
           <View style={styles.timeContainer}>
             <Text style={styles.time}>
-              33 min <View style={styles.line} /> 4.8 miles
+              {time} <View style={styles.line} /> {distance}
             </Text>
           </View>
         </View>
@@ -315,14 +415,14 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         <View style={styles.greycontainer}>
           <RatingIcon width={wp("10.13%")} height={hp("5%")} />
           <View style={styles.ratingContainer}>
-            <Text style={styles.greyboxtext}>{overall_rating}</Text>
+            <Text style={styles.greyboxtext}>{Math.round(overall_rating)}</Text>
             <Text style={styles.greyboxtext}>Ratings</Text>
           </View>
 
           <View style={styles.seperationLine} />
           <BookmarkIcon width={wp("10.13%")} height={hp("5%")} />
           <View style={styles.likesContainer}>
-            <Text style={styles.greyboxtext}>137k</Text>
+            <Text style={styles.greyboxtext}>{total_likes}</Text>
             <Text style={styles.greyboxtext}>Likes</Text>
           </View>
           <View style={styles.seperationLine} />
@@ -362,11 +462,11 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
           </>
         )}
 
-        {this.state.ratingAndReview.length > 0 && (
+        {ratingAndReview.length > 0 && (
           <View style={styles.reviewRatingContainer}>
             <Text style={styles.frappyText}>
               Ratings and Reviews(
-              {this.state.ratingAndReview.length})
+              {ratingAndReview.length})
             </Text>
           </View>
         )}
@@ -377,13 +477,14 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     const { isLoadMorePressed, ratingAndReview } = this.state
 
     const { isLoading } = this.state
+    const length = ratingAndReview.length
 
     const flatListData =
       ratingAndReview.length > 5
         ? isLoadMorePressed
-          ? ratingAndReview
-          : ratingAndReview.slice(0, 5)
-        : ratingAndReview
+          ? ratingAndReview.reverse()
+          : ratingAndReview.slice(length - 5, length - 0).reverse()
+        : ratingAndReview.reverse()
 
     return (
       <>
@@ -392,25 +493,37 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
-          <>
-            {this.state.ratingAndReview.length > 0 && (
-              <FlatList
-                ListHeaderComponent={this.renderHeader}
-                data={flatListData}
-                renderItem={({ item, index }) =>
-                  this.flatListRenderItem(item, index)
-                }
-                keyExtractor={(item, index) => item.id}
-                ListFooterComponent={this.renderFooter}
-              />
-            )}
-          </>
+          <View style={styles.flatListContainer}>
+            <FlatList
+              ListHeaderComponent={this.renderHeader}
+              data={flatListData}
+              renderItem={({ item, index }) =>
+                this.flatListRenderItem(item, index)
+              }
+              keyExtractor={(item, index) => item.id.toString()}
+              ListFooterComponent={this.renderFooter}
+            />
+          </View>
         )}
       </>
     )
   }
 }
+
+ItemInDetailScreen.contextType = Context
 const styles = StyleSheet.create({
+  dateContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  flatListContainer: { flex: 1, backgroundColor: colors.white },
+
+  ProfilePicStyles: {
+    height: wp("9%"),
+    width: wp("9%"),
+    borderRadius: wp("4.5%"),
+  },
   loadingWrapper: {
     display: "flex",
     flex: 1,
@@ -423,7 +536,6 @@ const styles = StyleSheet.create({
   },
   maincontainer: {
     display: "flex",
-    minHeight: hp("100%"),
     backgroundColor: colors.white,
   },
   mainimage: {
@@ -438,7 +550,6 @@ const styles = StyleSheet.create({
     // flex: 1,
     flexDirection: "column",
     paddingLeft: wp("2%"),
-    paddingRight: wp("13.066%"),
   },
   container1: { display: "flex" },
   container2: {
@@ -480,9 +591,10 @@ const styles = StyleSheet.create({
   addressTwo: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("4%"),
-    paddingTop: hp("1.44%"),
+
     color: colors.grey,
-    paddingBottom: hp("1%"),
+    paddingVertical: wp("1%"),
+    marginRight: wp("2%"),
   },
   getdirectionbutton: {
     display: "flex",
@@ -545,7 +657,7 @@ const styles = StyleSheet.create({
     width: wp("0.666%"),
     borderRadius: 4,
     backgroundColor: colors.lightGreyTwo,
-    marginRight: wp("3%"),
+    marginRight: wp("1%"),
     height: hp("3%"),
   },
   greycontainer: {
@@ -580,6 +692,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginBottom: wp("1%"),
     paddingLeft: hp("2%"),
+    width: "100%",
   },
   TitleContainer: {
     display: "flex",
@@ -634,14 +747,14 @@ const styles = StyleSheet.create({
     paddingRight: wp("9%"),
   },
   hallOfFameImage: {
-    width: wp("25%"),
-    height: wp("25%"),
+    width: wp("27%"),
+    height: wp("27%"),
     margin: wp("1.5%"),
     borderRadius: wp("5%"),
   },
   hallOfFameImageMore: {
-    width: wp("11.73%"),
-    height: hp("6.78%"),
+    width: wp("22%"),
+    height: wp("22%"),
   },
   loadmorecontainer: {
     display: "flex",
@@ -663,8 +776,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     // alignItems: 'center',
-    paddingHorizontal: wp("5%"),
-    paddingLeft: wp("3%"),
+    paddingHorizontal: wp("3%"),
   },
   searchcontainer: {
     paddingTop: hp("2.76%"),
@@ -701,8 +813,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: wp("1%"),
+    justifyContent: "space-between",
+    marginVertical: hp("1.5%"),
     paddingLeft: hp("2%"),
+    width: "100%",
+    paddingRight: wp("2%"),
+    marginLeft: -wp("5%"),
   },
 })
 

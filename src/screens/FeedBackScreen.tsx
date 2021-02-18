@@ -39,9 +39,9 @@ class FeedBackScreen extends Component<IProps, IState> {
     }
   }
   onPressSubmit = () => {
-    console.log("values", this.values)
+    const { showModal } = this.state
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: !showModal,
     })
   }
   showModal = () => {
@@ -59,10 +59,11 @@ class FeedBackScreen extends Component<IProps, IState> {
   }
 
   renderModal = () => {
+    const { showModal } = this.state
     return (
       <View>
         <Modal
-          isVisible={this.state.showModal}
+          isVisible={showModal}
           backdropColor={colors.white}
           backdropOpacity={0.9}
         >
@@ -82,9 +83,10 @@ class FeedBackScreen extends Component<IProps, IState> {
   }
 
   render() {
+    const { showModal } = this.state
     return (
       <>
-        {this.state.showModal && this.renderModal()}
+        {showModal && this.renderModal()}
         <SafeAreaView style={styles.safeareaviewContainer}>
           <ScrollView>
             <View style={styles.container}>

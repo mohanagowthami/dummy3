@@ -24,15 +24,17 @@ class CustomStarRating extends Component<IProps, IState> {
     }
   }
   getRating = (): any => {
+    const { starArray } = this.state
     let rating = 0
-    this.state.starArray.forEach((ele) => {
+    starArray.forEach((ele) => {
       if (ele) rating = rating + 1
     })
     this.props.onChange(rating)
   }
 
   changeStarStaus = (index: number) => {
-    let mutatedArray = [...this.state.starArray]
+    const { starArray } = this.state
+    let mutatedArray = [...starArray]
 
     if (mutatedArray[index]) {
       for (let i = index; i < mutatedArray.length; i++) {
@@ -49,9 +51,10 @@ class CustomStarRating extends Component<IProps, IState> {
 
   render() {
     const { width, height, style, elementStyle } = this.props
+    const { starArray } = this.state
     return (
       <View style={[styles.container, style]}>
-        {this.state.starArray.map((item, index) => (
+        {starArray.map((item, index) => (
           <View style={elementStyle} key={index}>
             {item ? (
               <Pressable onPress={() => this.changeStarStaus(index)}>

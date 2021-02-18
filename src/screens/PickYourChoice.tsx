@@ -167,9 +167,9 @@ class PickYourChoice extends Component<IProps, IState> {
       this.setState({ ...this.state, category: "shopping" })
     else {
       this.setModalVisible()
-      const selectedTravelist = this.filterByChecked(this.state.travelList)
-      const selectedFoodList = this.filterByChecked(this.state.foodTypesList)
-      const selectedShoppingList = this.filterByChecked(this.state.shoppingList)
+      const selectedTravelist = this.filterByChecked(travelList)
+      const selectedFoodList = this.filterByChecked(foodTypesList)
+      const selectedShoppingList = this.filterByChecked(shoppingList)
       userService
         .updateUserFavorites({
           food_category: selectedFoodList,
@@ -177,12 +177,10 @@ class PickYourChoice extends Component<IProps, IState> {
           shopping_category: selectedShoppingList,
         })
         .then((response) => {
-          console.log(response, "response in pick your choice")
           this.setModalVisible()
           this.props.navigation.navigate("bottomTab")
         })
         .catch((error) => {
-          console.log(error, "error in pick your choice ")
           this.setModalVisible()
         })
     }
@@ -220,7 +218,13 @@ class PickYourChoice extends Component<IProps, IState> {
     )
   }
   render() {
-    const { category, travelList, shoppingList, isLoading } = this.state
+    const {
+      category,
+      travelList,
+      shoppingList,
+      isLoading,
+      modalVisible,
+    } = this.state
     return (
       <>
         {isLoading ? (
@@ -229,10 +233,10 @@ class PickYourChoice extends Component<IProps, IState> {
           </View>
         ) : (
           <View style={styles.modalContainer}>
-            {this.state.modalVisible && (
+            {modalVisible && (
               <View>
                 <Modal
-                  isVisible={this.state.modalVisible}
+                  isVisible={modalVisible}
                   backdropColor={colors.white}
                   backdropOpacity={0.9}
                 >
@@ -246,9 +250,9 @@ class PickYourChoice extends Component<IProps, IState> {
             <View style={styles.container}>
               {/* Title for pick your choice */}
               <Text style={styles.titleText}>
-                {this.state.category === "food"
+                {category === "food"
                   ? "Gourmet"
-                  : this.state.category === "travel"
+                  : category === "travel"
                   ? "Explore"
                   : "Memories"}
               </Text>
@@ -261,7 +265,7 @@ class PickYourChoice extends Component<IProps, IState> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "food"
+                        category !== "food"
                           ? "rgba(255,108,101,0.2)"
                           : colors.orange,
                       borderColor: colors.orange,
@@ -270,10 +274,7 @@ class PickYourChoice extends Component<IProps, IState> {
                   buttonTextStyles={[
                     styles.buttonTextStyles,
                     {
-                      color:
-                        this.state.category !== "food"
-                          ? colors.orange
-                          : colors.white,
+                      color: category !== "food" ? colors.orange : colors.white,
                     },
                   ]}
                 />
@@ -284,7 +285,7 @@ class PickYourChoice extends Component<IProps, IState> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "travel"
+                        category !== "travel"
                           ? "rgba(253,210,106,0.2)"
                           : colors.yellow,
                       borderColor: colors.yellow,
@@ -293,9 +294,7 @@ class PickYourChoice extends Component<IProps, IState> {
                   buttonTextStyles={[
                     {
                       color:
-                        this.state.category !== "travel"
-                          ? colors.yellow
-                          : colors.white,
+                        category !== "travel" ? colors.yellow : colors.white,
                     },
                     styles.buttonTextStyles,
                   ]}
@@ -307,7 +306,7 @@ class PickYourChoice extends Component<IProps, IState> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "shopping"
+                        category !== "shopping"
                           ? "rgba(102,197,218,0.3)"
                           : colors.skyBlue,
 
@@ -317,9 +316,7 @@ class PickYourChoice extends Component<IProps, IState> {
                   buttonTextStyles={[
                     {
                       color:
-                        this.state.category !== "shopping"
-                          ? colors.skyBlue
-                          : colors.white,
+                        category !== "shopping" ? colors.skyBlue : colors.white,
                     },
                     styles.buttonTextStyles,
                   ]}
@@ -328,39 +325,36 @@ class PickYourChoice extends Component<IProps, IState> {
               <ScrollView showsVerticalScrollIndicator={false}>
                 {category === "food" ? (
                   <View style={styles.typeContainer}>
-                    {this.state.foodTypesList.map(
-                      (element: any, index: number) => {
-                        const { Svg, name } = element
-                        return (
-                          <Pressable
-                            key={index}
-                            onPress={() => this.onPressCheckItem("food", index)}
+                    {foodTypesList.map((element: any, index: number) => {
+                      const { Svg, name } = element
+                      return (
+                        <Pressable
+                          key={index}
+                          onPress={() => this.onPressCheckItem("food", index)}
+                        >
+                          <View
+                            style={[
+                              styles.typeImageConatiner,
+                              {
+                                borderColor: foodTypesList[index].checked
+                                  ? colors.darkyellow
+                                  : colors.white,
+                              },
+                            ]}
                           >
-                            <View
-                              style={[
-                                styles.typeImageConatiner,
-                                {
-                                  borderColor: this.state.foodTypesList[index]
-                                    .checked
-                                    ? colors.darkyellow
-                                    : colors.white,
-                                },
-                              ]}
+                            <ImageBackground
+                              style={styles.typeImage}
+                              source={Svg}
+                              resizeMode="cover"
                             >
-                              <ImageBackground
-                                style={styles.typeImage}
-                                source={Svg}
-                                resizeMode="cover"
-                              >
-                                <View style={styles.imageOverleaf}>
-                                  <Text style={styles.typeText}>{name}</Text>
-                                </View>
-                              </ImageBackground>
-                            </View>
-                          </Pressable>
-                        )
-                      }
-                    )}
+                              <View style={styles.imageOverleaf}>
+                                <Text style={styles.typeText}>{name}</Text>
+                              </View>
+                            </ImageBackground>
+                          </View>
+                        </Pressable>
+                      )
+                    })}
                   </View>
                 ) : category === "travel" ? (
                   <View style={styles.TravelListContainer}>

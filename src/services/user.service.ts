@@ -1,5 +1,11 @@
+import { DISLIKE, PROFILE_PIC, UPDATE_USER } from "./../lib/endpoints"
 // endpoints
-import { FAVORITES, GET_USER, USER_CURRENT_LOCATION } from "./../lib/endpoints"
+import {
+  FAVORITES,
+  GET_USER,
+  LIKE,
+  USER_CURRENT_LOCATION,
+} from "./../lib/endpoints"
 // service
 import APIService from "./api.service"
 //  async storage
@@ -52,6 +58,44 @@ class UserService extends APIService {
 
   getUser(): Promise<any> {
     return this.get(GET_USER)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+  likeListing(data: any): Promise<any> {
+    return this.post(LIKE, data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+
+  disLikeListing(data: any): Promise<any> {
+    return this.post(DISLIKE, data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+  updateUser(data: any): Promise<any> {
+    return this.put(UPDATE_USER(data.userId), data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+
+  updateUserPic(id: number, data: any): Promise<any> {
+    return this.put(PROFILE_PIC(id), data)
       .then((response: any) => {
         return response.data
       })

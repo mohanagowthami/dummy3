@@ -9,6 +9,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
+// expo location
+
 // icons
 import {
   ProfileSvg,
@@ -26,12 +28,30 @@ import CalenderScreens from "../../screens/CalendarScreens"
 // colors
 import { colors } from "../../lib/colors"
 import RestaurantsNearYou from "../../screens/RestaurantsNearYou"
+import { Context } from "../../lib/content"
 
 // creating bottom tab navigator
 const Tab = createBottomTabNavigator()
 
-class BottomTab extends React.Component<{}, {}> {
+interface IState {
+  latitude: number | null
+  longitude: number | null
+}
+class BottomTab extends React.Component<{}, IState> {
+  constructor(props: {}) {
+    super(props)
+    {
+      this.state = {
+        latitude: null,
+        longitude: null,
+      }
+    }
+  }
+
+  async componentDidMount() {}
+
   render() {
+    const { latitude, longitude } = this.state
     return (
       <Tab.Navigator
         tabBarOptions={{
@@ -93,7 +113,7 @@ class BottomTab extends React.Component<{}, {}> {
           name="calender"
           component={CalenderScreens}
           options={{
-            tabBarLabel: "Calender",
+            tabBarLabel: "Planner",
             tabBarIcon: ({ color }) => (
               <CalenderSvg
                 name="calender"

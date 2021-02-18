@@ -1,7 +1,7 @@
 // react-native-gesture-handler
 import { ScrollView } from "react-native-gesture-handler"
 // react
-import React, { Component } from "react"
+import React, { Component, createRef } from "react"
 // react-native
 import {
   Text,
@@ -44,9 +44,12 @@ interface IProps {
 // state - data
 interface Istate {
   category: string
-  categorySearchResults: []
+  categorySearchResults: any
   searchText: string
   isLoading: boolean
+  totalPages: number
+  currentPage: number
+  flatListLoading: boolean
 }
 // data
 const details = {
@@ -124,6 +127,9 @@ const travelService = new TravelService()
 const shoppingService = new ShoppingMallService()
 class FoodSearchResults extends Component<IProps, Istate> {
   carousel: any
+
+  flatListRef: any = createRef()
+
   constructor(props: IProps) {
     super(props)
     this.state = {
@@ -131,6 +137,9 @@ class FoodSearchResults extends Component<IProps, Istate> {
       categorySearchResults: [],
       searchText: "",
       isLoading: false,
+      currentPage: 1,
+      totalPages: 1,
+      flatListLoading: false,
     }
   }
 
@@ -142,7 +151,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
             <BackIcon width={wp("3.13%")} height={hp("2.84%")} />
           </Pressable>
         </View>
-        {/* <Text style={styles.title}>{this.state.keyWord}</Text> */}
+
         <Text style={[styles.filter, { paddingTop: hp("0.4%") }]}>Filter</Text>
       </>
     )
@@ -154,7 +163,6 @@ class FoodSearchResults extends Component<IProps, Istate> {
     })
   }
   _renderItem({ item, index }: any) {
-    console.log(item, "item")
     const image = item.image ? item.image : item
     return (
       <View style={styles.renderItemsContainer} key={index}>
@@ -168,61 +176,68 @@ class FoodSearchResults extends Component<IProps, Istate> {
       </View>
     )
   }
-  // get pagination() {
-  //   const { activeIndex, categoryData } = this.state
-  //   const index = this.getActiveIndex()
-  //   return (
-  //     <Pagination
-  //       dotsLength={categoryData.results.length}
-  //       activeDotIndex={activeIndex}
-  //       inactiveDotStyle={styles.inactiveDotStyles}
-  //       inactiveDotOpacity={0.3}
-  //       inactiveDotScale={1}
-  //       dotStyle={styles.activeDotStyles}
-  //     />
-  //   )
-  // }
 
   getDataFromSearchAPI = () => {
-    if (this.state.searchText !== "") {
-      if (this.state.categorySearchResults.length === 0) {
-        this.setState({ ...this.state, isLoading: true })
-      }
+    const { searchText, currentPage } = this.state
 
+    if (searchText !== "") {
       const { category, searchText } = this.state
       let service
       if (category === "food") service = restaurantService
       else if (category === "travel") service = travelService
       else service = shoppingService
-
+      const stateData = { ...this.state }
       service
-        .search(searchText)
+        .search(searchText, currentPage)
         .then((response: any) => {
-          console.log(response.results, "results")
-          this.setState({
-            ...this.state,
-            categorySearchResults: response.results,
-            isLoading: false,
-          })
+          stateData.totalPages = response.info.pages
+
+          if (currentPage > 1) {
+            stateData.categorySearchResults = [
+              ...stateData.categorySearchResults,
+              ...response.results,
+            ]
+          } else {
+            stateData.categorySearchResults = response.results
+          }
+          stateData.isLoading = false
+          stateData.flatListLoading = false
         })
-        .catch((error: any) => console.log(error, "in search API"))
+        .catch((error: any) => {
+          stateData.isLoading = false
+          stateData.flatListLoading = false
+        })
+        .finally(() => {
+          this.setState(stateData)
+        })
+    } else {
+      this.setState({ ...this.state, categorySearchResults: [] })
     }
   }
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (
-      prevState.searchText !== this.state.searchText &&
-      this.state.searchText !== ""
-    ) {
-      setTimeout(this.getDataFromSearchAPI, 300)
+    const { searchText, currentPage, categorySearchResults } = this.state
+    if (prevState.searchText !== searchText && searchText !== "") {
+      const stateData = { ...this.state }
+      stateData.currentPage = 1
+      if (categorySearchResults.length == 0) stateData.flatListLoading = true
+      this.setState(stateData)
+      const timeout = categorySearchResults.length === 0 ? 0 : 300
+      setTimeout(() => this.getDataFromSearchAPI(), timeout)
+    } else if (searchText === "" && categorySearchResults.length !== 0) {
+      this.setState({ ...this.state, categorySearchResults: [] })
     }
+    if (prevState.currentPage !== currentPage) this.getDataFromSearchAPI()
   }
   navigateToDeatailScreen = (id: string) => {
     this.props.navigation.navigate("itemInDetail", { id: id })
   }
+  handleNavigation = (address: string) => {
+    this.props.navigation.navigate("navigation", { address })
+  }
 
   flatListRenderItem = (prop: any) => {
-    console.log(prop.item, "item")
-    const number_of_ratings = this.state.categorySearchResults.length
+    const { categorySearchResults } = this.state
+    const number_of_ratings = categorySearchResults.length
     const { menu_images, name, tags, dining_rating, address, id } = prop.item
     const images =
       menu_images.length > 0 ? menu_images : this.getShuffleImagesList()
@@ -258,9 +273,12 @@ class FoodSearchResults extends Component<IProps, Istate> {
               })}
             </View>
 
-            <View style={styles.navigationIcon}>
+            <Pressable
+              style={styles.navigationIcon}
+              onPress={() => this.handleNavigation(address)}
+            >
               <NavigationIcon width={wp("7.46%")} height={hp("3.68%")} />
-            </View>
+            </Pressable>
           </View>
           <View>
             <View style={styles.rating}>
@@ -291,8 +309,12 @@ class FoodSearchResults extends Component<IProps, Istate> {
   updateCategory = (category: string) => {
     this.setState({ ...this.state, category: category, searchText: "" })
   }
+  handleCrossIcon = () => {
+    this.setState({ ...this.state, searchText: "" })
+  }
 
   renderCategoryButtons = () => {
+    const { searchText, category } = this.state
     return (
       <React.Fragment>
         <View style={styles.searchButton}>
@@ -302,8 +324,13 @@ class FoodSearchResults extends Component<IProps, Istate> {
             style={styles.searchInput}
             onChangeText={this.onChangeText}
             autoFocus={true}
-            value={this.state.searchText}
+            value={searchText}
           />
+          {searchText !== "" && (
+            <Text style={styles.crossIcon} onPress={this.handleCrossIcon}>
+              X
+            </Text>
+          )}
         </View>
         <View style={styles.buttonsContainer}>
           <CustomButton
@@ -313,17 +340,14 @@ class FoodSearchResults extends Component<IProps, Istate> {
               styles.smallButton,
               {
                 backgroundColor:
-                  this.state.category !== "food"
-                    ? "rgba(255,108,101,0.2)"
-                    : colors.orange,
+                  category !== "food" ? "rgba(255,108,101,0.2)" : colors.orange,
                 borderColor: colors.orange,
               },
             ]}
             buttonTextStyles={[
               styles.buttonTextStyles,
               {
-                color:
-                  this.state.category !== "food" ? colors.orange : colors.white,
+                color: category !== "food" ? colors.orange : colors.white,
               },
             ]}
           />
@@ -334,7 +358,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
               styles.smallButton,
               {
                 backgroundColor:
-                  this.state.category !== "travel"
+                  category !== "travel"
                     ? "rgba(253,210,106,0.2)"
                     : colors.yellow,
                 borderColor: colors.yellow,
@@ -342,10 +366,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
             ]}
             buttonTextStyles={[
               {
-                color:
-                  this.state.category !== "travel"
-                    ? colors.yellow
-                    : colors.white,
+                color: category !== "travel" ? colors.yellow : colors.white,
               },
               styles.buttonTextStyles,
             ]}
@@ -357,7 +378,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
               styles.smallButton,
               {
                 backgroundColor:
-                  this.state.category !== "shopping"
+                  category !== "shopping"
                     ? "rgba(102,197,218,0.3)"
                     : colors.skyBlue,
                 borderColor: colors.skyBlue,
@@ -365,10 +386,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
             ]}
             buttonTextStyles={[
               {
-                color:
-                  this.state.category !== "shopping"
-                    ? colors.skyBlue
-                    : colors.white,
+                color: category !== "shopping" ? colors.skyBlue : colors.white,
               },
               styles.buttonTextStyles,
             ]}
@@ -378,33 +396,63 @@ class FoodSearchResults extends Component<IProps, Istate> {
     )
   }
 
+  loadMore = () => {
+    const stateData = { ...this.state }
+    stateData.currentPage = stateData.currentPage + 1
+    this.setState(stateData)
+  }
+
+  renderFooter = () => {
+    const {
+      searchText,
+      categorySearchResults,
+      currentPage,
+      totalPages,
+
+      flatListLoading,
+    } = this.state
+
+    if (flatListLoading)
+      return <ActivityIndicator size="large" color={colors.darkBlack} />
+    else if (
+      categorySearchResults === "no objects" ||
+      (searchText !== "" && categorySearchResults.length == 0)
+    )
+      return <Text style={styles.noResultsFound}>No Results Found</Text>
+    else if (currentPage < totalPages && searchText !== "")
+      return (
+        <Text onPress={this.loadMore} style={styles.loadMoreText}>
+          Load more...
+        </Text>
+      )
+    else return null
+  }
+
   render() {
     const {
       isLoading,
       categorySearchResults,
       category,
       searchText,
+      flatListLoading,
     } = this.state
-    console.log(
-      categorySearchResults.length,
-      searchText,
-      "categorySearchResults"
-    )
+
     return (
       <SafeAreaView style={styles.safeAreaViewStyle}>
         <View style={styles.mainContainer}>
           {this.renderCategoryButtons()}
           {isLoading ? (
             <ActivityIndicator color={colors.darkBlack} size="large" />
-          ) : categorySearchResults.length > 0 ? (
+          ) : (
             <FlatList
               data={categorySearchResults}
               renderItem={this.flatListRenderItem}
               keyExtractor={(item: any) => item.id.toString()}
               extraData={category}
+              ListFooterComponent={this.renderFooter()}
+              ref={(ref) => (this.flatListRef = ref)}
+              keyboardShouldPersistTaps="always"
             />
-          ) : (
-            searchText !== "" && <Text>No results found</Text>
           )}
         </View>
       </SafeAreaView>
@@ -413,6 +461,27 @@ class FoodSearchResults extends Component<IProps, Istate> {
 }
 
 const styles = StyleSheet.create({
+  crossIcon: {
+    fontSize: wp("4.5%"),
+    fontWeight: "500",
+    color: colors.darkBlack,
+    display: "flex",
+    alignSelf: "flex-end",
+  },
+  loadMoreText: {
+    marginVertical: hp("3%"),
+    fontSize: hp("3%"),
+    display: "flex",
+    flexDirection: "row",
+    alignSelf: "flex-end",
+    paddingRight: wp("7%"),
+  },
+  noResultsFound: {
+    paddingHorizontal: wp("7%"),
+    fontFamily: "ArchivoBold",
+    fontSize: wp("4%"),
+    color: colors.darkBlack,
+  },
   clockWrapper: {
     display: "flex",
     flexDirection: "row",

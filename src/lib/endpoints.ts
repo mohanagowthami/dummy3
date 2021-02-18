@@ -1,11 +1,16 @@
+import { APIKEY, mode } from "./content"
+
 export const BACKEND_API = "https://frappy-crawler.herokuapp.com/"
 
 export const FAVORITES = `${BACKEND_API}api/user/favorites/`
 
-export const FAVORITE_RESTAURANTS = `${BACKEND_API}api/favorites/food/listings/`
+export const FAVORITE_RESTAURANTS = (page: number = 1) =>
+  `${BACKEND_API}api/favorites/food/listings/?page=${page}`
 
-export const FAVORITE_SHOPPINGMALL = `${BACKEND_API}api/favorites/shopping/listings/`
-export const FAVORITE_TRAVELPLACES = `${BACKEND_API}api/favorites/travel/listings/`
+export const FAVORITE_SHOPPINGMALL = (page: number = 1) =>
+  `${BACKEND_API}api/favorites/shopping/listings/?page=${page}`
+export const FAVORITE_TRAVELPLACES = (page: number = 1) =>
+  `${BACKEND_API}api/favorites/travel/listings/?page=${page}`
 
 export const REVIEWS_SPECIFIC_RESTAURANTS = (id: number) =>
   `${BACKEND_API}api/restaurant/reviews/?restaurant=${id}`
@@ -39,12 +44,29 @@ export const GET_REVIEWS = (id: string) =>
 
 export const UPDATE_REVIEW = `${BACKEND_API}api/review/`
 
-export const SEARCH = (category: string, searchText: string) =>
-  `${BACKEND_API}api/search/?establishment_category=${category}&search=${searchText}`
+export const SEARCH = (
+  category: string,
+  searchText: string,
+  page: number = 1
+) =>
+  `${BACKEND_API}api/search/?establishment_category=${category}&search=${searchText}&page=${page}`
 
 export const GET_USER = `${BACKEND_API}api/users/me/`
 
-export const UNIVERSAL_SEARCH = (searchText: string) =>
-  `${BACKEND_API}api/universal/search/?search=${searchText}`
+export const UNIVERSAL_SEARCH = (searchText: string, page: number = 1) =>
+  `${BACKEND_API}api/universal/search/?search=${searchText}&page=${page}`
 
 export const LIKE = `${BACKEND_API}api/listing/likes/`
+
+export const DISLIKE = `${BACKEND_API}api/listing/dislikes/`
+
+export const UPDATE_USER = (id: number) =>
+  `${BACKEND_API}api/user/details/update/${id}/`
+
+export const PROFILE_PIC = (id: number) =>
+  `${BACKEND_API}api/profile/pic/update/${id}/`
+
+export const MEDIA = `${BACKEND_API}api/assets/`
+
+export const MAPLINK = ({ latitude, longitude, destination }: any) =>
+  `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${destination}&key=${APIKEY}&mode=${mode}`

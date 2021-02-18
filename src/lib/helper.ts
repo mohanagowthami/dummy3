@@ -1,5 +1,5 @@
 export const getFormatedDate = (date: any) => {
-  if (date) {
+  if (date && typeof date !== "string") {
     let day = date.getDate()
     day = day.toString()
     if (day.length === 1) day = `0${day}`
@@ -11,8 +11,8 @@ export const getFormatedDate = (date: any) => {
       month = month + 1
     }
     return `${year}-${month}-${day}`
-  }
-  return ""
+  } else if (typeof date === "string") return date
+  else return ""
 }
 
 export const deriveArrayFromString = (name: string) => {
@@ -69,4 +69,47 @@ export function getCurrentMonthArray(day?: number) {
     if (index + 1 === computatedDay) return 1
     else return 0
   })
+}
+
+export function convertToTweleveHoursFormat(hours: number, minutes: number) {
+  if (hours > 12) {
+    return `${hours - 12}:${minutes} PM`
+  } else {
+    return `${hours}:${minutes} AM`
+  }
+}
+
+export function getMonthInDetail(index: number) {
+  const month = new Array(12)
+  month[0] = "January"
+  month[1] = "February"
+  month[2] = "March"
+  month[3] = "April"
+  month[4] = "May"
+  month[5] = "June"
+  month[6] = "July"
+  month[7] = "August"
+  month[8] = "September"
+  month[9] = "October"
+  month[10] = "November"
+  month[11] = "December"
+  return month[index]
+}
+
+export const dateComparision = (date: any) => {
+  if (typeof date !== "string") {
+    const day = date.getDate()
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const currentDate = new Date()
+    const currentDay = currentDate.getDate()
+    const currentMonth = currentDate.getMonth()
+    const currentYear = currentDate.getFullYear()
+    console.log(day, year, month, currentDay, currentMonth, currentYear)
+    if (day === currentDay && month === currentMonth && year === currentYear)
+      return true
+    else return false
+  } else {
+    return false
+  }
 }

@@ -14,8 +14,8 @@ class ReviewService extends APIService {
       })
   }
 
-  updateReviews(data: any): Promise<any> {
-    return this.post(UPDATE_REVIEW, data)
+  updateReviews(data: any, customHeaders?: any): Promise<any> {
+    return this.post(UPDATE_REVIEW, data, customHeaders)
       .then((response: any) => {
         return response.data
       })

@@ -23,7 +23,6 @@ class PlannerService extends APIService {
       })
   }
   searchCurrentUserPlannerData(date: string): Promise<any> {
-    console.log(SEARCH_USER_PLANS(date), "search with res")
     return this.get(SEARCH_USER_PLANS(date))
       .then((response: any) => {
         return response.data

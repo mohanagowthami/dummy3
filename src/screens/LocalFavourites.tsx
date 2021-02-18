@@ -111,6 +111,9 @@ interface IProps {
 interface IState {
   localFavourites: any
   isLoading: boolean
+  currentPage: number
+  totalPages: number
+  flatListLoading: boolean
 }
 
 const restaurantService = new RestaurantService()
@@ -124,16 +127,21 @@ class LocalFavourites extends Component<IProps, IState> {
       this.state = {
         localFavourites: [],
         isLoading: false,
+        currentPage: 1,
+        totalPages: 1,
+        flatListLoading: false,
       }
       this.refCategory = React.createRef()
     }
   }
-  componentDidMount() {
+
+  getDataFromServer = () => {
     const category = this.props.route.params
       ? this.props.route.params.category
       : this.refCategory.current
 
     this.setState({ ...this.state, isLoading: true })
+    const { currentPage } = this.state
     let service
     if (category === "food") {
       this.refCategory.current = "food"
@@ -146,26 +154,35 @@ class LocalFavourites extends Component<IProps, IState> {
       this.refCategory.current = "shopping"
     }
     service
-      .getCurrentUserLocationBasedData()
+      .getCurrentUserLocationBasedData(currentPage)
       .then((response) => {
-        this.setState({ localFavourites: response.results })
+        this.setState({
+          localFavourites: response.results,
+          totalPages: response.info.pages,
+        })
       })
-      .catch((error) => {
-        console.log(error, "error")
-      })
+      .catch((error) => {})
       .finally(() => {
         this.setState({ ...this.state, isLoading: false })
       })
   }
+  componentDidMount() {
+    this.getDataFromServer()
+  }
+
+  handleNavigation = (address: string) => {
+    this.props.navigation.navigate("navigation", { address: address })
+  }
 
   flatListRenderItem = ({ item }: any) => {
-    const { menu_images, overall_rating, name, tags, id } = item
+    const { menu_images, overall_rating, name, tags, id, address } = item
     const formatedCusines = deriveArrayFromString(tags)
     return (
       <Pressable
         onPress={() =>
           this.props.navigation.navigate("itemInDetail", {
             id: id,
+            address: address,
           })
         }
         style={[
@@ -184,7 +201,9 @@ class LocalFavourites extends Component<IProps, IState> {
               {name}
             </Text>
           </View>
-          <NavigationIcon width={wp("7.8")} height={wp("7.8%")} />
+          <Pressable onPress={() => this.handleNavigation(address)}>
+            <NavigationIcon width={wp("7.8")} height={wp("7.8%")} />
+          </Pressable>
         </View>
 
         {menu_images.length > 0 ? (
@@ -204,6 +223,24 @@ class LocalFavourites extends Component<IProps, IState> {
     )
   }
 
+  onPressLoadMore = () => {
+    let stateData = { ...this.state }
+    stateData.currentPage = stateData.currentPage + 1
+    this.setState(stateData, () => this.getDataFromServer)
+  }
+  renderFooter = () => {
+    const { currentPage, totalPages } = this.state
+    if (currentPage < totalPages) {
+      return (
+        <View style={styles.loadmore}>
+          <Text style={styles.loadMoreText} onPress={this.onPressLoadMore}>
+            Load More...
+          </Text>
+        </View>
+      )
+    } else return null
+  }
+
   renderLocalFavouritesList = () => {
     const category = this.props.route.params
       ? this.props.route.params.category
@@ -215,13 +252,15 @@ class LocalFavourites extends Component<IProps, IState> {
         renderItem={this.flatListRenderItem}
         keyExtractor={(item: any) => item.id.toString()}
         extraData={category}
+        ListFooterComponent={this.renderFooter}
       />
     )
   }
   render() {
+    const { isLoading } = this.state
     return (
       <>
-        {this.state.isLoading ? (
+        {isLoading ? (
           <View style={styles.activityIndicator}>
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
@@ -240,7 +279,7 @@ class LocalFavourites extends Component<IProps, IState> {
               <TextInput
                 placeholder="Search Restaurants"
                 style={styles.searchInput}
-                onChange={() =>
+                onFocus={() =>
                   this.props.navigation.navigate("searchFoodResults")
                 }
               />
@@ -335,5 +374,15 @@ const styles = StyleSheet.create({
     height: wp("28%"),
     display: "flex",
     alignSelf: "center",
+  },
+  loadmore: {
+    display: "flex",
+    flexDirection: "row",
+    alignSelf: "flex-end",
+  },
+  loadMoreText: {
+    fontSize: wp("4.5%"),
+    fontFamily: "ArchivoRegular",
+    color: colors.darkBlack,
   },
 })

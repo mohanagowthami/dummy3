@@ -3,7 +3,14 @@ import { ScrollView } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, Image, Pressable } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -20,19 +27,21 @@ import {
 } from "../../assets/svgs/icons/icons-profile"
 // colors
 import { colors } from "../lib/colors"
+import { Profile } from "../../assets/svgs/icons"
+import UserService from "../services/user.service"
+import Loader from "../components/elements/Loader"
 
 interface IProps {
   navigation: any
 }
 // divisioning of the screen
-interface IDetailsType {
-  profileDetails: Array<any>
-}
+
 // state - data
 interface Istate {
-  categoryData: IDetailsType
-  activeIndex: number
-  notificationsCount: number
+  name: string
+  address: string
+  profilePic: string
+  isLoading: boolean
 }
 // data
 const details = {
@@ -46,35 +55,80 @@ const details = {
   ],
 }
 
+const userService = new UserService()
 class ProfileScreen extends Component<IProps, Istate> {
+  subscribe: any
+
   constructor(props: IProps) {
     super(props)
     this.state = {
-      categoryData: details,
-      activeIndex: 0,
-      notificationsCount: 0,
+      name: "",
+
+      address: "",
+      profilePic: "",
+      isLoading: false,
     }
   }
 
+  fetchData = () => {
+    let stateData = { ...this.state }
+    this.setState({ ...this.state, isLoading: true })
+    userService
+      .getUser()
+      .then((response) => {
+        stateData.name = response.username
+        stateData.address = response.address
+        stateData.profilePic = response.profile_pic
+      })
+      .catch((error) => {})
+      .finally(() => {
+        stateData.isLoading = false
+        this.setState(stateData)
+      })
+  }
+  componentDidMount() {
+    this.subscribe = this.props.navigation.addListener("focus", () => {
+      this.fetchData()
+    })
+  }
+
+  componentWillUnmount() {
+    this.subscribe()
+  }
   render() {
+    const { name, address, profilePic, isLoading } = this.state
+
     return (
-      <ScrollView style={styles.maincontainer}>
-        <View style={styles.profilecontainer}>
-          {this.state.categoryData.profileDetails.map((item, index) => {
-            const { name, image, place } = item
-            return (
-              <View style={styles.container} key={index}>
+      <>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <ScrollView style={styles.maincontainer}>
+            <View style={styles.profilecontainer}>
+              <View style={styles.container}>
                 <View style={styles.imageandbackicon}>
-                  <Image
-                    style={styles.profileimage}
-                    resizeMode="cover"
-                    source={{
-                      uri: image,
-                    }}
-                  />
+                  {profilePic !== "" && profilePic !== null ? (
+                    <Image
+                      style={styles.profileimage}
+                      resizeMode="cover"
+                      source={{
+                        uri: profilePic,
+                      }}
+                    />
+                  ) : (
+                    <Profile
+                      color={colors.greyTwo}
+                      width={wp("25%")}
+                      height={wp("25%")}
+                    />
+                  )}
                   <View style={styles.imageAndEdit}>
                     <Pressable
-                      onPress={() => this.props.navigation.navigate("profile")}
+                      onPress={() =>
+                        this.props.navigation.navigate("profile", {
+                          isEditable: true,
+                        })
+                      }
                     >
                       <View style={styles.editContainer}>
                         <Text style={styles.editText}>Edit</Text>
@@ -86,61 +140,72 @@ class ProfileScreen extends Component<IProps, Istate> {
                   </View>
                 </View>
                 <View style={styles.nameandplace}>
-                  <Text style={styles.name}>{name}</Text>
-                  <Text style={styles.place}>{place}</Text>
+                  <Text style={styles.name}>
+                    {name.charAt(0).toUpperCase() + name.slice(1)}
+                  </Text>
+                  <Text style={styles.place}>{address}</Text>
                   <View style={styles.line} />
                 </View>
               </View>
-            )
-          })}
-        </View>
-        <View style={styles.optionscontainer}>
-          <View style={styles.optioncontainer}>
-            <Pressable
-              onPress={() => this.props.navigation.navigate("notifications")}
-            >
-              <Notifications width={wp("5.86%")} height={hp("2.89%")} />
-            </Pressable>
-            <Pressable
-              onPress={() => this.props.navigation.navigate("notifications")}
-            >
-              <Text style={styles.optionstext}>Notifications</Text>
-            </Pressable>
-            <View style={styles.notificationcount}>
-              <Pressable
-                onPress={() => this.props.navigation.navigate("notifications")}
-              >
-                <Text style={styles.notificationcountContainer}>
-                  3{/* <Text>{this.state.notificationsCount}</Text> */}
-                </Text>
-              </Pressable>
+              <View style={styles.optionscontainer}>
+                <View style={styles.optioncontainer}>
+                  <Pressable
+                    onPress={() =>
+                      this.props.navigation.navigate("notifications")
+                    }
+                  >
+                    <Notifications width={wp("5.86%")} height={hp("2.89%")} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() =>
+                      this.props.navigation.navigate("notifications")
+                    }
+                  >
+                    <Text style={styles.optionstext}>Notifications</Text>
+                  </Pressable>
+                  <View style={styles.notificationcount}>
+                    <Pressable
+                      onPress={() =>
+                        this.props.navigation.navigate("notifications")
+                      }
+                    >
+                      <Text style={styles.notificationcountContainer}>3</Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <View style={styles.optioncontainer}>
+                  <Share width={wp("5.86%")} height={hp("2.89%")} />
+                  <Text style={styles.optionstext}>
+                    Share with your friends
+                  </Text>
+                </View>
+                <View style={styles.optioncontainer}>
+                  <Social width={wp("5.86%")} height={hp("2.89%")} />
+                  <Text style={styles.optionstext}>Social</Text>
+                </View>
+                <Pressable
+                  onPress={() =>
+                    this.props.navigation.navigate("accountSettings")
+                  }
+                >
+                  <View style={styles.optioncontainer}>
+                    <Settings width={wp("5.86%")} height={hp("2.89%")} />
+                    <Text style={styles.optionstext}>Settings</Text>
+                  </View>
+                </Pressable>
+                <View style={styles.optioncontainer}>
+                  <Logout width={wp("5.86%")} height={hp("2.89%")} />
+                  <Text style={styles.optionstext}>Logout</Text>
+                </View>
+              </View>
             </View>
-          </View>
-          <View style={styles.optioncontainer}>
-            <Share width={wp("5.86%")} height={hp("2.89%")} />
-            <Text style={styles.optionstext}>Share with your friends</Text>
-          </View>
-          <View style={styles.optioncontainer}>
-            <Social width={wp("5.86%")} height={hp("2.89%")} />
-            <Text style={styles.optionstext}>Social</Text>
-          </View>
-          <Pressable
-            onPress={() => this.props.navigation.navigate("accountSettings")}
-          >
-            <View style={styles.optioncontainer}>
-              <Settings width={wp("5.86%")} height={hp("2.89%")} />
-              <Text style={styles.optionstext}>Settings</Text>
-            </View>
-          </Pressable>
-          <View style={styles.optioncontainer}>
-            <Logout width={wp("5.86%")} height={hp("2.89%")} />
-            <Text style={styles.optionstext}>Logout</Text>
-          </View>
-        </View>
-      </ScrollView>
+          </ScrollView>
+        )}
+      </>
     )
   }
 }
+
 const styles = StyleSheet.create({
   maincontainer: {
     display: "flex",
@@ -170,8 +235,8 @@ const styles = StyleSheet.create({
     // backgroundColor: 'yellow',
   },
   profileimage: {
-    width: wp("25.006%"),
-    height: wp("20.368%"),
+    width: wp("28.006%"),
+    height: wp("28.368%"),
     borderRadius: wp("2%"),
   },
   editContainer: {
@@ -197,6 +262,7 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("6.4%"),
     color: colors.namecolor,
+    marginTop: -hp("1.5%"),
   },
   place: {
     fontFamily: "ArchivoRegular",

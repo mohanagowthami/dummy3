@@ -10,8 +10,8 @@ import {
 import APIService from "./api.service"
 
 class ShoppingMallService extends APIService {
-  getCurrentUserLocationBasedData(): Promise<any> {
-    return this.get(FAVORITE_SHOPPINGMALL)
+  getCurrentUserLocationBasedData(page?: number): Promise<any> {
+    return this.get(FAVORITE_SHOPPINGMALL((page = 1)))
       .then((response: any) => {
         return response.data
       })
@@ -29,7 +29,7 @@ class ShoppingMallService extends APIService {
       })
   }
 
-  getShoppingMallsHallOfFame(): Promise<any> {
+  getHallOfFame(): Promise<any> {
     return this.get(HALL_OF_FAME_CATEGORY("shopping"))
       .then((response: any) => {
         return response.data
@@ -39,7 +39,7 @@ class ShoppingMallService extends APIService {
       })
   }
 
-  getShoppingMallsRecap(): Promise<any> {
+  getRecap(): Promise<any> {
     return this.get(RECAP_CATEGORY("shopping"))
       .then((response: any) => {
         return response.data
@@ -49,8 +49,8 @@ class ShoppingMallService extends APIService {
       })
   }
 
-  search(searchText: string): Promise<any> {
-    return this.get(SEARCH("shopping", searchText))
+  search(searchText: string, page: number): Promise<any> {
+    return this.get(SEARCH("shopping", searchText, page))
       .then((response: any) => {
         return response.data
       })
@@ -62,8 +62,8 @@ class ShoppingMallService extends APIService {
   getDataFromServer(): Promise<any> {
     return Promise.all([
       this.getCurrentUserLocationBasedData(),
-      this.getShoppingMallsHallOfFame(),
-      this.getShoppingMallsRecap(),
+      this.getHallOfFame(),
+      this.getRecap(),
     ])
       .then((values) => values)
       .catch((error: any) => {

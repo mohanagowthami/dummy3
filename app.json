@@ -1,39 +1,50 @@
 {
   "expo": {
-    "name": "frappy",
-    "slug": "frappy",
+    "owner": "soulpage",
+    "name": "Frappy",
+    "slug": "Frappy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/frappyIcon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "icon": "./assets/frappyIcon.png"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gowthami579.frappy"
+      "bundleIdentifier": "com.soulpage.frappy"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/frappyIcon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.gowthami579.frappy",
+      "package": "com.soulpage.frappy",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk"
+        },
+        "googleSignIn": {
+          "apiKey": "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
+          "certificateHash": "B8333B9D53A03CE39C44D9729C4B0C304FAA5A8E5ED338FADEB4E6787E47B534"
         }
       }
     },
     "web": {
-      "favicon": "./assets/icon.png"
-    }
+      "favicon": "./assets/frappyIcon.png"
+    },
+    "facebookScheme": "fb881191042676304",
+    "facebookAppId": "881191042676304",
+    "facebookDisplayName": "Frappy"
   }
 }

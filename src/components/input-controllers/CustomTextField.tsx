@@ -21,6 +21,7 @@ interface ICustomTextFieldProps {
   textAlignVertical?: any
   placeholderTextColor?: any
   secureText?: boolean
+  onTextCancel?: boolean
 }
 
 interface ICustomTextFieldState {
@@ -41,14 +42,21 @@ class CustomTextField extends Component<
       text: text,
     })
   }
+  componentDidUpdate(prevProps: any) {
+    if (this.props.onTextCancel)
+      this.setState({
+        text: "",
+      })
+  }
   render() {
     const { style, value, handleChange, secureText } = this.props
+    const { text } = this.state
     return (
       <TextInput
         {...this.props}
         style={[styles.textInput, style]}
         onChangeText={handleChange ? handleChange : this.handleChange}
-        value={value ? value : this.state.text}
+        value={value ? value : text}
         secureTextEntry={secureText ? true : false}
       />
     )

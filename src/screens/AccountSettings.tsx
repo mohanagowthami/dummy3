@@ -43,12 +43,6 @@ interface IState {
 
 const accountList = [
   {
-    representationSvg: Profile,
-    title: "Profile Information",
-    description: "Change your account information",
-    actionIcon: ForwardIcon,
-  },
-  {
     representationSvg: Facebook,
     title: "Add Social Account",
     description: "Add Facebook, Twitter etc ",
@@ -140,14 +134,16 @@ class AccountSettings extends Component<IProps, IState> {
             description,
             actionIcon: ActionIcon,
           } = element
-
+          const { switchArray } = this.state
           return (
             <View key={index}>
               <View style={styles.profileContainer}>
                 <Pressable
                   onPress={() => {
                     if (index == 0) {
-                      this.props.navigation.navigate("profile")
+                      this.props.navigation.navigate("profile", {
+                        isEditable: false,
+                      })
                     }
                   }}
                 >
@@ -179,7 +175,7 @@ class AccountSettings extends Component<IProps, IState> {
                     thumbColor={colors.white}
                     ios_backgroundColor={Colors.grey}
                     onValueChange={() => this.toggleSwitch(index)}
-                    value={this.state.switchArray[index].isEnabled}
+                    value={switchArray[index].isEnabled}
                     style={styles.switch}
                   />
                 ) : (
@@ -187,7 +183,9 @@ class AccountSettings extends Component<IProps, IState> {
                 )}
               </View>
               {description !=
-                (accountList[2].description && moreList[2].description) && (
+                (accountList[2] &&
+                  accountList[2].description &&
+                  moreList[2].description) && (
                 <View style={styles.borderLine} />
               )}
             </View>

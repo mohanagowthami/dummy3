@@ -41,8 +41,13 @@ import TravelService from "../services/travel.service"
 import UserService from "../services/user.service"
 // helper
 import { deriveArrayFromString } from "../lib/helper"
-import { dishesList, recapList, rectangleImageList } from "../lib/content"
-import ReadMoreComponent from "../components/elements/ReadMore"
+import {
+  Context,
+  dishesList,
+  recapList,
+  rectangleImageList,
+} from "../lib/content"
+import { FlatList } from "react-native-gesture-handler"
 
 interface IProps {
   navigation: any
@@ -97,85 +102,8 @@ const content = {
         "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
     },
   ],
-  // second division - local favourites data
-  localFavouritesList: [
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "Burgers",
-      companyName: "King Bakers",
-      rating: 4.8,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "Burgers",
-      companyName: "King Bakers",
-      rating: 4.8,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "Burgers",
-      companyName: "King Bakers",
-      rating: 4.8,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "Burgers",
-      companyName: "King Bakers",
-      rating: 4.8,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "Burgers",
-      companyName: "King Bakers",
-      rating: 4.8,
-    },
-  ],
-  // third division - recap data
-  recapList: [
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "KFC",
-      location: "882 Swift Courts Apt",
-      averageRatings: 4.8,
-      numberOfRatings: 233,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "KFC",
-      location: "882 Swift Courts Apt",
-      averageRatings: 4.8,
-      numberOfRatings: 233,
-    },
-    {
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-      name: "KFC",
-      location: "882 Swift Courts Apt",
-      averageRatings: 4.8,
-      numberOfRatings: 233,
-    },
-  ],
-  // fourth division - hall of fame data
-  hallOfFame: [
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-  ],
 }
 // Main class component
-
-const dummyImage =
-  "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg"
 
 const restaurantService = new RestaurantService()
 const travelService = new TravelService()
@@ -229,6 +157,33 @@ class HomeScreen extends Component<IProps, Istate> {
     }
   }
 
+  fetchRecapList = () => {
+    let service: any
+    let index = 0
+    let stateData = { ...this.state }
+    if (stateData.category === "food") {
+      service = restaurantService
+      index = 0
+    } else if (stateData.category === "travel") {
+      service = travelService
+      index = 1
+    } else if (stateData.category === "shopping") {
+      service = shoppingService
+      index = 2
+    }
+
+    service
+      .getRecap()
+      .then((response: any) => {
+        console.log(response, "response in fetch focus")
+        stateData.categoryData[index].data.recapList = response
+        this.setState(stateData)
+      })
+      .catch((error: any) => {
+        console.log(error, " in home screen")
+      })
+  }
+
   getFormatedRecapList = (recapList: any) => {
     return recapList.map((ele: any) => {
       return { ...ele, showFullAddress: false }
@@ -236,22 +191,15 @@ class HomeScreen extends Component<IProps, Istate> {
   }
 
   async componentDidMount() {
-    let { status } = await Location.requestPermissionsAsync()
-    if (status !== "granted") {
-      alert("please grant permission to access current location")
-    } else {
-      let location = await Location.getCurrentPositionAsync({})
-      console.log("user location", location)
-      const locationCoordinates = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      }
-      this.setState({
-        ...this.state,
-        isLoading: true,
-      })
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    })
+
+    if (this.context.latitude !== null) {
       userService
-        .updateUserCurrentLocation(locationCoordinates)
+
+        .updateUserCurrentLocation({ ...this.context })
         .then((response) => {
           restaurantService
             .getRestaurantDataFromServer()
@@ -269,14 +217,14 @@ class HomeScreen extends Component<IProps, Istate> {
               stateData.username = values[3].username
               this.setState(stateData)
             })
-            .catch((error) => console.log(error, "error in home screen"))
+            .catch((error) => {})
         })
-        .catch((error) =>
-          console.log(error, "error in user current location saving")
-        )
+        .catch((error) => {})
     }
+
     this.subscribe = this.props.navigation.addListener("focus", () => {
       this.scrollRef.scrollTo({ x: 0, y: 0, animated: true })
+      this.fetchRecapList()
     })
   }
 
@@ -306,7 +254,6 @@ class HomeScreen extends Component<IProps, Istate> {
       stateData.category = "shopping"
     }
     if (!stateData.categoryData[index].isDatafetched) {
-      console.log("clicking")
       this.setState({
         ...this.state,
         isLoading: true,
@@ -314,7 +261,6 @@ class HomeScreen extends Component<IProps, Istate> {
       service
         .getDataFromServer()
         .then((values: any) => {
-          console.log(values, "values123")
           let stateData = { ...this.state }
           stateData.categoryData[index].data.localFavouritesList =
             values[0].results
@@ -327,13 +273,13 @@ class HomeScreen extends Component<IProps, Istate> {
           stateData.isLoading = false
           this.setState(stateData)
         })
-        .catch((error: any) => console.log(error, "error in home screen"))
+        .catch((error: any) => {})
     }
   }
 
   async componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevState.category !== this.state.category)
-      this.getSelectedCategoryData()
+    const { category } = this.state
+    if (prevState.category !== category) this.getSelectedCategoryData()
   }
 
   // greeting function
@@ -390,16 +336,13 @@ class HomeScreen extends Component<IProps, Istate> {
         inactiveDotOpacity={1}
         inactiveDotScale={1}
         dotStyle={styles.activeDotStyles}
+        containerStyle={{ marginTop: -hp("3%"), marginBottom: -hp("4%") }}
       />
     )
   }
   // trends slider function
   renderTrendsSlider = () => {
     const { categoryData } = this.state
-    console.log(
-      categoryData[this.getActiveIndex()].data.trendsList,
-      "trensdsList"
-    )
 
     return (
       <>
@@ -426,17 +369,27 @@ class HomeScreen extends Component<IProps, Istate> {
 
   renderLocalFavourities = () => {
     const { categoryData } = this.state
-    console.log(categoryData[0].data, "data from network")
+
+    const recapLength =
+      categoryData[this.getActiveIndex()].data.recapList.length
+    const hallOfFameLength =
+      categoryData[this.getActiveIndex()].data.hallOfFame.length
 
     return (
       <ScrollView horizontal={true}>
-        <View style={{ display: "flex", flexDirection: "row" }}>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            marginBottom:
+              recapLength == 0 && hallOfFameLength == 0 ? hp("8%") : 0,
+          }}
+        >
           {categoryData[this.getActiveIndex()].data.localFavouritesList.map(
             (item, index) => {
-              const { id, menu_images, name, rating, tags } = item
+              const { id, menu_images, name, rating, tags, address } = item
 
               const formatedCusines = deriveArrayFromString(tags)
-              console.log(formatedCusines, "formatedCusines")
 
               return (
                 <Pressable
@@ -444,6 +397,7 @@ class HomeScreen extends Component<IProps, Istate> {
                   onPress={() =>
                     this.props.navigation.navigate("itemInDetail", {
                       id: id,
+                      address: address,
                     })
                   }
                   style={[
@@ -492,9 +446,12 @@ class HomeScreen extends Component<IProps, Istate> {
                         {Math.round(rating)}
                       </Text>
                     </View>
-                    <View style={styles.navigationWrapperStyles}>
+                    <Pressable
+                      style={styles.navigationWrapperStyles}
+                      onPress={() => this.handleNavigation(address)}
+                    >
                       <NavigationIcon width={wp("7.8%")} height={hp("3.68%")} />
-                    </View>
+                    </Pressable>
                   </View>
                 </Pressable>
               )
@@ -510,7 +467,7 @@ class HomeScreen extends Component<IProps, Istate> {
 
   onPressReadMore = (index: number) => {
     const stateData = { ...this.state }
-    console.log(stateData, "stateData")
+
     stateData.categoryData[this.getActiveIndex()].data.recapList[
       index
     ].showFullAddress = true
@@ -518,13 +475,78 @@ class HomeScreen extends Component<IProps, Istate> {
   }
 
   onPressLocalFavorites = () => {
+    const { category } = this.state
     this.props.navigation.navigate("localFavourites", {
-      category: this.state.category,
+      category: category,
     })
   }
+
+  handleNavigation = (address: string) => {
+    this.props.navigation.navigate("navigation", { address: address })
+  }
+
+  flatListRecapItem = (item: any, index: number) => {
+    const { categoryData } = this.state
+    const { name, user_rating, review_images, address, showFullAddress } = item
+    const numberOfRatings =
+      categoryData[this.getActiveIndex()].data.recapList.length
+    return (
+      <React.Fragment>
+        <View style={styles.recapItemContaineer}>
+          {review_images.length > 0 ? (
+            <Image
+              source={{
+                uri: review_images[0].image,
+              }}
+              style={styles.recapImage}
+            />
+          ) : (
+            <Image
+              source={recapList[Math.floor(Math.random() * recapList.length)]}
+              style={styles.recapImage}
+            />
+          )}
+
+          <View style={styles.restaurantTitleContainer}>
+            <Text style={styles.restaurantTitle}>{name}</Text>
+            {!showFullAddress ? (
+              <View style={styles.showFullAddressWrapper}>
+                <Text
+                  onPress={() => this.onPressReadMore(index)}
+                  style={styles.recapCardText}
+                  numberOfLines={1}
+                >
+                  {address}
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.recapCardText}>{address}</Text>
+            )}
+            <View style={styles.ratingContainer}>
+              <View style={styles.ratingInnerWrapper}>
+                <Rating width={wp("4.2%")} height={hp("4.2%")} />
+                <Text style={styles.noOfRatings}>
+                  {user_rating}({numberOfRatings} ratings)
+                </Text>
+              </View>
+
+              <Pressable
+                style={styles.navigationIcon}
+                onPress={() => this.handleNavigation(address)}
+              >
+                <NavigationIcon width={wp("7.8%")} height={hp("3.68%")} />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+        <View style={styles.borderLine}></View>
+      </React.Fragment>
+    )
+  }
+
   render() {
     // Main return function
-    const { isLoading, username } = this.state
+    const { isLoading, username, category, categoryData } = this.state
     return (
       <>
         {isLoading ? (
@@ -575,7 +597,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "food"
+                        category !== "food"
                           ? "rgba(255,108,101,0.2)"
                           : colors.orange,
                       borderColor: colors.orange,
@@ -584,10 +606,7 @@ class HomeScreen extends Component<IProps, Istate> {
                   buttonTextStyles={[
                     styles.buttonTextStyles,
                     {
-                      color:
-                        this.state.category !== "food"
-                          ? colors.orange
-                          : colors.white,
+                      color: category !== "food" ? colors.orange : colors.white,
                     },
                   ]}
                 />
@@ -600,7 +619,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "travel"
+                        category !== "travel"
                           ? "rgba(253,210,106,0.2)"
                           : colors.yellow,
                       borderColor: colors.yellow,
@@ -609,9 +628,7 @@ class HomeScreen extends Component<IProps, Istate> {
                   buttonTextStyles={[
                     {
                       color:
-                        this.state.category !== "travel"
-                          ? colors.yellow
-                          : colors.white,
+                        category !== "travel" ? colors.yellow : colors.white,
                     },
                     styles.buttonTextStyles,
                   ]}
@@ -625,7 +642,7 @@ class HomeScreen extends Component<IProps, Istate> {
                     styles.smallButton,
                     {
                       backgroundColor:
-                        this.state.category !== "shopping"
+                        category !== "shopping"
                           ? "rgba(102,197,218,0.3)"
                           : colors.skyBlue,
                       borderColor: colors.skyBlue,
@@ -634,19 +651,17 @@ class HomeScreen extends Component<IProps, Istate> {
                   buttonTextStyles={[
                     {
                       color:
-                        this.state.category !== "shopping"
-                          ? colors.skyBlue
-                          : colors.white,
+                        category !== "shopping" ? colors.skyBlue : colors.white,
                     },
                     styles.buttonTextStyles,
                   ]}
                 />
               </View>
               {/* calling trend slider function*/}
-              {this.state.categoryData[this.getActiveIndex()].data &&
+              {categoryData[this.getActiveIndex()].data &&
                 this.renderTrendsSlider()}
-              {this.state.categoryData[this.getActiveIndex()].data
-                .localFavouritesList.length > 0 && (
+              {categoryData[this.getActiveIndex()].data.localFavouritesList
+                .length > 0 && (
                 <>
                   <View style={styles.localFavouritesContainer}>
                     <Text style={styles.frappyText}>Local Favourites</Text>
@@ -661,17 +676,16 @@ class HomeScreen extends Component<IProps, Istate> {
                 </>
               )}
 
-              {this.state.categoryData[this.getActiveIndex()].data.recapList
-                .length > 0 && (
+              {categoryData[this.getActiveIndex()].data.recapList.length >
+                0 && (
                 <>
                   <View style={[styles.TitleContainer]}>
                     <Text style={styles.frappyText}>Recap</Text>
                     <Pressable
                       onPress={() =>
                         this.props.navigation.navigate("recap", {
-                          recapList: this.state.categoryData[
-                            this.getActiveIndex()
-                          ].data.recapList,
+                          recapList:
+                            categoryData[this.getActiveIndex()].data.recapList,
                         })
                       }
                     >
@@ -682,100 +696,33 @@ class HomeScreen extends Component<IProps, Istate> {
                     </Pressable>
                   </View>
                   <View>
-                    <View>
-                      {this.state.categoryData[
-                        this.getActiveIndex()
-                      ].data.recapList
-                        .slice(0, 1)
-                        .map((ele, index) => {
-                          const {
-                            name,
-                            user_rating,
-                            review_images,
-                            address,
-                            showFullAddress,
-                          } = ele
-                          const numberOfRatings = this.state.categoryData[
-                            this.getActiveIndex()
-                          ].data.recapList.length
-
-                          return (
-                            <React.Fragment key={index}>
-                              <View style={styles.recapItemContaineer}>
-                                {review_images.length > 0 ? (
-                                  <Image
-                                    source={{
-                                      uri: review_images[0].image,
-                                    }}
-                                    style={styles.recapImage}
-                                  />
-                                ) : (
-                                  <Image
-                                    source={
-                                      recapList[
-                                        Math.floor(
-                                          Math.random() * recapList.length
-                                        )
-                                      ]
-                                    }
-                                    style={styles.recapImage}
-                                  />
-                                )}
-
-                                <View style={styles.restaurantTitleContainer}>
-                                  <Text style={styles.restaurantTitle}>
-                                    {name}
-                                  </Text>
-                                  {!showFullAddress ? (
-                                    <View style={styles.showFullAddressWrapper}>
-                                      <Text
-                                        style={styles.recapCardText}
-                                        numberOfLines={1}
-                                      >
-                                        {address}
-                                      </Text>
-                                      <ReadMoreComponent
-                                        onPressReadmore={() =>
-                                          this.onPressReadMore(index)
-                                        }
-                                      />
-                                    </View>
-                                  ) : (
-                                    <Text style={styles.recapCardText}>
-                                      {address}
-                                    </Text>
-                                  )}
-                                  <View style={styles.ratingContainer}>
-                                    <View style={styles.ratingInnerWrapper}>
-                                      <Rating
-                                        width={wp("4.2%")}
-                                        height={hp("4.2%")}
-                                      />
-                                      <Text style={styles.noOfRatings}>
-                                        {user_rating}({numberOfRatings} ratings)
-                                      </Text>
-                                    </View>
-
-                                    <View style={styles.navigationIcon}>
-                                      <NavigationIcon
-                                        width={wp("7.8%")}
-                                        height={hp("3.68%")}
-                                      />
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                              <View style={styles.borderLine}></View>
-                            </React.Fragment>
-                          )
-                        })}
+                    <View
+                      style={{
+                        marginBottom:
+                          categoryData[this.getActiveIndex()].data.hallOfFame
+                            .length === 0
+                            ? hp("4%")
+                            : 0,
+                        height: hp("50%"),
+                      }}
+                    >
+                      <FlatList
+                        data={categoryData[
+                          this.getActiveIndex()
+                        ].data.recapList.reverse()}
+                        renderItem={({ item, index }) =>
+                          this.flatListRecapItem(item, index)
+                        }
+                        keyExtractor={(item: any) => item.id.toString()}
+                        extraData={category}
+                      />
                     </View>
                   </View>
                 </>
               )}
 
-              {this.state.categoryData[this.getActiveIndex()].data.hallOfFame
-                .length > 0 && (
+              {categoryData[this.getActiveIndex()].data.hallOfFame.length >
+                0 && (
                 <>
                   <View style={[styles.TitleContainer]}>
                     <Text style={styles.frappyText}>Hall of Fame</Text>
@@ -783,9 +730,9 @@ class HomeScreen extends Component<IProps, Istate> {
                       <Pressable
                         onPress={() =>
                           this.props.navigation.navigate("hallOfFame", {
-                            hallOfFameList: this.state.categoryData[
-                              this.getActiveIndex()
-                            ].data.hallOfFame,
+                            hallOfFameList:
+                              categoryData[this.getActiveIndex()].data
+                                .hallOfFame,
                           })
                         }
                       >
@@ -800,22 +747,22 @@ class HomeScreen extends Component<IProps, Istate> {
                     </View>
                   </View>
                   <View style={styles.hallOfFameContainer}>
-                    {this.state.categoryData[
-                      this.getActiveIndex()
-                    ].data.hallOfFame.map((item, index) => {
-                      const { image } = item
-                      return (
-                        <View key={index}>
-                          <Image
-                            style={styles.hallOfFameImage}
-                            source={{
-                              uri: image,
-                            }}
-                            resizeMode="cover"
-                          />
-                        </View>
-                      )
-                    })}
+                    {categoryData[this.getActiveIndex()].data.hallOfFame.map(
+                      (item, index) => {
+                        const { image } = item
+                        return (
+                          <View key={index}>
+                            <Image
+                              style={styles.hallOfFameImage}
+                              source={{
+                                uri: image,
+                              }}
+                              resizeMode="cover"
+                            />
+                          </View>
+                        )
+                      }
+                    )}
                   </View>
                 </>
               )}
@@ -827,6 +774,9 @@ class HomeScreen extends Component<IProps, Istate> {
   }
 }
 export default HomeScreen
+
+// HomeScreen.contextType = Context
+
 const styles = StyleSheet.create({
   ratingInnerWrapper: {
     display: "flex",
@@ -882,7 +832,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: wp("5%"),
+    marginTop: hp("0.5%"),
   },
   userNameContainer: {
     display: "flex",
@@ -896,7 +846,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 0,
-    marginBottom: wp("6%"),
+    marginBottom: wp("4%"),
   },
   localFavouritesImageContainer: {
     paddingVertical: wp("6%"),
@@ -1066,7 +1016,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "row",
-    paddingVertical: wp("5%"),
+    paddingVertical: wp("3.5%"),
   },
   recapCardText: {
     fontFamily: "ArchivoRegular",

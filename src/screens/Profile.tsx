@@ -3,7 +3,14 @@ import { ScrollView, TextInput } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, Image, Pressable } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -11,11 +18,21 @@ import {
 } from "react-native-responsive-screen"
 // expo-image-picker
 import * as ImagePicker from "expo-image-picker"
+// DateTimePicker
+import DateTimePicker from "@react-native-community/datetimepicker"
 // icons
 import { BackIcon } from "../../assets/svgs/icons/icons-directions"
 import { Camera } from "../../assets/svgs/icons/icons-profile"
+import {
+  CalenderSvg,
+  ProfileSvg,
+} from "../../assets/svgs/icons/icons-bottomTab"
 // colors
 import { colors } from "../lib/colors"
+// services
+import UserService from "../services/user.service"
+import MediaService from "../services/media.service"
+import { dateComparision, getFormatedDate } from "../lib/helper"
 
 interface IprofileOptions {
   option: string
@@ -23,6 +40,7 @@ interface IprofileOptions {
 }
 interface IProps {
   navigation: any
+  route: any
 }
 // divisioning of the screen
 interface IDetailsType {
@@ -30,21 +48,23 @@ interface IDetailsType {
 }
 // state - data
 interface Istate {
-  selectedImages: Array<string>
-  categoryData: IDetailsType
-  activeIndex: number
-  notificationsCount: number
-  userName: string
-  emailId: string
-  phoneNumber: string
-  gender: string
-  dob: string
-  profileOptions: Array<IprofileOptions>
+  userDetails: {
+    username: string
+    phoneNumber: string
+    email: string
+    gender: string
+    dob: any
+    profile_pic: string | any
+    place: string
+    userId: number
+  }
+  showModal: boolean
+  isLoading: boolean
 }
 const details = {
   profileDetails: [
     {
-      name: "Rohit Sharma",
+      username: "Rohit Sharma",
       image:
         "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       place: "Hyderabad",
@@ -52,116 +72,214 @@ const details = {
   ],
 }
 
+const userService = new UserService()
+const mediaService = new MediaService()
 class Profile extends Component<IProps, Istate> {
   constructor(props: IProps) {
     super(props)
     this.state = {
-      selectedImages: [
-        "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      ],
-      categoryData: details,
-      activeIndex: 0,
-      notificationsCount: 0,
-      userName: "User Name",
-      emailId: "soul@123",
-      phoneNumber: "9876543210",
-      gender: "M",
-      dob: "17/10/1998",
-      profileOptions: [
-        { option: "User Name", value: "User Name" },
-        { option: "Email", value: "emailId" },
-        { option: "Phone", value: "9876543210" },
-        { option: "Gender", value: "M" },
-        { option: "Date of Birth", value: "17/10/1998" },
-      ],
+      userDetails: {
+        username: "",
+        phoneNumber: "",
+        email: "",
+        gender: "",
+        dob: new Date(),
+        profile_pic: "",
+        place: "",
+        userId: 0,
+      },
+      showModal: false,
+      isLoading: false,
     }
+  }
+
+  componentDidMount() {
+    this.setState({ ...this.state, isLoading: true })
+    userService
+      .getUser()
+      .then((response) => {
+        let stateData = { ...this.state }
+        stateData.userDetails.username = response.username
+        stateData.userDetails.phoneNumber = response.PhoneNumbe
+          ? response.PhoneNumber
+          : ""
+        stateData.userDetails.email = response.email
+        stateData.userDetails.gender = response.gender ? response.gender : ""
+        stateData.userDetails.dob = response.dob ? response.dob : new Date()
+        stateData.userDetails.userId = response.id
+        stateData.userDetails.profile_pic = response.profile_pic
+
+        stateData.isLoading = false
+        this.setState(stateData)
+      })
+      .catch((error) => {})
   }
   handleChange = (value: string, name: any) => {
     let stateData: any = { ...this.state }
-    stateData[name] = value
+    stateData.userDetails[name] = value
+
     this.setState(stateData)
-    // console.log(stateData[name])
   }
   captureImage = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync()
-    if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!")
-    }
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    })
-    console.log(result, "image")
-    if (!result.cancelled) {
-      const mutatedImages = [...this.state.selectedImages]
-      mutatedImages.push(result.uri)
-      this.setState({ selectedImages: mutatedImages })
-      console.log(this.state.selectedImages)
+    const stateData = { ...this.state }
+    const { isEditable } = this.props.route.params
+    if (isEditable) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync()
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!")
+      }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      })
+
+      if (!result.cancelled) {
+        stateData.userDetails.profile_pic = result
+        this.setState(stateData)
+      }
     }
   }
+
+  updateUserDetails = (imageUrl?: string) => {
+    const { userDetails } = this.state
+    const data = { ...userDetails }
+    if (data.dob === "------") data.dob = ""
+    else data.dob = getFormatedDate(data.dob)
+
+    if (imageUrl) data.profile_pic = imageUrl
+    userService
+      .updateUser(data)
+      .then((response) => {
+        console.log(response, "response in update user details")
+        this.props.navigation.goBack()
+      })
+      .catch((error) => {
+        console.log(error, "error in user details")
+      })
+      .finally(() => {
+        this.setState({ ...this.state, isLoading: false })
+      })
+  }
+
+  pressSave = () => {
+    const { userDetails } = this.state
+    const data = { ...userDetails }
+    this.setState({ ...this.state, isLoading: true })
+
+    if (data.profile_pic.uri) {
+      const uri = "file:///" + data.profile_pic.uri.split("file:/").join("")
+      const imageData = {
+        uri: uri,
+        name: uri.split("/").pop(),
+        type: "image/jpeg",
+      }
+      const formData: any = new FormData()
+      formData.append("name[]", uri.split("/").pop())
+      formData.append("asset[]", imageData)
+
+      mediaService
+        .uploadMedia(formData)
+        .then((response) => {
+          const imageUrls = response.map((item: any) => {
+            return item.asset
+          })
+
+          this.updateUserDetails(imageUrls[0])
+        })
+
+        .catch((error) => {})
+        .finally(() => {
+          this.setState({ ...this.state, isLoading: false })
+        })
+    } else {
+      this.updateUserDetails()
+    }
+  }
+  onPressCalenderSvg = () => {
+    const stateData = { ...this.state }
+    stateData.showModal = true
+    this.setState(stateData)
+  }
+
+  onChangePicker = (event: any, selectedDate: any) => {
+    console.log(selectedDate, "selectedDate")
+    const stateData = { ...this.state }
+    stateData.userDetails.dob = selectedDate
+    stateData.showModal = false
+    this.setState(stateData)
+  }
   _renderinfo = () => {
+    const {
+      userDetails: { username, place, profile_pic },
+    } = this.state
+    const { isEditable } = this.props.route.params
+    const mutatedprofile_pic = profile_pic.uri ? profile_pic.uri : profile_pic
+
     return (
-      <View style={styles.profilecontainer}>
-        {this.state.categoryData.profileDetails.map((item, index) => {
-          const { name, image, place } = item
-          return (
-            <View key={index}>
-              <View style={styles.container}>
-                <View style={styles.backiconContainer}>
-                  <Pressable
-                    onPress={() =>
-                      this.props.navigation.navigate("profileScreen")
-                    }
-                  >
-                    <BackIcon width={wp("2.92%")} height={hp("2.86%")} />
-                  </Pressable>
-                </View>
-                <View style={styles.imageandbackicon}>
-                  <View style={styles.imagecontainer}>
-                    <View style={styles.image}>
-                      <Image
-                        style={styles.profileimage}
-                        resizeMode="cover"
-                        source={{
-                          uri: this.state.selectedImages[
-                            this.state.selectedImages.length - 1
-                          ],
-                        }}
-                      />
-                      <View style={styles.cameraicon}>
-                        <Pressable onPress={this.captureImage}>
-                          <Camera />
-                        </Pressable>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.nameandplace}>
-                <Text style={styles.name}>{this.state.userName}</Text>
-                <Text style={styles.place}>{place}</Text>
-              </View>
-            </View>
-          )
-        })}
+      <View style={styles.renderInfoContainer}>
+        <Pressable
+          onPress={() => this.props.navigation.navigate("profileScreen")}
+        >
+          <BackIcon width={wp("2.92%")} height={hp("2.86%")} />
+        </Pressable>
+        <View style={styles.profileWrapper}>
+          <View style={{ position: "relative" }}>
+            {profile_pic !== "" && profile_pic !== null ? (
+              <Image
+                style={styles.profileimage}
+                resizeMode="cover"
+                source={{
+                  uri: mutatedprofile_pic,
+                }}
+              />
+            ) : (
+              <ProfileSvg
+                width={wp("20%")}
+                height={wp("20%")}
+                color={colors.greyTwo}
+              />
+            )}
+          </View>
+
+          <Pressable onPress={this.captureImage} style={styles.cameraicon}>
+            <Camera />
+          </Pressable>
+
+          <Text style={styles.name}>{username}</Text>
+          <Text style={styles.place}>{place}</Text>
+        </View>
+        {isEditable && (
+          <View>
+            <Text onPress={this.pressSave} style={styles.saveText}>
+              Save
+            </Text>
+          </View>
+        )}
       </View>
     )
   }
   _renderdetails = () => {
+    const {
+      userDetails: { username, phoneNumber, dob, email, gender },
+      showModal,
+    } = this.state
+    console.log(dob, "date of birth")
+    const { isEditable } = this.props.route.params
     return (
       <View style={styles.optionscontainer}>
         <View style={styles.optioncontainer}>
-          <Text style={styles.heading}>Username</Text>
+          <Text style={styles.heading}>username</Text>
           <TextInput
             style={styles.details}
             onChangeText={(text) => {
-              this.handleChange(text, "userName")
+              this.handleChange(text, "username")
             }}
-          >
-            {this.state.userName}
-          </TextInput>
+            value={username}
+            editable={isEditable}
+            placeholder="------"
+          />
         </View>
         <View style={styles.line} />
         <View style={styles.optioncontainer}>
@@ -169,11 +287,12 @@ class Profile extends Component<IProps, Istate> {
           <TextInput
             style={styles.details}
             onChangeText={(text) => {
-              this.handleChange(text, "emailId")
+              this.handleChange(text, "email")
             }}
-          >
-            {this.state.emailId}
-          </TextInput>
+            placeholder="------"
+            value={email}
+            editable={isEditable}
+          ></TextInput>
         </View>
         <View style={styles.line} />
         <View style={styles.optioncontainer}>
@@ -183,9 +302,10 @@ class Profile extends Component<IProps, Istate> {
             onChangeText={(text) => {
               this.handleChange(text, "phoneNumber")
             }}
-          >
-            {this.state.phoneNumber}
-          </TextInput>
+            value={phoneNumber}
+            placeholder="------"
+            editable={isEditable}
+          />
         </View>
         <View style={styles.line} />
         <View style={styles.optioncontainer}>
@@ -195,35 +315,98 @@ class Profile extends Component<IProps, Istate> {
             onChangeText={(text) => {
               this.handleChange(text, "gender")
             }}
-          >
-            {this.state.gender}
-          </TextInput>
+            value={gender}
+            placeholder="------"
+            editable={isEditable}
+          ></TextInput>
         </View>
         <View style={styles.line} />
         <View style={styles.optioncontainer}>
           <Text style={styles.heading}>Date of Birth</Text>
-          <TextInput
-            style={styles.details}
-            onChangeText={(text) => {
-              this.handleChange(text, "dob")
-            }}
-          >
-            {this.state.dob}
-          </TextInput>
+          <View style={styles.calenderContainer}>
+            <TextInput
+              style={styles.details}
+              value={dateComparision(dob) ? "------" : getFormatedDate(dob)}
+              placeholder="------"
+              editable={isEditable}
+            />
+            <Pressable
+              onPress={this.onPressCalenderSvg}
+              style={styles.calenderSvg}
+            >
+              <CalenderSvg
+                color={colors.darkGrey}
+                width={wp("5%")}
+                height={wp("5%")}
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
     )
   }
   render() {
+    const { isLoading, showModal, userDetails } = this.state
     return (
-      <ScrollView style={styles.maincontainer}>
-        {this._renderinfo()}
-        {this._renderdetails()}
-      </ScrollView>
+      <>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator color={colors.darkBlack} size="large" />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.maincontainer}
+            keyboardShouldPersistTaps="always"
+          >
+            {this._renderinfo()}
+            {this._renderdetails()}
+            {showModal && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={userDetails.dob}
+                mode="date"
+                display="default"
+                onChange={this.onChangePicker}
+              />
+            )}
+          </ScrollView>
+        )}
+      </>
     )
   }
 }
 const styles = StyleSheet.create({
+  calenderSvg: {
+    marginLeft: wp("2%"),
+  },
+  calenderContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileWrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
+  renderInfoContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: wp("4.2%"),
+    paddingTop: wp("5%"),
+  },
+  saveText: {
+    fontFamily: "ArchivoBold",
+    fontSize: wp("3%"),
+    color: colors.darkBlack,
+  },
+  loadingContainer: {
+    display: "flex",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   maincontainer: {
     display: "flex",
     flex: 1,
@@ -237,14 +420,14 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   backiconContainer: {
     paddingLeft: wp("6.8%"),
     paddingTop: hp("3.57%"),
   },
-  image: {
-    position: "relative",
-  },
+
   imageandbackicon: {
     display: "flex",
     flex: 1,
@@ -253,7 +436,7 @@ const styles = StyleSheet.create({
   },
   imagecontainer: {
     display: "flex",
-    position: "relative",
+
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
@@ -261,22 +444,20 @@ const styles = StyleSheet.create({
   },
   profileimage: {
     display: "flex",
-    position: "relative",
+
     width: wp("38.93%"),
     height: hp("19.210%"),
     alignSelf: "center",
-    marginLeft: wp("10%"),
-    // paddingLeft: wp('8%'),
+
     borderRadius: wp("3.2%"),
   },
   cameraicon: {
     position: "absolute",
     width: wp("8.66%"),
     height: wp("8.66%"),
-    // left: wp('50%'),
-    // top: hp('0%'),
-    right: wp("2%"),
-    bottom: hp("1%"),
+
+    right: wp("3%"),
+    bottom: hp("11%"),
     borderRadius: wp("4.33%"),
     backgroundColor: colors.orange,
     justifyContent: "center",
@@ -285,14 +466,14 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("6.4%"),
-    alignSelf: "center",
+
     color: colors.namecolor,
   },
   place: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.73%"),
     paddingTop: hp("1.052%"),
-    alignSelf: "center",
+
     color: colors.grey,
   },
   nameandplace: {

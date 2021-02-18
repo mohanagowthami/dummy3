@@ -10,8 +10,8 @@ import {
 import APIService from "./api.service"
 
 class TravelService extends APIService {
-  getCurrentUserLocationBasedData(): Promise<any> {
-    return this.get(FAVORITE_TRAVELPLACES)
+  getCurrentUserLocationBasedData(page?: number): Promise<any> {
+    return this.get(FAVORITE_TRAVELPLACES((page = 1)))
       .then((response: any) => {
         return response.data
       })
@@ -29,7 +29,7 @@ class TravelService extends APIService {
       })
   }
 
-  getTravelPlacesHallOfFame(): Promise<any> {
+  getHallOfFame(): Promise<any> {
     return this.get(HALL_OF_FAME_CATEGORY("travel"))
       .then((response: any) => {
         return response.data
@@ -39,7 +39,7 @@ class TravelService extends APIService {
       })
   }
 
-  getTravelPlacesRecap(): Promise<any> {
+  getRecap(): Promise<any> {
     return this.get(RECAP_CATEGORY("travel"))
       .then((response: any) => {
         return response.data
@@ -49,8 +49,8 @@ class TravelService extends APIService {
       })
   }
 
-  search(searchText: string): Promise<any> {
-    return this.get(SEARCH("travel", searchText))
+  search(searchText: string, page: number): Promise<any> {
+    return this.get(SEARCH("travel", searchText, page))
       .then((response: any) => {
         return response.data
       })
@@ -62,8 +62,8 @@ class TravelService extends APIService {
   getDataFromServer(): Promise<any> {
     return Promise.all([
       this.getCurrentUserLocationBasedData(),
-      this.getTravelPlacesHallOfFame(),
-      this.getTravelPlacesRecap(),
+      this.getHallOfFame(),
+      this.getRecap(),
     ])
       .then((values) => values)
       .catch((error: any) => {

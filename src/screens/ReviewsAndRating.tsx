@@ -28,6 +28,7 @@ import { colors } from "../lib/colors"
 import RestaurantService from "../services/restaurants.service"
 import CustomTextField from "../components/input-controllers/CustomTextField"
 import ReviewService from "../services/review.service"
+import MediaService from "../services/media.service"
 
 interface IProps {
   navigation: any
@@ -35,12 +36,13 @@ interface IProps {
 }
 
 interface IState {
-  selectedImages: Array<string>
+  selectedImages: Array<any>
   showModal: boolean
 }
 
 const restaurantService = new RestaurantService()
 const reviewService = new ReviewService()
+const mediaService = new MediaService()
 class ReviewsAndRating extends Component<IProps, IState> {
   data: any = {}
   constructor(props: IProps) {
@@ -52,40 +54,76 @@ class ReviewsAndRating extends Component<IProps, IState> {
   }
 
   onPressSubmit = () => {
+    const { showModal, selectedImages } = this.state
+
     this.setState({
       ...this.state,
-      showModal: !this.state.showModal,
+      showModal: !showModal,
     })
-    const formData = new FormData()
-    formData.append("listing_id", this.props.route.params.id)
-    formData.append("category", "food")
-    formData.append("review", this.data.review)
-    formData.append("user_rating", this.data.user_rating)
-    this.state.selectedImages.forEach((img) =>
-      formData.append(`review_images[]`, img)
-    )
 
-    reviewService
-      .updateReviews(formData)
-      .then((response) => {
-        console.log(response, "response in review and ratings")
-        this.setState({
-          ...this.state,
-          showModal: !this.state.showModal,
-        })
+    let data: any = {}
+    data["listing"] = this.props.route.params.id
+    data["review"] = this.data.review
+    data["user_rating"] = this.data.user_rating
+    if (selectedImages.length > 0) {
+      const formData: any = new FormData()
+      selectedImages.map((img, index) => {
+        const uri = "file:///" + img.uri.split("file:/").join("")
+        const imageData = {
+          uri: uri,
+          name: uri.split("/").pop(),
+          type: "image/jpeg",
+        }
+        formData.append("name[]", uri.split("/").pop())
+        formData.append("asset[]", imageData)
       })
-      .catch((error) => {
-        console.log(error, " in submission in ratings and reviews screen ")
-        this.setState({
-          ...this.state,
-          showModal: !this.state.showModal,
+      mediaService
+        .uploadMedia(formData)
+        .then((response) => {
+          data["images"] = response.map((item: any) => {
+            return item.asset
+          })
+
+          reviewService.updateReviews(data).then((response) => {
+            this.setState({
+              ...this.state,
+              showModal: !showModal,
+            })
+          })
         })
-      })
-      .finally(() => {
-        this.props.navigation.navigate("itemInDetail", {
-          id: this.props.route.params.id,
+
+        .catch((error) => {
+          this.setState({
+            ...this.state,
+            showModal: !showModal,
+          })
         })
-      })
+        .finally(() => {
+          this.props.navigation.navigate("itemInDetail", {
+            id: this.props.route.params.id,
+          })
+        })
+    } else {
+      reviewService
+        .updateReviews(data)
+        .then((response) => {
+          this.setState({
+            ...this.state,
+            showModal: !showModal,
+          })
+        })
+        .catch((error) => {
+          this.setState({
+            ...this.state,
+            showModal: !showModal,
+          })
+        })
+        .finally(() => {
+          this.props.navigation.navigate("itemInDetail", {
+            id: this.props.route.params.id,
+          })
+        })
+    }
   }
   showModal = () => {
     this.setState({
@@ -99,7 +137,6 @@ class ReviewsAndRating extends Component<IProps, IState> {
   }
 
   async componentDidMount(): Promise<void> {
-    console.log(this.props.route.params, "params")
     if (Platform.OS !== "web") {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
@@ -109,6 +146,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     }
   }
   captureImage = async () => {
+    const { selectedImages } = this.state
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== "granted") {
       alert("Sorry, we need camera roll permissions to make this work!")
@@ -119,40 +157,43 @@ class ReviewsAndRating extends Component<IProps, IState> {
       aspect: [4, 3],
       quality: 1,
     })
-    console.log(result, "image")
+
     if (!result.cancelled) {
-      const mutatedImages = [...this.state.selectedImages]
-      mutatedImages.push(result.uri)
+      const mutatedImages = [...selectedImages]
+      mutatedImages.push(result)
       this.setState({ selectedImages: mutatedImages })
     }
   }
 
   galleryImage = async () => {
+    const { selectedImages } = this.state
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     })
-    console.log(result, "image")
+
     if (!result.cancelled) {
-      const mutatedImages = [...this.state.selectedImages]
-      mutatedImages.push(result.uri)
+      const mutatedImages = [...selectedImages]
+      mutatedImages.push(result)
       this.setState({ selectedImages: mutatedImages })
     }
   }
 
   removeImage = (index: number) => {
-    let mutatedImages = [...this.state.selectedImages]
+    const { selectedImages } = this.state
+    let mutatedImages = [...selectedImages]
     mutatedImages.splice(index, 1)
     this.setState({ selectedImages: mutatedImages })
   }
 
   renderModal = () => {
+    const { showModal } = this.state
     return (
       <View>
         <Modal
-          isVisible={this.state.showModal}
+          isVisible={showModal}
           backdropColor={colors.white}
           backdropOpacity={0.9}
         >
@@ -172,14 +213,16 @@ class ReviewsAndRating extends Component<IProps, IState> {
   }
 
   onChange = (name: string, value: any) => {
-    console.log(value, "value")
     this.data[name] = value
-    console.log(this.data[name], " this.data[name]")
   }
   render() {
+    const { showModal, selectedImages } = this.state
+    const lengthOfSelectedImages = selectedImages.length
+    const imagesAlignment =
+      lengthOfSelectedImages % 3 === 0 && lengthOfSelectedImages !== 0
     return (
       <SafeAreaView style={styles.container}>
-        {this.state.showModal && this.renderModal()}
+        {showModal && this.renderModal()}
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
@@ -205,7 +248,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
             />
 
             <View style={styles.captureImageStyles}>
-              <Pressable onPress={this.captureImage}>
+              <Pressable onPress={this.galleryImage}>
                 <View style={styles.plusButton}>
                   <Text style={styles.plus}>+</Text>
                 </View>
@@ -216,19 +259,18 @@ class ReviewsAndRating extends Component<IProps, IState> {
               style={[
                 styles.selectedImagesWrapper,
                 {
-                  justifyContent:
-                    this.state.selectedImages.length % 3 === 0 &&
-                    this.state.selectedImages.length !== 0
-                      ? "space-between"
-                      : "space-around",
+                  justifyContent: imagesAlignment
+                    ? "space-between"
+                    : "flex-start",
+                  marginRight: imagesAlignment ? 0 : wp("5%"),
                 },
               ]}
             >
-              {this.state.selectedImages.map((image, index) => {
+              {selectedImages.map((image, index) => {
                 return (
                   <View key={index}>
                     <Image
-                      source={{ uri: image }}
+                      source={{ uri: image.uri }}
                       style={styles.selectedImageStyles}
                     />
 

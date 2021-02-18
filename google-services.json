@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "959505581957",
+    "project_id": "fappy-d077a",
+    "storage_bucket": "fappy-d077a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959505581957:android:09f9a45b116b71494da6ec",
+        "android_client_info": {
+          "package_name": "com.soulpage.frappy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "959505581957-qfjnh0nmsuc9qusn5lihct8ucpkssg0h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.soulpage.frappy",
+            "certificate_hash": "ee98d20ebd0c98739fa215fda9654b1008dfaddc"
+          }
+        },
+        {
+          "client_id": "959505581957-p04hbmgg7fj13v71u73nb2c6blqh06vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKiJCinaktHMrhB9Q-eGUGdYv_o5BvzUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "959505581957-p04hbmgg7fj13v71u73nb2c6blqh06vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

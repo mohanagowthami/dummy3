@@ -9,6 +9,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Pressable,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -32,6 +33,11 @@ import { colors } from "../lib/colors"
 import AuthService from "../services/auth.service"
 import UserService from "../services/user.service"
 import { Logo } from "../../assets/svgs/icons"
+import * as Facebook from "expo-facebook"
+import * as Google from "expo-google-app-auth"
+import * as AppAuth from "expo-app-auth"
+import * as yup from "yup"
+import { Formik } from "formik"
 
 // props for login screen
 interface ILoginScreen {
@@ -47,6 +53,15 @@ interface State {
 const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
 const userService = new UserService()
+
+const loginValidationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Please enter valid email")
+    .required("Email Address is Required"),
+  password: yup.string().required("Password is required"),
+})
+
 class LoginScreen extends React.Component<ILoginScreen, State> {
   inputRef: any
   values: any
@@ -97,17 +112,17 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     }))
   }
   // Get OTP Button function
-  onPressOTPButton = () => {
+  onSubmitValues = (data: any) => {
     // this.setModalVisible()
     this.setState({
       ...this.state,
       isLoading: true,
     })
-    // console.log(this.values, 'values')
+    console.log(data, "data in login screen")
     authService
-      .logIn(this.values)
+      .logIn(data)
       .then((response) => {
-        // console.log(response)
+        console.log(response, "response")
         this.setState({
           ...this.state,
           isLoading: false,
@@ -117,21 +132,22 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         authService.authenticateUser(response.access, response.refresh)
       })
       .then(() => {
-        setTimeout(() => {
-          this.setState({
+        this.setState(
+          {
             ...this.state,
             isLoading: false,
             modalVisible: false,
-          })
-          this.props.navigation.navigate("pickYourChoice")
-        }, 100)
+          },
+          () => this.props.navigation.navigate("bottomTab")
+        )
       })
       .catch((error) => {
-        console.log(error, "error")
+        console.log(error, "in login")
         this.setState({
           ...this.state,
           isLoading: false,
           showError: true,
+          modalVisible: false,
           errorText: error.detail,
         })
       })
@@ -141,10 +157,59 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     this.values[name] = value
   }
 
+  logIn = async () => {
+    try {
+      await Facebook.initializeAsync({
+        appId: "881191042676304",
+      })
+      const { type, token }: any = await Facebook.logInWithReadPermissionsAsync(
+        {
+          permissions: ["public_profile"],
+        }
+      )
+      if (type === "success") {
+        // Get the user's name using Facebook's Graph API
+        const response = await fetch(
+          `https://graph.facebook.com/me?access_token=${token}`
+        )
+        const jsonResponse = await response.json()
+
+        alert(` ${(await response.json()).name}!`)
+      } else {
+        // type === 'cancel'
+      }
+    } catch ({ message }) {
+      alert(`Facebook Login Error: ${message}`)
+    }
+  }
+
+  googleLogin = async () => {
+    const { type, accessToken, user }: any = await Google.logInAsync({
+      androidClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
+      scopes: ["profile", "email"],
+      redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google`,
+      androidStandaloneAppClientId:
+        "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
+    })
+    console.log(type, accessToken, "type,accessToken")
+
+    if (type === "success") {
+      // Then you can use the Google REST API
+      let userInfoResponse = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      )
+      const userInfoResponseJson = await userInfoResponse.json()
+      console.log(userInfoResponseJson, "responseJson in google")
+    }
+  }
   render() {
     // navigation as prop
     const { navigation } = this.props
-    const { isLoading, errorText, showError } = this.state
+    const { isLoading, errorText, showError, modalVisible } = this.state
+
     return (
       <>
         {isLoading ? (
@@ -157,69 +222,114 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             style={styles.mainContainer}
             keyboardShouldPersistTaps="always"
           >
-            {this.state.modalVisible && (
-              <View>
-                <Modal
-                  isVisible={this.state.modalVisible}
-                  backdropColor={colors.white}
-                  backdropOpacity={0.9}
-                >
-                  <View style={styles.renderModalContainer}>
-                    {/* This call, renders the modal*/}
-                    {this.renderModalContent()}
-                  </View>
-                </Modal>
-              </View>
-            )}
-            <View style={styles.container}>
-              <Image
-                style={styles.welcome}
-                resizeMode="contain"
-                source={Welcome}
-              />
-              <Text style={styles.loginText}>Login</Text>
-              {showError && <Text style={styles.errorStyles}>{errorText}</Text>}
-              <CustomTextField
-                onChange={(value) => this.onChange("email", value)}
-                placeholder="Enter Email Id"
-                style={styles.inputBox}
-              />
-              <CustomTextField
-                onChange={(value) => this.onChange("password", value)}
-                placeholder="Enter Password"
-                style={styles.inputBox}
-                secureText={true}
-              />
-              <View>
-                <CustomButton
-                  title="Get OTP"
-                  onPressButton={this.onPressOTPButton}
-                  buttonTextStyles={styles.verifyContinueButtonText}
-                />
-              </View>
+            <Formik
+              validationSchema={loginValidationSchema}
+              initialValues={{ email: "", password: "" }}
+              onSubmit={(values) => {
+                this.onSubmitValues(values)
+              }}
+            >
+              {({ handleChange, handleSubmit, values, errors, touched }) => (
+                <>
+                  {modalVisible && (
+                    <View>
+                      <Modal
+                        isVisible={modalVisible}
+                        backdropColor={colors.white}
+                        backdropOpacity={0.9}
+                      >
+                        <View style={styles.renderModalContainer}>
+                          {/* This call, renders the modal*/}
+                          {this.renderModalContent()}
+                        </View>
+                      </Modal>
+                    </View>
+                  )}
+                  <View style={styles.container}>
+                    <Image
+                      style={styles.welcome}
+                      resizeMode="contain"
+                      source={Welcome}
+                    />
+                    <Text style={styles.loginText}>Login</Text>
+                    {showError && (
+                      <Text style={styles.errorStyles}>{errorText}</Text>
+                    )}
+                    <TextInput
+                      onChangeText={handleChange("email")}
+                      placeholder="Enter Email Id"
+                      style={styles.inputBox}
+                      value={values.email}
+                    />
+                    {touched.email && errors.email ? (
+                      <Text style={styles.error}>{errors.email}</Text>
+                    ) : null}
+                    <TextInput
+                      onChangeText={handleChange("password")}
+                      placeholder="Enter Password"
+                      style={styles.inputBox}
+                      secureTextEntry
+                      value={values.password}
+                    />
+                    {touched.password && errors.password ? (
+                      <Text style={styles.error}>{errors.password}</Text>
+                    ) : null}
+                    <View>
+                      <CustomButton
+                        title="Login"
+                        onPressButton={handleSubmit}
+                        buttonTextStyles={styles.verifyContinueButtonText}
+                      />
+                    </View>
 
-              <View style={styles.loginBottom}>
-                <Text style={styles.loginWith}>Or Login with...</Text>
-                <View style={styles.socialIconsContainer}>
-                  <FacebookSvg width={wp("14.66%")} height={hp("7.23%")} />
-                  <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
-                  <GoogleSvg width={wp("14.66%")} height={hp("7.23%")} />
-                </View>
-                <Text style={styles.signupContainer}>
-                  <Text style={styles.newToFrappy}>New to Frappy? </Text>
-                  <Text style={styles.signUp} onPress={this.handleNavigation}>
-                    Sign up
-                  </Text>
-                </Text>
-              </View>
-            </View>
+                    <View style={styles.loginBottom}>
+                      <Text style={styles.loginWith}>Or Login with...</Text>
+                      <View style={styles.socialIconsContainer}>
+                        <Pressable onPress={this.logIn}>
+                          <FacebookSvg
+                            width={wp("14.66%")}
+                            height={hp("7.23%")}
+                          />
+                        </Pressable>
+
+                        <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
+                        <Pressable onPress={this.googleLogin}>
+                          <GoogleSvg
+                            width={wp("14.66%")}
+                            height={hp("7.23%")}
+                          />
+                        </Pressable>
+                      </View>
+                      <Text style={styles.signupContainer}>
+                        <Text style={styles.newToFrappy}>New to Frappy? </Text>
+                        <Text
+                          style={styles.signUp}
+                          onPress={this.handleNavigation}
+                        >
+                          Sign up
+                        </Text>
+                      </Text>
+                    </View>
+                  </View>
+                </>
+              )}
+            </Formik>
           </ScrollView>
         )}
       </>
     )
   }
 }
+
 const styles = StyleSheet.create({
+  error: {
+    color: colors.orange,
+    fontSize: wp("3%"),
+    fontFamily: "ArchivoRegular",
+    textAlign: "left",
+    display: "flex",
+    alignSelf: "flex-start",
+  },
   errorStyles: {
     color: colors.orange,
     fontSize: wp("6%"),
@@ -337,11 +447,16 @@ const styles = StyleSheet.create({
     fontFamily: "AirbnbCerealBold",
   },
   inputBox: {
-    // marginTop: '7%',
-    fontFamily: "ArchivoRegular",
-    marginTop: hp("3%"),
-    marginBottom: hp("1%"),
-    fontSize: wp("4.2%"),
+    width: wp("85.33%"),
+    margin: "3%",
+    marginLeft: wp("0%"),
+    fontSize: wp("4.26%"),
+    marginRight: wp("0%"),
+    padding: wp("2%"),
+    borderBottomWidth: 2,
+    paddingLeft: 0,
+    borderBottomColor: "#DFE1E6",
+    // borderRadius: wp("2.66%"),
   },
   loginBottom: {
     display: "flex",

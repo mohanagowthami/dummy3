@@ -24,6 +24,8 @@ import image11 from "../../assets/images/image22.png"
 import image12 from "../../assets/images/image23.png"
 import image13 from "../../assets/images/image24.png"
 
+import React from "react"
+
 export const content = {
   onBoarding: {
     onBoardingTitleOne: "Humanize",
@@ -54,3 +56,8 @@ export const rectangleImageList = [
   image12,
   image13,
 ]
+
+export const APIKEY = "AIzaSyAqP9tvqARsKjUTXNrM8-egJFwmu2YTQ1U"
+export const mode = "driving"
+//@ts-ignore
+export const Context = React.createContext()

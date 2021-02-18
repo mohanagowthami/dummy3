@@ -14,6 +14,7 @@ import Navigation from "./Navigation"
 import Notifications from "./Notifications"
 import Recap from "./RecapScreen"
 import HallOfFame from "./HallOfFameScreen"
+import DisplayFullImage from "./DisplayFullImage"
 
 // creating stack for navigation screens
 const Stack = createStackNavigator()
@@ -25,6 +26,11 @@ class HomeScreens extends Component {
         <Stack.Screen
           name="home"
           component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="navigation"
+          component={Navigation}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -52,13 +58,13 @@ class HomeScreens extends Component {
         />
 
         <Stack.Screen
-          name="navigation"
-          component={Navigation}
+          name="localFavourites"
+          component={LocalFavourites}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="localFavourites"
-          component={LocalFavourites}
+          name="fullImage"
+          component={DisplayFullImage}
           options={{ headerShown: false }}
         />
 

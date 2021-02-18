@@ -40,10 +40,7 @@ class Locations extends Component<IProps, Istate> {
       isModalOpen: false,
     }
   }
-  onPressGetDirections = () => {
-    console.log("Get Directions")
-    // this.props.navigation.navigate('pickYourChoice')
-  }
+
   render() {
     return (
       <View style={styles.container}>

@@ -1,7 +1,7 @@
 // react-native-gesture-handler
 import { ScrollView } from "react-native-gesture-handler"
 // react
-import React, { Component } from "react"
+import React, { Component, createRef } from "react"
 // react-native
 import {
   Text,
@@ -45,6 +45,7 @@ const plannerService = new PlannerService()
 class FrappyPlannerCalendar extends Component<IProps, Istate> {
   date: any
   subscribe: any
+  flatListRef: any
   constructor(props: IProps) {
     super(props)
     this.date = new Date()
@@ -55,24 +56,46 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
       plannerData: [],
       isLoading: false,
     }
+    this.flatListRef = createRef()
   }
 
   onChangePicker = (event: any, selectedDate: any) => {
-    console.log(selectedDate, "selectedDate")
-    this.setState({
-      ...this.state,
-      isModalOpen: false,
-      selectedDate: selectedDate,
-      dateArray: new Array(
-        new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0).getDate()
-      ).fill(0),
-    })
+    if (selectedDate) {
+      const stateData = { ...this.state }
+      stateData.selectedDate = selectedDate
+      stateData.isModalOpen = false
+      if (
+        selectedDate.getMonth() === this.date.getMonth() &&
+        selectedDate.getFullYear() === this.date.getFullYear()
+      ) {
+        stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
+        let index
+        if (selectedDate.getDate() + 2 <= stateData.dateArray.length - 1)
+          index = selectedDate.getDate() + 2
+        else index = stateData.dateArray.length - 1
+
+        this.flatListRef.scrollToIndex({
+          animated: true,
+          index: index,
+        })
+      } else {
+        stateData.dateArray = new Array(
+          new Date(
+            this.date.getFullYear(),
+            this.date.getMonth() + 1,
+            0
+          ).getDate()
+        ).fill(0)
+      }
+      this.setState(stateData)
+    }
   }
 
   fetchData = () => {
     this.setState({ ...this.state, isLoading: true })
+    const { selectedDate } = this.state
     plannerService
-      .searchCurrentUserPlannerData(getFormatedDate(this.state.selectedDate))
+      .searchCurrentUserPlannerData(getFormatedDate(selectedDate))
       .then((response) => {
         this.setState({
           ...this.state,
@@ -80,7 +103,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
           isLoading: false,
         })
       })
-      .catch((error) => console.log(error, "error"))
+      .catch((error) => {})
   }
   async componentDidMount() {
     const { navigation } = this.props
@@ -91,7 +114,8 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
   }
 
   async componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevState.selectedDate !== this.state.selectedDate) {
+    const { selectedDate } = this.state
+    if (prevState.selectedDate !== selectedDate) {
       this.fetchData()
     }
   }
@@ -106,14 +130,13 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
   }
 
   handlePressableDate = (ind: number): any => {
-    const mutatedArray = this.state.dateArray.map(
-      (ele: boolean, index: number) => {
-        if (index === ind) {
-          return !ele
-        }
-        return 0
+    const { dateArray } = this.state
+    const mutatedArray = dateArray.map((ele: boolean, index: number) => {
+      if (index === ind) {
+        return !ele
       }
-    )
+      return 0
+    })
     this.setState({
       ...this.state,
       dateArray: mutatedArray,
@@ -165,20 +188,22 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
   }
 
   renderDays = () => {
-    const { dateArray } = this.state
+    const { dateArray, selectedDate } = this.state
     return (
       <FlatList
         data={dateArray}
         renderItem={({ item, index }) => this.flatListRenderItem(item, index)}
         horizontal
         keyExtractor={(item, index) => "key" + index}
-        initialScrollIndex={this.date.getDate() - 1}
         getItemLayout={this.getItemLayout.bind(this)}
+        ref={(ref) => (this.flatListRef = ref)}
+        initialScrollIndex={selectedDate.getDate() - 1}
       />
     )
   }
 
   render() {
+    const { selectedDate, isLoading, plannerData, isModalOpen } = this.state
     return (
       <View style={styles.container}>
         <ScrollView style={styles.mainContainer}>
@@ -204,17 +229,17 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
             </Pressable>
           </View>
           <Text style={styles.formattedDate}>
-            {getFormatedDate(this.state.selectedDate)}
+            {getFormatedDate(selectedDate)}
           </Text>
           {this.renderDays()}
           <View style={styles.bottomTab}>
             <Text style={styles.yourVisits}>Your Visits</Text>
 
-            {this.state.isLoading ? (
+            {isLoading ? (
               <ActivityIndicator color={colors.darkBlack} size="large" />
             ) : (
               <>
-                {this.state.plannerData.map((ele: any, index: number) => {
+                {plannerData.map((ele: any, index: number) => {
                   const { from_time, to_time, description } = ele
                   return (
                     <View style={styles.cardContainer} key={index}>
@@ -240,10 +265,10 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
             <AddIcon width={wp("13.06%")} height={hp("6.44%")} />
           </Pressable>
         </View>
-        {this.state.isModalOpen && (
+        {isModalOpen && (
           <DateTimePicker
             testID="dateTimePicker"
-            value={this.state.selectedDate}
+            value={selectedDate}
             mode="date"
             display="default"
             onChange={this.onChangePicker}
@@ -304,7 +329,7 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("5%"),
     color: colors.darkBlack,
-    paddingTop: hp("2%"),
+    paddingTop: hp("0.5%"),
     paddingHorizontal: wp("6%"),
   },
   yourVisits: {

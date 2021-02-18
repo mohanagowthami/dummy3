@@ -9,6 +9,7 @@ abstract class APIService {
     const token = await AsyncStorage.getItem("accessToken")
     return {
       Authorization: token ? `Bearer ${token}` : "",
+      "Content-Type": "application/json",
     }
   }
 
@@ -16,18 +17,14 @@ abstract class APIService {
   async setAccessToken(value: string): Promise<any> {
     try {
       await AsyncStorage.setItem("accessToken", value)
-    } catch (e) {
-      console.log(e, "error in saving accessToken")
-    }
+    } catch (e) {}
   }
 
   // Setting refresh token
   async setRefreshToken(value: string): Promise<any> {
     try {
       await AsyncStorage.setItem("refreshToken", value)
-    } catch (e) {
-      console.log(e, "error in saving refreshToken")
-    }
+    } catch (e) {}
   }
 
   // Axios get method
@@ -39,14 +36,14 @@ abstract class APIService {
     })
   }
 
-  async post(url: string, data = {}): Promise<any> {
-    const headers = await this.getAxiosHeaders()
-    console.log(headers, "headers")
+  async post(url: string, data = {}, customHeaders?: any): Promise<any> {
+    let headers = await this.getAxiosHeaders()
+
     return axios({
       method: "POST",
       url,
       data,
-      headers: await this.getAxiosHeaders(),
+      headers: headers,
     })
   }
 

@@ -35,7 +35,7 @@ const colorsList = [
 class HallOfFame extends Component<IProps, Istate> {
   render() {
     const { hallOfFameList } = this.props.route.params
-    console.log(hallOfFameList, "hallofFameList")
+    
     return (
       <ScrollView style={styles.mainContainer}>
         <View>

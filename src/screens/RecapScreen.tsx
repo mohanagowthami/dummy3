@@ -3,7 +3,7 @@ import { ScrollView } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, View, StyleSheet, Image } from "react-native"
+import { Text, View, StyleSheet, Image, Pressable } from "react-native"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -54,6 +54,9 @@ class Recap extends Component<IProps, Istate> {
 
     stateData.recapList[index].showFullAddress = true
     this.setState(stateData)
+  }
+  handleNavigation = (address: string) => {
+    this.props.navigation.navigate("navigation", { address: address })
   }
   render() {
     const { recapList } = this.state
@@ -123,12 +126,15 @@ class Recap extends Component<IProps, Istate> {
                             </Text>
                           </View>
 
-                          <View style={styles.navigationIcon}>
+                          <Pressable
+                            style={styles.navigationIcon}
+                            onPress={() => this.handleNavigation(address)}
+                          >
                             <NavigationIcon
                               width={wp("7.8%")}
                               height={hp("3.68%")}
                             />
-                          </View>
+                          </Pressable>
                         </View>
                       </View>
                     </View>

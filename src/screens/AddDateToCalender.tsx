@@ -18,21 +18,23 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
+// google places auto complete
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
 // DateTimePicker
 import DateTimePicker from "@react-native-community/datetimepicker"
 // icons
-import {
-  BellIcon,
-  CalenderSvg,
-  Clock,
-  LocationIcon,
-} from "../../assets/svgs/icons"
+import { BellIcon, CalenderSvg, Clock } from "../../assets/svgs/icons"
 // components
-import CustomTextField from "../components/input-controllers/CustomTextField"
 import CustomButton from "../components/buttons/CustomButton"
 // colors
 import { colors } from "../lib/colors"
-import { getFormatedDate, getCurrentMonthArray } from "../lib/helper"
+// helper
+import {
+  getFormatedDate,
+  getCurrentMonthArray,
+  convertToTweleveHoursFormat,
+} from "../lib/helper"
+// service
 import PlannerService from "../services/planner.service"
 
 // props
@@ -52,8 +54,7 @@ interface IState {
   fromTime: string
   toTime: string
   dateArray: any
-  initialLocation: string
-  destinationLocation: string
+
   isLoading: boolean
 }
 
@@ -62,6 +63,8 @@ const plannerService = new PlannerService()
 class AddDateToCalender extends Component<IProps, IState> {
   date: any = new Date()
   ref: any
+  fromLocationRef: any
+  toLocationRef: any
   flatListRef: any
   constructor(props: IProps) {
     super(props)
@@ -76,7 +79,7 @@ class AddDateToCalender extends Component<IProps, IState> {
       switchArray: [
         {
           name: "Food",
-          on: true,
+          on: false,
         },
         {
           name: "Travel",
@@ -89,11 +92,11 @@ class AddDateToCalender extends Component<IProps, IState> {
       ],
       fromTime: "From",
       toTime: "To",
-      initialLocation: "",
-      destinationLocation: "",
     }
     this.ref = React.createRef()
     this.flatListRef = React.createRef()
+    this.fromLocationRef = React.createRef()
+    this.toLocationRef = React.createRef()
   }
 
   showPicker = (mode: string) => {
@@ -105,51 +108,70 @@ class AddDateToCalender extends Component<IProps, IState> {
   }
 
   onChangePicker = (event: any, selectedDate: any) => {
-    let stateData = { ...this.state }
-    stateData.show = false
-    if (this.state.mode === "date") {
-      stateData.date = selectedDate
-      if (
-        selectedDate.getMonth() === this.date.getMonth() &&
-        selectedDate.getFullYear() === this.date.getFullYear()
-      ) {
-        stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
-        this.flatListRef.scrollToIndex({
-          animated: true,
-          index: selectedDate.getDate() - 1,
-        })
-      } else {
-        stateData.dateArray = new Array(
-          new Date(
-            this.date.getFullYear(),
-            this.date.getMonth() + 1,
-            0
-          ).getDate()
-        ).fill(0)
-      }
-    } else {
-      if (this.ref.current === "from")
-        stateData.fromTime = `${selectedDate.getHours()} : ${selectedDate.getMinutes()}`
-      else
-        stateData.toTime = `${selectedDate.getHours()} : ${selectedDate.getMinutes()}`
-    }
+    const { mode } = this.state
+    if (selectedDate) {
+      let stateData = { ...this.state }
+      stateData.show = false
+      if (mode === "date") {
+        stateData.date = selectedDate
+        if (
+          selectedDate.getMonth() === this.date.getMonth() &&
+          selectedDate.getFullYear() === this.date.getFullYear()
+        ) {
+          stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
+          let index
+          if (selectedDate.getDate() + 2 <= stateData.dateArray.length - 1)
+            index = selectedDate.getDate() + 2
+          else index = stateData.dateArray.length - 1
 
-    this.setState(stateData)
+          this.flatListRef.scrollToIndex({
+            animated: true,
+            index: index,
+          })
+        } else {
+          stateData.dateArray = new Array(
+            new Date(
+              this.date.getFullYear(),
+              this.date.getMonth() + 1,
+              0
+            ).getDate()
+          ).fill(0)
+        }
+      } else {
+        if (this.ref.current === "from") {
+          let minutes = selectedDate.getMinutes()
+          if (minutes.toString().length === 1) minutes = "0" + minutes
+
+          stateData.fromTime = convertToTweleveHoursFormat(
+            selectedDate.getHours(),
+            minutes
+          )
+        } else {
+          let minutes = selectedDate.getMinutes()
+          if (minutes.toString().length === 1) minutes = "0" + minutes
+          stateData.toTime = convertToTweleveHoursFormat(
+            selectedDate.getHours(),
+            minutes
+          )
+        }
+      }
+
+      this.setState(stateData)
+    }
   }
 
   toggleSwitch = (index: number) => {
     let stateData = { ...this.state }
-    stateData.switchArray[0].on = false
-    stateData.switchArray[1].on = false
-    stateData.switchArray[2].on = false
+
     stateData.switchArray[index].on = !stateData.switchArray[index].on
     this.setState(stateData)
   }
 
   renderSelectCategorySwitches = () => {
+    const { switchArray } = this.state
     return (
       <>
-        {this.state.switchArray.map((element, index) => {
+        {switchArray.map((element, index) => {
           const { name, on } = element
           return (
             <View style={styles.categoryContainer} key={index}>
@@ -173,14 +195,13 @@ class AddDateToCalender extends Component<IProps, IState> {
   }
 
   handlePressableDate = (ind: number): any => {
-    const mutatedArray = this.state.dateArray.map(
-      (ele: boolean, index: number) => {
-        if (index === ind) {
-          return !ele
-        }
-        return 0
+    const { dateArray } = this.state
+    const mutatedArray = dateArray.map((ele: boolean, index: number) => {
+      if (index === ind) {
+        return !ele
       }
-    )
+      return 0
+    })
     this.setState({
       ...this.state,
       dateArray: mutatedArray,
@@ -221,21 +242,21 @@ class AddDateToCalender extends Component<IProps, IState> {
   getItemLayout(data: any, index: number) {
     return {
       length: wp("10%"),
-      offset: wp("13%") * index,
+      offset: wp("15%") * index,
       index,
     }
   }
 
   renderDays = () => {
-    const { dateArray } = this.state
-    console.log(this.state.date.getDate(), "dategow")
+    const { dateArray, date } = this.state
+
     return (
       <FlatList
         data={dateArray}
         renderItem={({ item, index }) => this.flatListRenderItem(item, index)}
         horizontal
         keyExtractor={(item, index) => "key" + index}
-        initialScrollIndex={this.state.date.getDate() - 1}
+        initialScrollIndex={date.getDate() - 1}
         getItemLayout={this.getItemLayout.bind(this)}
         ref={(ref) => (this.flatListRef = ref)}
       />
@@ -243,50 +264,75 @@ class AddDateToCalender extends Component<IProps, IState> {
   }
 
   pressPlan = () => {
-    const {
-      date,
-      fromTime,
-      toTime,
-      initialLocation,
-      destinationLocation,
-      description,
-      switchArray,
-    } = this.state
-    const category = switchArray.find((ele) => {
+    const { date, fromTime, toTime, description, switchArray } = this.state
+    const category = switchArray.filter((ele) => {
       if (ele) return ele.name
     })
     const data = {
-      from_time: fromTime.replace(/\s/g, ""),
-      to_time: toTime.replace(/\s/g, ""),
+      from_time: fromTime !== "From" ? fromTime.replace(/\s/g, "") : "",
+      to_time: toTime !== "From" ? toTime.replace(/\s/g, "") : "",
       date: getFormatedDate(date),
-      start_location: initialLocation,
-      end_location: destinationLocation,
-      category: category!.name,
+      start_location: this.fromLocationRef.current.getAddressText(),
+      end_location: this.toLocationRef.current.getAddressText(),
+      category: category,
       description: description,
     }
-
-    console.log(data, "data")
+    console.log(data, "before submitting")
     this.setState({ ...this.state, isLoading: true })
     plannerService
       .updateUserPlannerData(data)
       .then((response) => {
-        console.log(response, "response")
         this.props.navigation.navigate("frappyCalender")
       })
-      .catch((error) => console.log(error, "error"))
+      .catch((error) => {})
   }
 
   onChangeDescription = (text: string) => {
-    this.setState({ ...this.setState, description: text })
+    this.setState({ ...this.state, description: text })
   }
   onPressDate = () => {
     this.showPicker("date")
   }
+
+  onPressCancel = () => {
+    const stateData = { ...this.state }
+    stateData.date = new Date()
+    stateData.description = ""
+    stateData.dateArray = getCurrentMonthArray()
+    stateData.switchArray = [
+      {
+        name: "Food",
+        on: false,
+      },
+      {
+        name: "Travel",
+        on: false,
+      },
+      {
+        name: "Shopping",
+        on: false,
+      },
+    ]
+    stateData.fromTime = "From"
+    stateData.toTime = "To"
+    this.fromLocationRef.current.setAddressText("")
+    this.toLocationRef.current.setAddressText("")
+    this.setState(stateData)
+  }
   render() {
+    const {
+      isLoading,
+      date,
+      fromTime,
+      toTime,
+      show,
+      mode,
+      description,
+    } = this.state
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
         <ScrollView keyboardShouldPersistTaps="handled">
-          {this.state.isLoading ? (
+          {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator color={colors.darkBlack} size="large" />
             </View>
@@ -302,21 +348,19 @@ class AddDateToCalender extends Component<IProps, IState> {
                   <BellIcon width={wp("5.9%")} height={wp("5.9%")} />
                 </Pressable>
               </View>
-              <View style={styles.containerDirection}>
-                <Pressable onPress={this.onPressDate}>
-                  <View style={styles.dateWrapper}>
-                    <Text style={styles.dateTextStyle}>Select Date</Text>
-                    <CalenderSvg
-                      color={colors.darkGrey}
-                      width={wp("5%")}
-                      height={wp("5%")}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <Text style={styles.formattedDate}>
-                {getFormatedDate(this.state.date)}
-              </Text>
+
+              <Pressable onPress={this.onPressDate}>
+                <View style={styles.dateWrapper}>
+                  <Text style={styles.dateTextStyle}>Select Date</Text>
+                  <CalenderSvg
+                    color={colors.darkGrey}
+                    width={wp("5%")}
+                    height={wp("5%")}
+                  />
+                </View>
+              </Pressable>
+
+              <Text style={styles.formattedDate}>{getFormatedDate(date)}</Text>
               {this.renderDays()}
 
               <Text
@@ -334,7 +378,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                       this.showPicker("time")
                     }}
                   >
-                    <Text style={styles.timeText}>{this.state.fromTime}</Text>
+                    <Text style={styles.timeText}>{fromTime}</Text>
                     <Clock width={wp("6.13%")} height={hp("3.02%")} />
                   </Pressable>
                 </View>
@@ -346,59 +390,75 @@ class AddDateToCalender extends Component<IProps, IState> {
                       this.showPicker("time")
                     }}
                   >
-                    <Text style={styles.timeText}>{this.state.toTime}</Text>
+                    <Text style={styles.timeText}>{toTime}</Text>
                     <Clock width={wp("6.13%")} height={hp("3.02%")} />
                   </Pressable>
                 </View>
               </View>
               <Text style={styles.selectDate}>Location</Text>
-              <View style={styles.setLocationContainer}>
-                <View style={styles.timeBox}>
-                  <TextInput
-                    placeholder="Start"
-                    style={[styles.timeText, { paddingBottom: wp("0%") }]}
-                    onChangeText={(text) => {
-                      this.setState({
-                        ...this.state,
-                        initialLocation: text,
-                      })
-                    }}
-                  />
 
-                  <Pressable>
-                    <LocationIcon width={wp("6.13%")} height={hp("3.02%")} />
-                  </Pressable>
-                </View>
-                <View style={styles.timeBox}>
-                  <TextInput
-                    placeholder="End"
-                    style={[styles.timeText, { paddingBottom: wp("0%") }]}
-                    onChangeText={(text) => {
-                      this.setState({
-                        ...this.state,
-                        destinationLocation: text,
-                      })
-                    }}
-                  />
-                  <Pressable>
-                    <LocationIcon width={wp("6.13%")} height={hp("3.02%")} />
-                  </Pressable>
-                </View>
-              </View>
+              <GooglePlacesAutocomplete
+                ref={this.fromLocationRef}
+                placeholder="From Address"
+                onPress={(data, details = null) => {
+                  // 'details' is provided when fetchDetails = true
+                }}
+                query={{
+                  key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
+                  language: "en",
+                }}
+                autoFillOnNotFound={true}
+                enablePoweredByContainer={false}
+                styles={{
+                  container: {
+                    width: "100%",
+                    padding: wp("1%"),
+                    marginVertical: wp("1%"),
+                    borderColor: colors.greyTwo,
+                    borderWidth: wp("0.3%"),
+                    borderRadius: wp("2%"),
+                  },
+                  textInput: styles.timeText,
+                }}
+              />
+              <GooglePlacesAutocomplete
+                ref={this.toLocationRef}
+                placeholder="To Address"
+                onPress={(data, details = null) => {
+                  // 'details' is provided when fetchDetails = true
+                  console.log(data, details)
+                }}
+                query={{
+                  key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
+                  language: "en",
+                }}
+                enablePoweredByContainer={false}
+                styles={{
+                  container: {
+                    width: "100%",
+                    padding: wp("1%"),
+                    marginVertical: wp("1%"),
+                    borderColor: colors.greyTwo,
+                    borderWidth: wp("0.3%"),
+                    borderRadius: wp("2%"),
+                  },
+                  textInput: styles.timeText,
+                }}
+              />
+
               <Text style={styles.selectDate}>Select Category</Text>
               {this.renderSelectCategorySwitches()}
-              <CustomTextField
-                onChange={this.onChangeDescription}
+              <TextInput
+                onChangeText={this.onChangeDescription}
                 textAlignVertical="top"
                 placeholderTextColor={colors.greyTwo}
                 placeholder={"Description"}
                 style={styles.customTextField}
+                value={description}
               />
               <View style={styles.bottomContainer}>
                 <CustomButton
-                  onPressButton={() =>
-                    this.props.navigation.navigate("frappyCalender")
-                  }
+                  onPressButton={this.onPressCancel}
                   buttonStyles={styles.buttonStyles}
                   title="Cancel"
                   buttonTextStyles={styles.buttonTextStyles}
@@ -412,11 +472,11 @@ class AddDateToCalender extends Component<IProps, IState> {
               </View>
             </View>
           )}
-          {this.state.show && (
+          {show && (
             <DateTimePicker
               testID="dateTimePicker"
-              value={this.state.date}
-              mode={this.state.mode}
+              value={date}
+              mode={mode}
               is24Hour={false}
               display="default"
               onChange={this.onChangePicker}
@@ -430,6 +490,9 @@ class AddDateToCalender extends Component<IProps, IState> {
 export default AddDateToCalender
 
 const styles = StyleSheet.create({
+  locationBox: {
+    backgroundColor: "red",
+  },
   timeBoxItem: {
     display: "flex",
     flex: 1,
@@ -447,14 +510,13 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: hp("1%"),
+    marginBottom: -hp("0.5%"),
   },
   formattedDate: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("5%"),
     color: colors.greyTwo,
     paddingVertical: hp("1%"),
-    paddingTop: 0,
   },
   flatListRenderItemContainer: {
     marginHorizontal: wp("3%"),
@@ -600,6 +662,7 @@ const styles = StyleSheet.create({
     letterSpacing: wp("0.05%"),
     marginVertical: wp("1%"),
     color: colors.darkBlack,
+    marginRight: wp("3%"),
   },
   loadingContainer: {
     height: hp("90%"),
