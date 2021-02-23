@@ -14,6 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
+import { SafeAreaView } from "react-native-safe-area-context"
 // react-native / NewAppScreen
 import { Colors } from "react-native/Libraries/NewAppScreen"
 // icons
@@ -197,20 +198,25 @@ class AccountSettings extends Component<IProps, IState> {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={styles.title}>Account Settings</Text>
-          <Text style={styles.description}>
-            Update your settings like notifications,
-            {"\n"}payments, profile edit etc.
-          </Text>
-          {this.renderSettings(accountList)}
-          <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
-          {this.renderSettings(notificationsList)}
-          <Text style={styles.settingsHeading}>MORE</Text>
-          {this.renderSettings(moreList)}
-        </View>
-      </ScrollView>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            <Text style={styles.title}>Account Settings</Text>
+            <Text style={styles.description}>
+              Update your settings like notifications,
+              {"\n"}payments, profile edit etc.
+            </Text>
+            {this.renderSettings(accountList)}
+            <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
+            {this.renderSettings(notificationsList)}
+            <Text style={styles.settingsHeading}>MORE</Text>
+            {this.renderSettings(moreList)}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     )
   }
 }

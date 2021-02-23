@@ -30,9 +30,11 @@ import { colors } from "../lib/colors"
 import { Profile } from "../../assets/svgs/icons"
 import UserService from "../services/user.service"
 import Loader from "../components/elements/Loader"
+import { CommonActions } from "@react-navigation/native"
 
 interface IProps {
   navigation: any
+  rootNavigation: any
 }
 // divisioning of the screen
 
@@ -70,6 +72,25 @@ class ProfileScreen extends Component<IProps, Istate> {
     }
   }
 
+  handleLogout = () => {
+    this.setState({ ...this.state, isLoading: true })
+    userService
+      .removeAccessToken()
+      .then((response) => {
+        console.log(response, "response in logout")
+        if (response)
+          this.props.navigation.dispatch(
+            CommonActions.navigate({
+              name: "login",
+              params: {},
+            })
+          )
+        else alert("Logout is unsuccessful, please try again")
+      })
+      .catch((e) => {
+        this.setState({ ...this.state, isLoading: false })
+      })
+  }
   fetchData = () => {
     let stateData = { ...this.state }
     this.setState({ ...this.state, isLoading: true })
@@ -103,7 +124,11 @@ class ProfileScreen extends Component<IProps, Istate> {
         {isLoading ? (
           <Loader />
         ) : (
-          <ScrollView style={styles.maincontainer}>
+          <ScrollView
+            style={styles.maincontainer}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
             <View style={styles.profilecontainer}>
               <View style={styles.container}>
                 <View style={styles.imageandbackicon}>
@@ -163,15 +188,15 @@ class ProfileScreen extends Component<IProps, Istate> {
                   >
                     <Text style={styles.optionstext}>Notifications</Text>
                   </Pressable>
-                  <View style={styles.notificationcount}>
-                    <Pressable
+                  {/* <View style={styles.notificationcount}> */}
+                  {/* <Pressable
                       onPress={() =>
                         this.props.navigation.navigate("notifications")
                       }
                     >
                       <Text style={styles.notificationcountContainer}>3</Text>
-                    </Pressable>
-                  </View>
+                    </Pressable> */}
+                  {/* </View> */}
                 </View>
                 <View style={styles.optioncontainer}>
                   <Share width={wp("5.86%")} height={hp("2.89%")} />
@@ -195,7 +220,9 @@ class ProfileScreen extends Component<IProps, Istate> {
                 </Pressable>
                 <View style={styles.optioncontainer}>
                   <Logout width={wp("5.86%")} height={hp("2.89%")} />
-                  <Text style={styles.optionstext}>Logout</Text>
+                  <Text style={styles.optionstext} onPress={this.handleLogout}>
+                    Logout
+                  </Text>
                 </View>
               </View>
             </View>

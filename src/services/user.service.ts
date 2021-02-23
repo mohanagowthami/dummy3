@@ -1,10 +1,14 @@
-import { DISLIKE, PROFILE_PIC, UPDATE_USER } from "./../lib/endpoints"
 // endpoints
 import {
+  DISLIKE,
   FAVORITES,
   GET_USER,
   LIKE,
   USER_CURRENT_LOCATION,
+  PROFILE_PIC,
+  UPDATE_USER,
+  FORGOT_PASSWORD,
+  RESET_PASSWORD,
 } from "./../lib/endpoints"
 // service
 import APIService from "./api.service"
@@ -22,6 +26,11 @@ class UserService extends APIService {
     } catch (e) {
       return e
     }
+  }
+  async setAccessToken(): Promise<any> {
+    return this.removeAccessToken().then((response) => {
+      return response
+    })
   }
 
   // Getting refresh token
@@ -96,6 +105,25 @@ class UserService extends APIService {
 
   updateUserPic(id: number, data: any): Promise<any> {
     return this.put(PROFILE_PIC(id), data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+
+  forgotPassword(data: any): Promise<any> {
+    return this.post(FORGOT_PASSWORD, data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+  resetPassword(data: any): Promise<any> {
+    return this.post(RESET_PASSWORD, data)
       .then((response: any) => {
         return response.data
       })

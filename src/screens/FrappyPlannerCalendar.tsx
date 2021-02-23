@@ -25,7 +25,12 @@ import CalenderSvg from "../../assets/svgs/icons/icons-bottomTab/CalenderSvg"
 // colors
 import { colors } from "../lib/colors"
 // date
-import { getFormatedDate, getCurrentMonthArray } from "../lib/helper"
+import {
+  getFormatedDate,
+  getCurrentMonthArray,
+  convertToTweleveHoursFormat,
+} from "../lib/helper"
+// service
 import PlannerService from "../services/planner.service"
 
 interface IProps {
@@ -133,7 +138,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     const { dateArray } = this.state
     const mutatedArray = dateArray.map((ele: boolean, index: number) => {
       if (index === ind) {
-        return !ele
+        return 1
       }
       return 0
     })
@@ -161,14 +166,10 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
         <Text
           style={[
             styles.dateTextStyle,
+            styles.dateText,
             {
-              backgroundColor: item ? colors.orange : colors.white,
-              color: item ? colors.white : colors.darkBlack,
-              width: wp("10%"),
-              height: wp("10%"),
-              borderRadius: wp("5%"),
-              textAlign: "center",
-              textAlignVertical: "center",
+              backgroundColor: item == 1 ? colors.orange : colors.white,
+              color: item === 1 ? colors.white : colors.darkBlack,
             },
           ]}
           onPress={() => this.handlePressableDate(index)}
@@ -206,7 +207,11 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     const { selectedDate, isLoading, plannerData, isModalOpen } = this.state
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.mainContainer}>
+        <ScrollView
+          style={styles.mainContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <View style={styles.heading}>
             <Text style={styles.title}>Frappy Planner</Text>
 
@@ -241,14 +246,14 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
               <>
                 {plannerData.map((ele: any, index: number) => {
                   const { from_time, to_time, description } = ele
+
                   return (
                     <View style={styles.cardContainer} key={index}>
-                      <Text style={styles.cardTitle}>
-                        Breakfast in Chutney’s
-                      </Text>
                       <Text style={styles.cardDescription}>{description}</Text>
                       <Text style={styles.cardTimings}>
-                        {from_time} - {to_time}
+                        {`${convertToTweleveHoursFormat(
+                          from_time
+                        )} - ${convertToTweleveHoursFormat(to_time)}`}
                       </Text>
                     </View>
                   )
@@ -279,6 +284,13 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
   }
 }
 const styles = StyleSheet.create({
+  dateText: {
+    width: wp("10%"),
+    height: wp("10%"),
+    borderRadius: wp("5%"),
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
   dateTextStyle2: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.73"),

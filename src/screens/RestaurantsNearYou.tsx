@@ -93,6 +93,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
         .finally(() => {
           stateData.isLoading = false
           stateData.flatListLoading = false
+          stateData.searchText = this.state.searchText
           this.setState(stateData)
         })
     } else {
@@ -136,10 +137,10 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
           {userName.charAt(0).toUpperCase() + userName.slice(1)}?
         </Text>
 
-        <View style={styles.container}>
+        {/* <View style={styles.container}>
           <CurrentLocation width={wp("4.23%")} height={hp("2.34%")} />
           <Text style={styles.currentLocationText}> Use current Location</Text>
-        </View>
+        </View> */}
         <View style={styles.searchButton}>
           <LocationIcon width={wp("5%")} height={wp("5%")} />
           <TextInput

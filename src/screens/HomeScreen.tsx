@@ -11,6 +11,8 @@ import {
   TextInput,
   ActivityIndicator,
   ImageBackground,
+  FlatList,
+  SafeAreaView,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -19,8 +21,7 @@ import {
 } from "react-native-responsive-screen"
 // react-native-snap-carousel
 import Carousel, { Pagination } from "react-native-snap-carousel"
-// expo location
-import * as Location from "expo-location"
+
 // svgs
 import {
   BellIcon,
@@ -42,12 +43,16 @@ import UserService from "../services/user.service"
 // helper
 import { deriveArrayFromString } from "../lib/helper"
 import {
+  adventuresList,
   Context,
   dishesList,
   recapList,
   rectangleImageList,
+  shoppingMallList,
+  sightSeeingList,
+  worshipList,
+  travellingList,
 } from "../lib/content"
-import { FlatList } from "react-native-gesture-handler"
 
 interface IProps {
   navigation: any
@@ -114,6 +119,7 @@ class HomeScreen extends Component<IProps, Istate> {
   carousel: any
   scrollRef: any
   subscribe: any
+  mounted: boolean
 
   // destructuring props and state
   constructor(props: IProps) {
@@ -155,39 +161,47 @@ class HomeScreen extends Component<IProps, Istate> {
       username: "",
       searchText: "",
     }
+    this.mounted = false
   }
 
   fetchRecapList = () => {
-    let service: any
-    let index = 0
-    let stateData = { ...this.state }
-    if (stateData.category === "food") {
-      service = restaurantService
-      index = 0
-    } else if (stateData.category === "travel") {
-      service = travelService
-      index = 1
-    } else if (stateData.category === "shopping") {
-      service = shoppingService
-      index = 2
-    }
+    if (this.mounted) {
+      let service: any
+      let index = 0
+      let stateData = { ...this.state }
+      if (stateData.category === "food") {
+        service = restaurantService
+        index = 0
+      } else if (stateData.category === "travel") {
+        service = travelService
+        index = 1
+      } else if (stateData.category === "shopping") {
+        service = shoppingService
+        index = 2
+      }
 
-    service
-      .getRecap()
-      .then((response: any) => {
-        console.log(response, "response in fetch focus")
-        stateData.categoryData[index].data.recapList = response
-        this.setState(stateData)
-      })
-      .catch((error: any) => {
-        console.log(error, " in home screen")
-      })
+      Promise.all([service.getRecap(), service.getHallOfFame()])
+        .then((response: any) => {
+          console.log(response, "response in fetch focus")
+          stateData.categoryData[index].data.recapList = response[0]
+          stateData.categoryData[index].data.hallOfFame = response[1]
+          this.setState(stateData)
+        })
+        .catch((error: any) => {
+          console.log(error, " in home screen")
+        })
+    }
   }
 
-  getFormatedRecapList = (recapList: any) => {
-    return recapList.map((ele: any) => {
-      return { ...ele, showFullAddress: false }
-    })
+  getFormatedRecapList = (recapList: any): Array<any> => {
+    if (recapList.length > 0) {
+      const mutatedArray = recapList.map((ele: any) => {
+        return { ...ele, showFullAddress: false }
+      })
+      return mutatedArray.reverse()
+    } else {
+      return []
+    }
   }
 
   async componentDidMount() {
@@ -198,12 +212,12 @@ class HomeScreen extends Component<IProps, Istate> {
 
     if (this.context.latitude !== null) {
       userService
-
         .updateUserCurrentLocation({ ...this.context })
         .then((response) => {
           restaurantService
             .getRestaurantDataFromServer()
             .then((values) => {
+              console.log(values, "values")
               let stateData = { ...this.state }
               stateData.categoryData[0].data.localFavouritesList =
                 values[0].results
@@ -217,9 +231,13 @@ class HomeScreen extends Component<IProps, Istate> {
               stateData.username = values[3].username
               this.setState(stateData)
             })
-            .catch((error) => {})
+            .catch((error) => {
+              console.log(error, " error in inner")
+            })
         })
-        .catch((error) => {})
+        .catch((error) => {
+          console.log(error, "in outer")
+        })
     }
 
     this.subscribe = this.props.navigation.addListener("focus", () => {
@@ -261,6 +279,7 @@ class HomeScreen extends Component<IProps, Istate> {
       service
         .getDataFromServer()
         .then((values: any) => {
+          console.log(values[1], "values og hall of fame")
           let stateData = { ...this.state }
           stateData.categoryData[index].data.localFavouritesList =
             values[0].results
@@ -278,6 +297,7 @@ class HomeScreen extends Component<IProps, Istate> {
   }
 
   async componentDidUpdate(prevProps: any, prevState: any) {
+    this.mounted = true
     const { category } = this.state
     if (prevState.category !== category) this.getSelectedCategoryData()
   }
@@ -336,7 +356,7 @@ class HomeScreen extends Component<IProps, Istate> {
         inactiveDotOpacity={1}
         inactiveDotScale={1}
         dotStyle={styles.activeDotStyles}
-        containerStyle={{ marginTop: -hp("3%"), marginBottom: -hp("4%") }}
+        containerStyle={{ marginTop: -hp("2%"), marginBottom: -hp("2.8%") }}
       />
     )
   }
@@ -367,8 +387,34 @@ class HomeScreen extends Component<IProps, Istate> {
     )
   }
 
+  getRequireImage = (tag: string) => {
+    console.log(tag, "tag")
+    const { category } = this.state
+    if (category === "food")
+      return rectangleImageList[
+        Math.floor(Math.random() * rectangleImageList.length)
+      ]
+    else {
+      if (tag.includes("Sight seeing"))
+        return sightSeeingList[
+          Math.floor(Math.random() * sightSeeingList.length)
+        ]
+      else if (tag.includes("Worship"))
+        return worshipList[Math.floor(Math.random() * worshipList.length)]
+      else if (tag.includes("travel"))
+        return adventuresList[Math.floor(Math.random() * adventuresList.length)]
+      else if (category === "travel")
+        return travellingList[Math.floor(Math.random() * travellingList.length)]
+      else {
+        return shoppingMallList[
+          Math.floor(Math.random() * shoppingMallList.length)
+        ]
+      }
+    }
+  }
+
   renderLocalFavourities = () => {
-    const { categoryData } = this.state
+    const { categoryData, category } = this.state
 
     const recapLength =
       categoryData[this.getActiveIndex()].data.recapList.length
@@ -376,7 +422,7 @@ class HomeScreen extends Component<IProps, Istate> {
       categoryData[this.getActiveIndex()].data.hallOfFame.length
 
     return (
-      <ScrollView horizontal={true}>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <View
           style={{
             display: "flex",
@@ -388,8 +434,10 @@ class HomeScreen extends Component<IProps, Istate> {
           {categoryData[this.getActiveIndex()].data.localFavouritesList.map(
             (item, index) => {
               const { id, menu_images, name, rating, tags, address } = item
-
-              const formatedCusines = deriveArrayFromString(tags)
+              let formatedCusines
+              if (typeof tags === "string")
+                formatedCusines = deriveArrayFromString(tags)
+              else formatedCusines = tags
 
               return (
                 <Pressable
@@ -414,18 +462,19 @@ class HomeScreen extends Component<IProps, Istate> {
                   {menu_images.length > 0 ? (
                     <ImageBackground
                       source={{
-                        uri: menu_images[0].image,
+                        uri:
+                          menu_images[
+                            Math.floor(Math.random() * menu_images.length)
+                          ].image,
                       }}
                       style={styles.localFavouriteBackgroundImage}
                       resizeMode="cover"
                     />
                   ) : (
                     <ImageBackground
-                      source={
-                        rectangleImageList[
-                          Math.floor(Math.random() * rectangleImageList.length)
-                        ]
-                      }
+                      source={this.getRequireImage(
+                        tags[Math.floor(Math.random() * tags.length)]
+                      )}
                       style={styles.localFavouriteBackgroundImage}
                       resizeMode="cover"
                     />
@@ -434,24 +483,29 @@ class HomeScreen extends Component<IProps, Istate> {
                     <Text style={styles.formattedCuisinesText}>
                       {formatedCusines[0]}
                     </Text>
-                    <Text style={styles.name}>{name}</Text>
+                    <Text style={styles.name} numberOfLines={1}>
+                      {name}
+                    </Text>
 
                     <View style={styles.ratingWrapper}>
-                      <Rating width={wp("4.2%")} height={hp("4.2%")} />
-                      <Text
-                        style={{
-                          marginLeft: wp("2%"),
-                        }}
-                      >
-                        {Math.round(rating)}
-                      </Text>
+                      <View style={styles.ratingBox}>
+                        <Rating width={wp("4.2%")} height={hp("4.2%")} />
+                        <Text
+                          style={{
+                            marginLeft: wp("2%"),
+                          }}
+                        >
+                          {Math.round(rating)}
+                        </Text>
+                      </View>
+
+                      <Pressable onPress={() => this.handleNavigation(address)}>
+                        <NavigationIcon
+                          width={wp("7.8%")}
+                          height={hp("3.68%")}
+                        />
+                      </Pressable>
                     </View>
-                    <Pressable
-                      style={styles.navigationWrapperStyles}
-                      onPress={() => this.handleNavigation(address)}
-                    >
-                      <NavigationIcon width={wp("7.8%")} height={hp("3.68%")} />
-                    </Pressable>
                   </View>
                 </Pressable>
               )
@@ -480,31 +534,64 @@ class HomeScreen extends Component<IProps, Istate> {
       category: category,
     })
   }
+  handleRecapItem = (id: number, address: string) => {
+    this.props.navigation.navigate("itemInDetail", {
+      id: id,
+      address,
+    })
+  }
 
   handleNavigation = (address: string) => {
     this.props.navigation.navigate("navigation", { address: address })
   }
 
   flatListRecapItem = (item: any, index: number) => {
-    const { categoryData } = this.state
-    const { name, user_rating, review_images, address, showFullAddress } = item
+    const { categoryData, category } = this.state
+    const {
+      name,
+      user_rating,
+      review_images,
+      address,
+      showFullAddress,
+      id,
+      restaurant,
+    } = item
     const numberOfRatings =
       categoryData[this.getActiveIndex()].data.recapList.length
+    const list =
+      category === "food"
+        ? rectangleImageList
+        : category === "travel"
+        ? travellingList
+        : shoppingMallList
+    console.log("list", list, "list")
     return (
-      <React.Fragment>
+      <Pressable
+        onPress={() =>
+          this.props.navigation.navigate("itemInDetail", {
+            id: restaurant,
+            address: address,
+          })
+        }
+      >
         <View style={styles.recapItemContaineer}>
           {review_images.length > 0 ? (
-            <Image
-              source={{
-                uri: review_images[0].image,
-              }}
-              style={styles.recapImage}
-            />
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{
+                  uri: review_images[0].image,
+                }}
+                style={styles.recapImage}
+                resizeMode="cover"
+              />
+            </View>
           ) : (
-            <Image
-              source={recapList[Math.floor(Math.random() * recapList.length)]}
-              style={styles.recapImage}
-            />
+            <View style={styles.imageWrapper}>
+              <Image
+                source={list[Math.floor(Math.random() * list.length)]}
+                style={styles.recapImage}
+              />
+            </View>
           )}
 
           <View style={styles.restaurantTitleContainer}>
@@ -540,13 +627,31 @@ class HomeScreen extends Component<IProps, Istate> {
           </View>
         </View>
         <View style={styles.borderLine}></View>
-      </React.Fragment>
+      </Pressable>
     )
+  }
+
+  getHallOfFameImages = () => {
+    let list: any = []
+    const { categoryData } = this.state
+    categoryData[this.getActiveIndex()].data.hallOfFame.map(
+      (ele: any, index: number) => {
+        const { review_images } = ele
+        review_images.map((item: any, index: any) => {
+          const { image } = item
+          list = [...list, image]
+        })
+      }
+    )
+    return list
   }
 
   render() {
     // Main return function
     const { isLoading, username, category, categoryData } = this.state
+    console.log(categoryData[this.getActiveIndex()].data.hallOfFame, "fame")
+    const HallOfFameImagesList = this.getHallOfFameImages()
+
     return (
       <>
         {isLoading ? (
@@ -554,220 +659,239 @@ class HomeScreen extends Component<IProps, Istate> {
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
-          <ScrollView
-            style={styles.container}
-            ref={(ref) => (this.scrollRef = ref)}
-          >
-            <View>
-              <View style={styles.heading}>
-                <Text style={styles.frappyText}>
-                  {this.render_greeting(new Date())}
-                </Text>
-                <Pressable
-                  onPress={() =>
-                    this.props.navigation.navigate("notifications")
-                  }
-                >
-                  <BellIcon width={wp("6%")} height={wp("6%")} />
-                </Pressable>
-              </View>
-              <View style={styles.userNameContainer}>
-                <Text style={styles.userName}>
-                  {username.charAt(0).toUpperCase() + username.slice(1)}
-                </Text>
-                <WavingHand width={wp("5.33%")} height={hp("2.63%")} />
-              </View>
-              <View style={styles.searchButton}>
-                <SearchIcon width={wp("5%")} height={wp("5%")} />
-                <TextInput
-                  placeholder="Explore spots near you"
-                  style={styles.searchInput}
-                  onFocus={() =>
-                    this.props.navigation.navigate("searchFoodResults")
-                  }
-                />
-              </View>
-              <View style={styles.buttonsContainer}>
-                <CustomButton
-                  onPressButton={() =>
-                    this.setState({ ...this.state, category: "food" })
-                  }
-                  title="Food"
-                  buttonStyles={[
-                    styles.smallButton,
-                    {
-                      backgroundColor:
-                        category !== "food"
-                          ? "rgba(255,108,101,0.2)"
-                          : colors.orange,
-                      borderColor: colors.orange,
-                    },
-                  ]}
-                  buttonTextStyles={[
-                    styles.buttonTextStyles,
-                    {
-                      color: category !== "food" ? colors.orange : colors.white,
-                    },
-                  ]}
-                />
-                <CustomButton
-                  onPressButton={() =>
-                    this.setState({ ...this.state, category: "travel" })
-                  }
-                  title="Travel"
-                  buttonStyles={[
-                    styles.smallButton,
-                    {
-                      backgroundColor:
-                        category !== "travel"
-                          ? "rgba(253,210,106,0.2)"
-                          : colors.yellow,
-                      borderColor: colors.yellow,
-                    },
-                  ]}
-                  buttonTextStyles={[
-                    {
-                      color:
-                        category !== "travel" ? colors.yellow : colors.white,
-                    },
-                    styles.buttonTextStyles,
-                  ]}
-                />
-                <CustomButton
-                  onPressButton={() =>
-                    this.setState({ ...this.state, category: "shopping" })
-                  }
-                  title="Shopping"
-                  buttonStyles={[
-                    styles.smallButton,
-                    {
-                      backgroundColor:
-                        category !== "shopping"
-                          ? "rgba(102,197,218,0.3)"
-                          : colors.skyBlue,
-                      borderColor: colors.skyBlue,
-                    },
-                  ]}
-                  buttonTextStyles={[
-                    {
-                      color:
-                        category !== "shopping" ? colors.skyBlue : colors.white,
-                    },
-                    styles.buttonTextStyles,
-                  ]}
-                />
-              </View>
-              {/* calling trend slider function*/}
-              {categoryData[this.getActiveIndex()].data &&
-                this.renderTrendsSlider()}
-              {categoryData[this.getActiveIndex()].data.localFavouritesList
-                .length > 0 && (
-                <>
-                  <View style={styles.localFavouritesContainer}>
-                    <Text style={styles.frappyText}>Local Favourites</Text>
-                    <Pressable onPress={this.onPressLocalFavorites}>
-                      <View style={styles.sectionHeaderWrapper}>
-                        <Text style={styles.showAllText}>Show all</Text>
-                        <RightArrow width={wp("1.59%")} height={hp("1.10%")} />
-                      </View>
-                    </Pressable>
-                  </View>
-                  {this.renderLocalFavourities()}
-                </>
-              )}
+          <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+            <ScrollView
+              style={styles.container}
+              ref={(ref) => (this.scrollRef = ref)}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            >
+              <View>
+                <View style={styles.heading}>
+                  <Text style={styles.frappyText}>
+                    {this.render_greeting(new Date())}
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      this.props.navigation.navigate("notifications")
+                    }
+                  >
+                    <BellIcon width={wp("6%")} height={wp("6%")} />
+                  </Pressable>
+                </View>
+                <View style={styles.userNameContainer}>
+                  <Text style={styles.userName}>
+                    {username.charAt(0).toUpperCase() + username.slice(1)}
+                  </Text>
+                  <WavingHand width={wp("5.33%")} height={hp("2.63%")} />
+                </View>
+                <View style={styles.searchButton}>
+                  <SearchIcon width={wp("5%")} height={wp("5%")} />
+                  <TextInput
+                    placeholder="Explore spots near you"
+                    style={styles.searchInput}
+                    onFocus={() =>
+                      this.props.navigation.navigate("searchFoodResults")
+                    }
+                  />
+                </View>
+                <View style={styles.buttonsContainer}>
+                  <CustomButton
+                    onPressButton={() =>
+                      this.setState({ ...this.state, category: "food" })
+                    }
+                    title="Food"
+                    buttonStyles={[
+                      styles.smallButton,
+                      {
+                        backgroundColor:
+                          category !== "food"
+                            ? "rgba(255,108,101,0.2)"
+                            : colors.orange,
+                        borderColor: colors.orange,
+                      },
+                    ]}
+                    buttonTextStyles={[
+                      styles.buttonTextStyles,
+                      {
+                        color:
+                          category !== "food" ? colors.orange : colors.white,
+                      },
+                    ]}
+                  />
+                  <CustomButton
+                    onPressButton={() =>
+                      this.setState({ ...this.state, category: "travel" })
+                    }
+                    title="Travel"
+                    buttonStyles={[
+                      styles.smallButton,
+                      {
+                        backgroundColor:
+                          category !== "travel"
+                            ? "rgba(253,210,106,0.2)"
+                            : colors.yellow,
+                        borderColor: colors.yellow,
+                      },
+                    ]}
+                    buttonTextStyles={[
+                      {
+                        color:
+                          category !== "travel" ? colors.yellow : colors.white,
+                      },
+                      styles.buttonTextStyles,
+                    ]}
+                  />
+                  <CustomButton
+                    onPressButton={() =>
+                      this.setState({ ...this.state, category: "shopping" })
+                    }
+                    title="Shopping"
+                    buttonStyles={[
+                      styles.smallButton,
+                      {
+                        backgroundColor:
+                          category !== "shopping"
+                            ? "rgba(102,197,218,0.3)"
+                            : colors.skyBlue,
+                        borderColor: colors.skyBlue,
+                      },
+                    ]}
+                    buttonTextStyles={[
+                      {
+                        color:
+                          category !== "shopping"
+                            ? colors.skyBlue
+                            : colors.white,
+                      },
+                      styles.buttonTextStyles,
+                    ]}
+                  />
+                </View>
+                {/* calling trend slider function*/}
+                {categoryData[this.getActiveIndex()].data &&
+                  this.renderTrendsSlider()}
+                {categoryData[this.getActiveIndex()].data.localFavouritesList
+                  .length > 0 && (
+                  <>
+                    <View style={styles.localFavouritesContainer}>
+                      <Text style={styles.frappyText}>Local Favourites</Text>
 
-              {categoryData[this.getActiveIndex()].data.recapList.length >
-                0 && (
-                <>
-                  <View style={[styles.TitleContainer]}>
-                    <Text style={styles.frappyText}>Recap</Text>
-                    <Pressable
-                      onPress={() =>
-                        this.props.navigation.navigate("recap", {
-                          recapList:
-                            categoryData[this.getActiveIndex()].data.recapList,
-                        })
-                      }
-                    >
-                      <View style={styles.sectionHeaderWrapper}>
+                      <Pressable
+                        style={styles.sectionHeaderWrapper}
+                        onPress={this.onPressLocalFavorites}
+                      >
                         <Text style={styles.showAllText}>Show all</Text>
-                        <RightArrow width={wp("1.59%")} height={hp("1.10%")} />
-                      </View>
-                    </Pressable>
-                  </View>
-                  <View>
-                    <View
-                      style={{
-                        marginBottom:
-                          categoryData[this.getActiveIndex()].data.hallOfFame
-                            .length === 0
-                            ? hp("4%")
-                            : 0,
-                        height: hp("50%"),
-                      }}
-                    >
+                        <RightArrow
+                          width={wp("2.3%")}
+                          height={hp("2%")}
+                          color={colors.white}
+                        />
+                      </Pressable>
+                    </View>
+                    {this.renderLocalFavourities()}
+                  </>
+                )}
+
+                {categoryData[this.getActiveIndex()].data.recapList.length >
+                  0 && (
+                  <>
+                    <View style={[styles.TitleContainer]}>
+                      <Text style={styles.frappyText}>Recap</Text>
+                      <Pressable
+                        onPress={() =>
+                          this.props.navigation.navigate("recap", {
+                            recapList:
+                              categoryData[this.getActiveIndex()].data
+                                .recapList,
+                          })
+                        }
+                      >
+                        <View style={styles.sectionHeaderWrapper}>
+                          <Text style={styles.showAllText}>Show all</Text>
+                          <RightArrow
+                            width={wp("2.3%")}
+                            height={hp("2%")}
+                            color={colors.white}
+                          />
+                        </View>
+                      </Pressable>
+                    </View>
+                    <View>
                       <FlatList
                         data={categoryData[
                           this.getActiveIndex()
-                        ].data.recapList.reverse()}
+                        ].data.recapList.slice(0, 4)}
                         renderItem={({ item, index }) =>
                           this.flatListRecapItem(item, index)
                         }
                         keyExtractor={(item: any) => item.id.toString()}
                         extraData={category}
+                        style={{
+                          marginBottom:
+                            HallOfFameImagesList.length === 0 ? hp("4.1%") : 0,
+                        }}
                       />
                     </View>
-                  </View>
-                </>
-              )}
+                  </>
+                )}
 
-              {categoryData[this.getActiveIndex()].data.hallOfFame.length >
-                0 && (
-                <>
-                  <View style={[styles.TitleContainer]}>
-                    <Text style={styles.frappyText}>Hall of Fame</Text>
-                    <View style={styles.sectionHeaderWrapper}>
-                      <Pressable
-                        onPress={() =>
-                          this.props.navigation.navigate("hallOfFame", {
-                            hallOfFameList:
-                              categoryData[this.getActiveIndex()].data
-                                .hallOfFame,
-                          })
-                        }
-                      >
-                        <View style={styles.showAll}>
-                          <Text style={styles.showAllText}>Show all</Text>
-                          <RightArrow
-                            width={wp("1.59%")}
-                            height={hp("1.10%")}
-                          />
+                {HallOfFameImagesList.length > 0 && (
+                  <>
+                    <View style={[styles.TitleContainer]}>
+                      <Text style={styles.frappyText}>Hall of Fame</Text>
+                      {HallOfFameImagesList.length > 6 && (
+                        <View style={styles.sectionHeaderWrapper}>
+                          <Pressable
+                            onPress={() =>
+                              this.props.navigation.navigate("hallOfFame", {
+                                hallOfFameList:
+                                  categoryData[this.getActiveIndex()].data
+                                    .hallOfFame,
+                              })
+                            }
+                          >
+                            <View style={styles.showAll}>
+                              <Text style={styles.showAllText}>Show all</Text>
+                              <RightArrow
+                                width={wp("2.3%")}
+                                height={hp("2%")}
+                                color={colors.white}
+                              />
+                            </View>
+                          </Pressable>
                         </View>
-                      </Pressable>
+                      )}
                     </View>
-                  </View>
-                  <View style={styles.hallOfFameContainer}>
-                    {categoryData[this.getActiveIndex()].data.hallOfFame.map(
-                      (item, index) => {
-                        const { image } = item
-                        return (
-                          <View key={index}>
-                            <Image
-                              style={styles.hallOfFameImage}
-                              source={{
-                                uri: image,
-                              }}
-                              resizeMode="cover"
-                            />
-                          </View>
-                        )
-                      }
-                    )}
-                  </View>
-                </>
-              )}
-            </View>
-          </ScrollView>
+                    <View style={styles.hallOfFameContainer}>
+                      {HallOfFameImagesList.slice(0, 6).map(
+                        (image: string, index: number) => {
+                          return (
+                            <Pressable
+                              key={index}
+                              onPress={() =>
+                                this.props.navigation.navigate("fullImage", {
+                                  imageUrl: image,
+                                })
+                              }
+                            >
+                              <Image
+                                style={styles.hallOfFameImage}
+                                source={{
+                                  uri: image,
+                                }}
+                                resizeMode="cover"
+                              />
+                            </Pressable>
+                          )
+                        }
+                      )}
+                    </View>
+                  </>
+                )}
+              </View>
+            </ScrollView>
+          </SafeAreaView>
         )}
       </>
     )
@@ -775,9 +899,21 @@ class HomeScreen extends Component<IProps, Istate> {
 }
 export default HomeScreen
 
-// HomeScreen.contextType = Context
+HomeScreen.contextType = Context
 
 const styles = StyleSheet.create({
+  imageWrapper: {
+    width: wp("30%"),
+    height: wp("30%"),
+    borderRadius: wp("4%"),
+    overflow: "hidden",
+  },
+
+  ratingBox: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
   ratingInnerWrapper: {
     display: "flex",
     flexDirection: "row",
@@ -796,18 +932,21 @@ const styles = StyleSheet.create({
   },
   formattedCuisinesText: {
     fontFamily: "ArchivoBold",
-    fontSize: wp("4.8%"),
+    fontSize: wp("5.3%"),
     color: colors.darkBlack,
   },
   ratingWrapper: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: wp("2%"),
   },
   renderLocalImagePortion2: {
     display: "flex",
     flex: 1,
     padding: wp("5%"),
+    paddingTop: wp("3%"),
   },
 
   localFavouriteBackgroundImage: {
@@ -820,7 +959,7 @@ const styles = StyleSheet.create({
   },
   renderLocalFavouritesItemWrapper: {
     width: wp("55%"),
-    height: wp("70%"),
+    height: wp("65%"),
     borderRadius: wp("3.2%"),
     marginRight: wp("3%"),
     padding: 0,
@@ -832,7 +971,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: hp("0.5%"),
+    marginTop: hp("1%"),
   },
   userNameContainer: {
     display: "flex",
@@ -980,14 +1119,14 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("3.8%"),
     color: colors.orange,
-    height: hp("7%"),
+
     overflow: "hidden",
   },
   showAllText: {
     fontFamily: "ArchivoRegular",
     fontSize: wp("4%"),
     lineHeight: wp("5.7%"),
-    color: colors.darkBlack,
+    color: colors.white,
     marginRight: wp("2%"),
   },
 
@@ -1001,6 +1140,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    padding: wp("2%"),
+    backgroundColor: colors.orange,
+    borderRadius: wp("4%"),
   },
   hallOfFameImage: {
     width: wp("28%"),
@@ -1009,7 +1151,7 @@ const styles = StyleSheet.create({
     borderRadius: wp("5%"),
   },
   recapImage: {
-    width: wp("30%"),
+    width: "100%",
     height: wp("30%"),
   },
   recapItemContaineer: {

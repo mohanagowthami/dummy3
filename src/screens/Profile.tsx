@@ -215,7 +215,12 @@ class Profile extends Component<IProps, Istate> {
       userDetails: { username, place, profile_pic },
     } = this.state
     const { isEditable } = this.props.route.params
-    const mutatedprofile_pic = profile_pic.uri ? profile_pic.uri : profile_pic
+    const mutatedprofile_pic =
+      profile_pic !== "" && profile_pic !== null
+        ? profile_pic["uri"]
+          ? profile_pic.uri
+          : profile_pic
+        : profile_pic
 
     return (
       <View style={styles.renderInfoContainer}>
@@ -244,7 +249,7 @@ class Profile extends Component<IProps, Istate> {
           </View>
 
           <Pressable onPress={this.captureImage} style={styles.cameraicon}>
-            <Camera />
+            <Camera width={wp("6%")} height={wp("6%")} />
           </Pressable>
 
           <Text style={styles.name}>{username}</Text>
@@ -277,7 +282,7 @@ class Profile extends Component<IProps, Istate> {
               this.handleChange(text, "username")
             }}
             value={username}
-            editable={isEditable}
+            editable={false}
             placeholder="------"
           />
         </View>
@@ -291,7 +296,7 @@ class Profile extends Component<IProps, Istate> {
             }}
             placeholder="------"
             value={email}
-            editable={isEditable}
+            editable={false}
           ></TextInput>
         </View>
         <View style={styles.line} />
@@ -346,7 +351,12 @@ class Profile extends Component<IProps, Istate> {
     )
   }
   render() {
-    const { isLoading, showModal, userDetails } = this.state
+    const {
+      isLoading,
+      showModal,
+      userDetails: { dob },
+    } = this.state
+    const dateOfBirth = typeof dob === "string" ? new Date(dob) : dob
     return (
       <>
         {isLoading ? (
@@ -357,16 +367,19 @@ class Profile extends Component<IProps, Istate> {
           <ScrollView
             style={styles.maincontainer}
             keyboardShouldPersistTaps="always"
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
           >
             {this._renderinfo()}
             {this._renderdetails()}
             {showModal && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={userDetails.dob}
+                value={dateOfBirth}
                 mode="date"
                 display="default"
                 onChange={this.onChangePicker}
+                maximumDate={new Date()}
               />
             )}
           </ScrollView>
@@ -397,9 +410,9 @@ const styles = StyleSheet.create({
     paddingTop: wp("5%"),
   },
   saveText: {
-    fontFamily: "ArchivoBold",
-    fontSize: wp("3%"),
-    color: colors.darkBlack,
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("4.5%"),
+    color: colors.orange,
   },
   loadingContainer: {
     display: "flex",
@@ -452,16 +465,16 @@ const styles = StyleSheet.create({
     borderRadius: wp("3.2%"),
   },
   cameraicon: {
-    position: "absolute",
     width: wp("8.66%"),
     height: wp("8.66%"),
 
-    right: wp("3%"),
-    bottom: hp("11%"),
     borderRadius: wp("4.33%"),
     backgroundColor: colors.orange,
     justifyContent: "center",
     alignItems: "center",
+    display: "flex",
+    alignSelf: "flex-end",
+    marginTop: -wp("8%"),
   },
   name: {
     fontFamily: "ArchivoRegular",

@@ -163,13 +163,19 @@ export default function App() {
           ) : isSignedIn ? (
             <>
               <Stack.Screen
+                name="bottomTab"
+                component={BottomTab}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name="login"
                 component={LoginScreen}
                 options={{ headerShown: false }}
               />
+
               <Stack.Screen
-                name="bottomTab"
-                component={BottomTab}
+                name="signUp"
+                component={SignUpScreen}
                 options={{ headerShown: false }}
               />
             </>
@@ -180,7 +186,6 @@ export default function App() {
                 component={OnboardingScreens}
                 options={{ headerShown: false }}
               />
-
               <Stack.Screen
                 name="login"
                 component={LoginScreen}
@@ -197,6 +202,7 @@ export default function App() {
                 component={PickYourChoice}
                 options={{ headerShown: false }}
               />
+
               <Stack.Screen
                 name="bottomTab"
                 component={BottomTab}

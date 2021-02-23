@@ -113,7 +113,11 @@ class Navigation extends Component<IProps, Istate> {
           <Loader />
         ) : (
           <View style={styles.container}>
-            <ScrollView style={styles.mainContainer}>
+            <ScrollView
+              style={styles.mainContainer}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            >
               <View style={styles.borders}>
                 <View style={styles.heading}>
                   <Text style={styles.title}>Navigation</Text>

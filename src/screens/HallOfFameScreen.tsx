@@ -35,9 +35,13 @@ const colorsList = [
 class HallOfFame extends Component<IProps, Istate> {
   render() {
     const { hallOfFameList } = this.props.route.params
-    
+
     return (
-      <ScrollView style={styles.mainContainer}>
+      <ScrollView
+        style={styles.mainContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <View>
           <View style={[styles.TitleContainer]}>
             <Text style={styles.frappyText}>Hall of Fame</Text>
@@ -45,16 +49,29 @@ class HallOfFame extends Component<IProps, Istate> {
           <View style={styles.hallOfFameWrapper}>
             {hallOfFameList &&
               hallOfFameList.map((item: any, index: number) => {
-                return (
-                  <View key={index}>
-                    <Image
-                      style={styles.hallOfFameImage}
-                      source={{
-                        uri: item.image,
-                      }}
-                    />
-                  </View>
-                )
+                const { review_images } = item
+                console.log(review_images, "review_images")
+                return review_images.map((ele: any, index: number) => {
+                  const { image } = ele
+                  return (
+                    <Pressable
+                      key={index}
+                      onPress={() =>
+                        this.props.navigation.navigate("fullImage", {
+                          imageUrl: image,
+                        })
+                      }
+                    >
+                      <Image
+                        style={styles.hallOfFameImage}
+                        source={{
+                          uri: image,
+                        }}
+                        resizeMode="cover"
+                      />
+                    </Pressable>
+                  )
+                })
               })}
           </View>
         </View>

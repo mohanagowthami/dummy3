@@ -27,6 +27,14 @@ abstract class APIService {
     } catch (e) {}
   }
 
+  async removeAccessToken() {
+    try {
+      await AsyncStorage.removeItem("accessToken")
+      return true
+    } catch (exception) {
+      return false
+    }
+  }
   // Axios get method
   async get(url: string): Promise<any> {
     return axios({

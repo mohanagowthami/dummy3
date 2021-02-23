@@ -17,6 +17,7 @@ import { Rating } from "../../assets/svgs/icons"
 import { colors } from "../lib/colors"
 import ReadMoreComponent from "../components/elements/ReadMore"
 import { recapList as imagesList } from "../lib/content"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 interface IProps {
   navigation: any
@@ -61,90 +62,106 @@ class Recap extends Component<IProps, Istate> {
   render() {
     const { recapList } = this.state
     return (
-      <ScrollView style={styles.mainContainer}>
-        <View>
-          <View style={[styles.TitleContainer]}>
-            <Text style={styles.frappyText}>Recap</Text>
-          </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+        <ScrollView
+          style={styles.mainContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <View>
-            {recapList &&
-              recapList.map((ele: any, index: number) => {
-                const {
-                  name,
-                  address,
-                  averageRatings,
-                  numberOfRatings,
-                  review_images,
-                  showFullAddress,
-                  user_rating,
-                } = ele
-                return (
-                  <React.Fragment key={index}>
-                    <View style={styles.recapItemContaineer}>
-                      {review_images.length > 0 ? (
-                        <Image
-                          source={{
-                            uri: review_images[0].image,
-                          }}
-                          style={styles.recapImage}
-                        />
-                      ) : (
-                        <Image
-                          source={
-                            imagesList[
-                              Math.floor(Math.random() * imagesList.length)
-                            ]
-                          }
-                          style={styles.recapImage}
-                        />
-                      )}
-
-                      <View style={styles.restaurantTitleContainer}>
-                        <Text style={styles.restaurantTitle}>{name}</Text>
-                        {!showFullAddress ? (
-                          <View style={styles.showFullAddressWrapper}>
-                            <Text
-                              style={styles.recapCardText}
-                              numberOfLines={1}
-                            >
-                              {address}
-                            </Text>
-                            <ReadMoreComponent
-                              onPressReadmore={() =>
-                                this.onPressReadMore(index)
-                              }
-                            />
-                          </View>
+            <View style={[styles.TitleContainer]}>
+              <Text style={styles.frappyText}>Recap</Text>
+            </View>
+            <View>
+              {recapList &&
+                recapList.map((ele: any, index: number) => {
+                  const {
+                    id,
+                    name,
+                    address,
+                    averageRatings,
+                    numberOfRatings,
+                    review_images,
+                    showFullAddress,
+                    user_rating,
+                    restaurant,
+                  } = ele
+                  return (
+                    <Pressable
+                      key={index}
+                      onPress={() =>
+                        this.props.navigation.navigate("itemInDetail", {
+                          id: restaurant,
+                          address: address,
+                        })
+                      }
+                    >
+                      <View style={styles.recapItemContaineer}>
+                        {review_images.length > 0 ? (
+                          <Image
+                            source={{
+                              uri: review_images[0].image,
+                            }}
+                            style={styles.recapImage}
+                          />
                         ) : (
-                          <Text style={styles.recapCardText}>{address}</Text>
+                          <Image
+                            source={
+                              imagesList[
+                                Math.floor(Math.random() * imagesList.length)
+                              ]
+                            }
+                            style={styles.recapImage}
+                          />
                         )}
-                        <View style={styles.ratingContainer}>
-                          <View style={styles.ratingInnerWrapper}>
-                            <Rating width={wp("4.2%")} height={hp("4.2%")} />
-                            <Text style={styles.noOfRatings}>
-                              {user_rating}({numberOfRatings} ratings)
-                            </Text>
-                          </View>
 
-                          <Pressable
-                            style={styles.navigationIcon}
-                            onPress={() => this.handleNavigation(address)}
-                          >
-                            <NavigationIcon
-                              width={wp("7.8%")}
-                              height={hp("3.68%")}
-                            />
-                          </Pressable>
+                        <View style={styles.restaurantTitleContainer}>
+                          <Text style={styles.restaurantTitle}>{name}</Text>
+                          {!showFullAddress ? (
+                            <View style={styles.showFullAddressWrapper}>
+                              <Text
+                                style={styles.recapCardText}
+                                numberOfLines={1}
+                              >
+                                {address}
+                              </Text>
+                              <ReadMoreComponent
+                                onPressReadmore={() =>
+                                  this.onPressReadMore(index)
+                                }
+                              />
+                            </View>
+                          ) : (
+                            <Text style={styles.recapCardText}>{address}</Text>
+                          )}
+                          <View style={styles.ratingContainer}>
+                            <View style={styles.ratingInnerWrapper}>
+                              <Rating width={wp("4.2%")} height={hp("4.2%")} />
+                              <Text style={styles.noOfRatings}>
+                                {user_rating}({numberOfRatings} ratings)
+                              </Text>
+                            </View>
+
+                            <Pressable
+                              style={styles.navigationIcon}
+                              onPress={() => this.handleNavigation(address)}
+                            >
+                              <NavigationIcon
+                                width={wp("7.8%")}
+                                height={hp("3.68%")}
+                              />
+                            </Pressable>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                    <View style={styles.borderLine}></View>
-                  </React.Fragment>
-                )
-              })}
+                      <View style={styles.borderLine}></View>
+                    </Pressable>
+                  )
+                })}
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     )
   }
 }

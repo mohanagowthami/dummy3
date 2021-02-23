@@ -1,3 +1,5 @@
+import { yupToFormErrors } from "formik"
+
 export const getFormatedDate = (date: any) => {
   if (date && typeof date !== "string") {
     let day = date.getDate()
@@ -57,25 +59,48 @@ export function decode(t?: any, e?: any) {
   }))
 }
 
-export function getCurrentMonthArray(day?: number) {
+export function getCurrentMonthArray(today = 1, day?: number) {
   const date = new Date()
   let calculatedArray = new Array(
     new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
   ).fill(0)
 
   return calculatedArray.map((ele, index) => {
-    const computatedDay = day ? day : date.getDate()
+    const computatedDay = day ? day : today ? date.getDate() : null
 
-    if (index + 1 === computatedDay) return 1
+    if (index + 1 < date.getDate()) return -1
+    else if (computatedDay !== null && index + 1 === computatedDay) return 1
     else return 0
   })
 }
 
-export function convertToTweleveHoursFormat(hours: number, minutes: number) {
-  if (hours > 12) {
-    return `${hours - 12}:${minutes} PM`
+export function convertToTweleveHoursFormat(
+  hours: number | string,
+  minutes?: number
+) {
+  if (typeof hours === "number") {
+    if (hours > 12) {
+      return `${hours - 12}:${minutes} PM`
+    } else {
+      return `${hours}:${minutes} AM`
+    }
   } else {
-    return `${hours}:${minutes} AM`
+    const hoursArray = hours.split(":")
+    if (parseInt(hoursArray[0]) > 12) {
+      return `${parseInt(hoursArray[0]) - 1}:${hoursArray[1]} PM`
+    } else {
+      return `${hoursArray[0]}:${hoursArray[1]} AM`
+    }
+  }
+}
+
+export function convertToTwentyFourHoursFormat(date: string) {
+  if (date.includes("AM")) {
+    return date
+  } else {
+    let dateArray = date.split(":")
+    dateArray[0] = (parseInt(dateArray[0]) + 12).toString()
+    return `${dateArray[0]}:${dateArray[1]}`
   }
 }
 
@@ -112,4 +137,31 @@ export const dateComparision = (date: any) => {
   } else {
     return false
   }
+}
+
+export function getDistanceFromLatLon(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) {
+  console.log(lat1, lon1, lat2, lon2, "latitudes")
+  var R = 6371 // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1) // deg2rad below
+  var dLon = deg2rad(lon2 - lon1)
+  // console.log(dLat, dLon, "dlat,dlong")
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  var d = R * c // Distance in km
+  // console.log(d, "distance")
+  return { distance: d.toFixed(2), time: (d / 60).toFixed(2) }
+}
+
+function deg2rad(deg: any) {
+  return deg * (Math.PI / 180)
 }

@@ -16,7 +16,7 @@ class LuckyCardsScreen extends Component<{}, {}> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.text}>Lucky Cards Screen</Text>
+        <Text style={styles.text}>Coming Soon !...</Text>
       </SafeAreaView>
     )
   }
@@ -28,7 +28,13 @@ const styles = StyleSheet.create({
     paddingTop: hp("0.5%"),
     padding: wp("1%"),
     backgroundColor: colors.white,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  text: { fontFamily: "ArchivoRegular", fontSize: wp("6%") },
+  text: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("6%"),
+    color: colors.orange,
+  },
 })
 export default LuckyCardsScreen

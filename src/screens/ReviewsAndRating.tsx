@@ -38,6 +38,7 @@ interface IProps {
 interface IState {
   selectedImages: Array<any>
   showModal: boolean
+  errorText: string
 }
 
 const restaurantService = new RestaurantService()
@@ -50,6 +51,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     this.state = {
       selectedImages: [],
       showModal: false,
+      errorText: "",
     }
   }
 
@@ -65,64 +67,76 @@ class ReviewsAndRating extends Component<IProps, IState> {
     data["listing"] = this.props.route.params.id
     data["review"] = this.data.review
     data["user_rating"] = this.data.user_rating
-    if (selectedImages.length > 0) {
-      const formData: any = new FormData()
-      selectedImages.map((img, index) => {
-        const uri = "file:///" + img.uri.split("file:/").join("")
-        const imageData = {
-          uri: uri,
-          name: uri.split("/").pop(),
-          type: "image/jpeg",
-        }
-        formData.append("name[]", uri.split("/").pop())
-        formData.append("asset[]", imageData)
-      })
-      mediaService
-        .uploadMedia(formData)
-        .then((response) => {
-          data["images"] = response.map((item: any) => {
-            return item.asset
+    console.log(data, "data123 in rating review")
+    if (
+      this.data.review ||
+      this.data.user_rating ||
+      selectedImages.length !== 0
+    ) {
+      if (selectedImages.length > 0) {
+        const formData: any = new FormData()
+        selectedImages.map((img, index) => {
+          const uri = "file:///" + img.uri.split("file:/").join("")
+          const imageData = {
+            uri: uri,
+            name: uri.split("/").pop(),
+            type: "image/jpeg",
+          }
+          formData.append("name[]", uri.split("/").pop())
+          formData.append("asset[]", imageData)
+        })
+        mediaService
+          .uploadMedia(formData)
+          .then((response) => {
+            data["images"] = response.map((item: any) => {
+              return item.asset
+            })
+
+            reviewService.updateReviews(data).then((response) => {
+              this.setState({
+                ...this.state,
+                showModal: !showModal,
+              })
+            })
           })
 
-          reviewService.updateReviews(data).then((response) => {
+          .catch((error) => {
             this.setState({
               ...this.state,
               showModal: !showModal,
             })
           })
-        })
-
-        .catch((error) => {
-          this.setState({
-            ...this.state,
-            showModal: !showModal,
+          .finally(() => {
+            this.props.navigation.navigate("itemInDetail", {
+              id: this.props.route.params.id,
+            })
           })
-        })
-        .finally(() => {
-          this.props.navigation.navigate("itemInDetail", {
-            id: this.props.route.params.id,
+      } else {
+        reviewService
+          .updateReviews(data)
+          .then((response) => {
+            this.setState({
+              ...this.state,
+              showModal: !showModal,
+            })
           })
-        })
+          .catch((error) => {
+            this.setState({
+              ...this.state,
+              showModal: !showModal,
+            })
+          })
+          .finally(() => {
+            this.props.navigation.navigate("itemInDetail", {
+              id: this.props.route.params.id,
+            })
+          })
+      }
     } else {
-      reviewService
-        .updateReviews(data)
-        .then((response) => {
-          this.setState({
-            ...this.state,
-            showModal: !showModal,
-          })
-        })
-        .catch((error) => {
-          this.setState({
-            ...this.state,
-            showModal: !showModal,
-          })
-        })
-        .finally(() => {
-          this.props.navigation.navigate("itemInDetail", {
-            id: this.props.route.params.id,
-          })
-        })
+      this.setState({
+        ...this.state,
+        errorText: "Atleast one of these fields is required",
+      })
     }
   }
   showModal = () => {
@@ -167,20 +181,21 @@ class ReviewsAndRating extends Component<IProps, IState> {
 
   galleryImage = async () => {
     const { selectedImages } = this.state
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    })
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      })
 
-    if (!result.cancelled) {
-      const mutatedImages = [...selectedImages]
-      mutatedImages.push(result)
-      this.setState({ selectedImages: mutatedImages })
-    }
+      if (!result.cancelled) {
+        const mutatedImages = [...selectedImages]
+        mutatedImages.push(result)
+        this.setState({ selectedImages: mutatedImages })
+      }
+    } catch (error) {}
   }
-
   removeImage = (index: number) => {
     const { selectedImages } = this.state
     let mutatedImages = [...selectedImages]
@@ -202,10 +217,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
               source={require("../../assets/images/thankYou.png")}
               style={styles.modalImage}
             />
-            <Text style={styles.thankYouTextStyles}>Thankyou!</Text>
-            <Text style={styles.descriptionModalStyles}>
-              Dummy text is text that is used in the publishing industry
-            </Text>
+            <Text style={styles.thankYouTextStyles}>Thank You!</Text>
           </View>
         </Modal>
       </View>
@@ -216,7 +228,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     this.data[name] = value
   }
   render() {
-    const { showModal, selectedImages } = this.state
+    const { showModal, selectedImages, errorText } = this.state
     const lengthOfSelectedImages = selectedImages.length
     const imagesAlignment =
       lengthOfSelectedImages % 3 === 0 && lengthOfSelectedImages !== 0
@@ -226,7 +238,9 @@ class ReviewsAndRating extends Component<IProps, IState> {
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
+          showsHorizontalScrollIndicator={false}
         >
+          {errorText !== "" && <Text style={styles.error}>{errorText}</Text>}
           <View>
             <Text style={styles.titleText}>Reviews and ratings</Text>
             <CustomStarRating
@@ -262,13 +276,15 @@ class ReviewsAndRating extends Component<IProps, IState> {
                   justifyContent: imagesAlignment
                     ? "space-between"
                     : "flex-start",
-                  marginRight: imagesAlignment ? 0 : wp("5%"),
                 },
               ]}
             >
               {selectedImages.map((image, index) => {
                 return (
-                  <View key={index}>
+                  <View
+                    key={index}
+                    style={{ marginRight: imagesAlignment ? 0 : wp("5%") }}
+                  >
                     <Image
                       source={{ uri: image.uri }}
                       style={styles.selectedImageStyles}
@@ -306,6 +322,16 @@ class ReviewsAndRating extends Component<IProps, IState> {
 }
 export default ReviewsAndRating
 const styles = StyleSheet.create({
+  error: {
+    color: colors.orange,
+    fontSize: wp("5.3%"),
+    fontFamily: "ArchivoRegular",
+    textAlign: "left",
+    display: "flex",
+    alignSelf: "flex-start",
+    marginVertical: wp("3%"),
+  },
+
   selectedImagesWrapper: {
     display: "flex",
     flexDirection: "row",

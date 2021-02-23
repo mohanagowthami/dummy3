@@ -70,3 +70,9 @@ export const MEDIA = `${BACKEND_API}api/assets/`
 
 export const MAPLINK = ({ latitude, longitude, destination }: any) =>
   `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${destination}&key=${APIKEY}&mode=${mode}`
+
+export const GOOGLE_SIGNIN = `${BACKEND_API}api/google/login/`
+export const FACEBOOK_SIGNIN = `${BACKEND_API}api/facebook/login/`
+
+export const FORGOT_PASSWORD = `${BACKEND_API}api/password/reset/`
+export const RESET_PASSWORD = `${BACKEND_API}api/password/reset/confirm/`

@@ -36,7 +36,7 @@ import ReadMoreComponent from "../components/elements/ReadMore"
 // colors
 import { colors } from "../lib/colors"
 import { Context, dishesList } from "../lib/content"
-import { getMonthInDetail } from "../lib/helper"
+import { getDistanceFromLatLon, getMonthInDetail } from "../lib/helper"
 import MapService from "../services/map.service"
 // services
 import RestaurantService from "../services/restaurants.service"
@@ -56,6 +56,7 @@ interface Istate {
   isLoadMorePressed: boolean
   time: any
   distance: any
+  showAllPhotos: boolean
 }
 
 const restaurantService = new RestaurantService()
@@ -88,15 +89,25 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       isLoadMorePressed: false,
       time: 0,
       distance: 0,
+      showAllPhotos: false,
     }
   }
   onPressGetDirections = (address: string) => {
     this.props.navigation.navigate("navigation", { address: address })
   }
+  getFormatedReviews = (reviewsList: any) => {
+    const array = reviewsList.map((ele: any) => {
+      return { ...ele, showFullAddress: false }
+    })
+    return array.reverse()
+  }
 
   fetchData = () => {
     const { id, address } = this.props.route.params
+    console.log(id, address, "id")
+
     this.setState({ ...this.state, isLoading: true })
+
     Promise.all([
       restaurantService.getRestaurant(id),
       reviewService.getReviews(id),
@@ -107,20 +118,33 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       }),
     ])
       .then((values) => {
-        console.log(values, "values")
+        console.log(values[0])
         let mutatedObject = { ...this.state }
         mutatedObject.restaurantDetails = values[0]
 
-        mutatedObject.ratingAndReview = values[1]
+        mutatedObject.ratingAndReview = this.getFormatedReviews(values[1])
         mutatedObject.isLoading = false
-        // mutatedObject.distance = values[2].routes[0].legs[0].distance.text
-        // mutatedObject.time = values[2].routes[0].legs[0].duration.text
+        try {
+          mutatedObject.distance = values[2].routes[0].legs[0].distance.text
+          mutatedObject.time = values[2].routes[0].legs[0].duration.text
+        } catch (error) {
+          const durationData = getDistanceFromLatLon(
+            values[0].latitude,
+            values[0].longitude,
+            this.context.latitude,
+            this.context.longitude
+          )
+          mutatedObject.distance = durationData.distance
+          mutatedObject.time = durationData.time
+        }
 
         this.setState(mutatedObject)
       })
-      .catch((error) => {})
+      .catch((error) => {
+        console.log(error, "item in detail")
+        this.setState({ ...this.state, isLoading: false })
+      })
   }
-
   componentDidMount() {
     if (this.context.latitue !== null) {
       this.fetchData()
@@ -133,12 +157,16 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   changeLikeStatusInServer = () => {
     const { restaurantDetails } = this.state
     if (restaurantDetails.user_liked) {
+      console.log("in servicing")
       userService
         .likeListing({
           listing: restaurantDetails.id,
         })
-        .then((response: any) => {})
+        .then((response: any) => {
+          console.log(response, "response in like")
+        })
         .catch((error: any) => {
+          console.log(error, "error in like")
           const stateData = { ...this.state }
           stateData.restaurantDetails.user_liked = !stateData.restaurantDetails
             .user_liked
@@ -162,14 +190,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         })
     }
   }
-  componentDidUpdate(prevProps: any, prevState: any) {
-    const { restaurantDetails } = this.state
-    if (
-      prevState.restaurantDetails.user_liked !== restaurantDetails.user_liked
-    ) {
-      this.changeLikeStatusInServer()
-    }
-  }
 
   componentWillUnmount() {
     this.subscribe()
@@ -184,44 +204,46 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   changeloadMoreStatus = () => {
     this.setState({ ...this.state, isLoadMorePressed: true })
   }
+
+  handleFullDescription = (index: number) => {
+    const stateData = { ...this.state }
+
+    stateData.ratingAndReview[index].showFullAddress = true
+    this.setState(stateData)
+  }
   flatListRenderItem = (item: any, index: number) => {
     const {
       user: { profile_pic, username },
       review,
       review_images,
       updated,
+      showFullAddress,
     } = item
 
     let updatedDate = new Date(updated)
     const presentDate = new Date()
     const diff = presentDate.getDate() - updatedDate.getDate()
-    console.log("diff", diff)
+
     const year = updatedDate.getFullYear()
     const month = getMonthInDetail(updatedDate.getMonth())
 
     const reviewImagesLength = review_images.length
     const imagesAlignment =
-      reviewImagesLength % 3 === 0 && reviewImagesLength !== 0
+      reviewImagesLength % 5 === 0 && reviewImagesLength !== 0
     const date = `${month} ${year}`
 
     return (
       <View style={styles.reviewcontainer} key={index}>
-        <View
-          style={[
-            styles.reviewContainerDirection,
-            { width: "15%", display: "flex", alignItems: "center" },
-          ]}
-        >
-          {profile_pic !== "" && profile_pic !== null && index !== 0 ? (
-            <Image
-              resizeMode="cover"
-              style={styles.ProfilePicStyles}
-              source={{ uri: profile_pic }}
-            />
-          ) : (
-            <Profile width={wp("9%")} height={wp("9%")} />
-          )}
-        </View>
+        {profile_pic !== "" && profile_pic !== null && index !== 0 ? (
+          <Image
+            resizeMode="cover"
+            style={styles.ProfilePicStyles}
+            source={{ uri: profile_pic }}
+          />
+        ) : (
+          <Profile width={wp("9%")} height={wp("9%")} />
+        )}
+
         <View style={styles.userNameContainer}>
           <Text style={styles.userName}>
             {username.charAt(0).toUpperCase() + username.slice(1)}
@@ -235,7 +257,17 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               </>
             )}
           </View>
-
+          {item.showFullAddress ? (
+            <Text style={styles.reviewText}>{review}</Text>
+          ) : (
+            <Text
+              style={styles.reviewText}
+              numberOfLines={3}
+              onPress={() => this.handleFullDescription(index)}
+            >
+              {review}
+            </Text>
+          )}
           <View
             style={[
               styles.reviewImages,
@@ -243,7 +275,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                 justifyContent: imagesAlignment
                   ? "space-between"
                   : "flex-start",
-                marginRight: imagesAlignment ? 0 : wp("5%"),
               },
             ]}
           >
@@ -258,6 +289,12 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                       imageUrl: image,
                     })
                   }
+                  style={{
+                    width: "20%",
+                    height: wp("15%"),
+                    overflow: "hidden",
+                    marginRight: imagesAlignment ? 0 : wp("2%"),
+                  }}
                 >
                   <Image
                     resizeMode="cover"
@@ -285,7 +322,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     else
       stateData.restaurantDetails.total_likes =
         stateData.restaurantDetails.total_likes - 1
-    this.setState(stateData)
+    this.setState(stateData, () => this.changeLikeStatusInServer())
   }
 
   renderFooter = () => {
@@ -331,12 +368,25 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       time,
       distance,
       ratingAndReview,
+      showAllPhotos,
     } = this.state
-    const allImages = [
-      ...restaurantDetails.menu_images,
-      ...restaurantDetails.gallery_images,
-      ...restaurantDetails.washroom_images,
-    ]
+    let revewImagesList: any = []
+    let allImages: any = []
+    try {
+      ratingAndReview.map((ele: any) => {
+        const { review_images } = ele
+        revewImagesList = [...review_images, ...revewImagesList]
+      })
+
+      allImages = [
+        ...restaurantDetails.menu_images,
+        ...restaurantDetails.gallery_images,
+        ...restaurantDetails.washroom_images,
+        ...revewImagesList,
+      ]
+    } catch (error) {}
+
+    console.log("allImages", allImages)
     const {
       name,
       address,
@@ -346,36 +396,40 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       menu_images,
       total_likes,
     } = restaurantDetails
+    const imagesAlignment = allImages.length % 3 === 0 && allImages.length !== 0
+    const allPhotos =
+      allImages.length > 6
+        ? showAllPhotos
+          ? allImages
+          : allImages.slice(0, 6)
+        : allImages
+
     return (
-      <View style={styles.maincontainer}>
-        <View style={styles.container1}>
-          <View style={styles.container2}>
-            <View style={styles.container3}>
-              <Pressable onPress={this.onPressBackIcon}>
-                <BackIcon width={wp("2.62%")} height={hp("2.26%")} />
-              </Pressable>
-              {menu_images.length > 0 ? (
-                <Image
-                  style={styles.image}
-                  resizeMode="cover"
-                  source={{ uri: menu_images[0].image }}
-                />
-              ) : (
-                <Image
-                  style={styles.image}
-                  resizeMode="cover"
-                  source={replaceImage}
-                />
-              )}
-              <Pressable onPress={this.onPressLike}>
-                <LoveIcon
-                  width={wp("7.46%")}
-                  height={hp("3.015%")}
-                  color={user_liked ? colors.orange : colors.greyTwo}
-                />
-              </Pressable>
-            </View>
-          </View>
+      <>
+        <View style={{ paddingHorizontal: wp("3%") }}>
+          <Pressable onPress={this.onPressBackIcon}>
+            <BackIcon width={wp("2.62%")} height={hp("2.26%")} />
+          </Pressable>
+          {menu_images.length > 0 ? (
+            <Image
+              style={styles.image}
+              resizeMode="cover"
+              source={{ uri: menu_images[0].image }}
+            />
+          ) : (
+            <Image
+              style={styles.image}
+              resizeMode="cover"
+              source={replaceImage}
+            />
+          )}
+          <Pressable onPress={this.onPressLike}>
+            <LoveIcon
+              width={wp("7.46%")}
+              height={hp("3.015%")}
+              color={user_liked ? colors.orange : colors.greyTwo}
+            />
+          </Pressable>
         </View>
         <View style={styles.details}>
           <Text style={styles.restaurantname}>{name}</Text>
@@ -432,59 +486,101 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             <Text style={styles.greyboxtext}>Photo</Text>
           </View>
         </View>
-        <Text style={styles.description}>{description}</Text>
-        {/* Photos container*/}
+        <View style={{ paddingHorizontal: wp("3%") }}>
+          {description !== "" && description !== null && (
+            <Text style={styles.description}>{description}</Text>
+          )}
+          {/* Photos container*/}
 
-        {allImages.length > 0 && (
-          <>
-            <View style={[styles.TitleContainer]}>
-              <Text style={styles.frappyText}>Photos</Text>
-              <View style={styles.sectionHeaderWrapper}>
-                <Text style={styles.showAllText}>Show all</Text>
-                <RightArrow width={wp("1.59%")} height={hp("1.10%")} />
-              </View>
-            </View>
-            <View style={styles.imagesContainer}>
-              {allImages.map((item, index) => {
-                const { image, id } = item
-                return (
-                  <View key={index}>
-                    <Image
-                      style={styles.hallOfFameImage}
-                      source={{
-                        uri: image,
-                      }}
+          {allImages.length > 0 && (
+            <>
+              <View
+                style={[
+                  styles.TitleContainer,
+                  { marginVertical: wp("2.5%"), marginTop: wp("2%") },
+                ]}
+              >
+                <Text style={styles.frappyText}>Photos</Text>
+                {allImages.length > 6 && !showAllPhotos && (
+                  <Pressable
+                    style={styles.sectionHeaderWrapper}
+                    onPress={() =>
+                      this.setState({ ...this.state, showAllPhotos: true })
+                    }
+                  >
+                    <Text style={styles.showAllText}>Show all</Text>
+                    <RightArrow
+                      width={wp("2.3%")}
+                      height={hp("2%")}
+                      color={colors.white}
                     />
-                  </View>
-                )
-              })}
-            </View>
-          </>
-        )}
+                  </Pressable>
+                )}
+              </View>
+              <View
+                style={[
+                  styles.imagesContainer,
+                  {
+                    justifyContent: imagesAlignment
+                      ? "space-between"
+                      : "flex-start",
+                  },
+                ]}
+              >
+                {allPhotos.map((item: any, index: number) => {
+                  const { image, id } = item
+                  return (
+                    <Pressable
+                      key={index}
+                      style={{
+                        width: "30%",
+                        marginBottom: wp("2%"),
+                        marginRight: imagesAlignment ? 0 : wp("2.5%"),
+                      }}
+                      onPress={() =>
+                        this.props.navigation.navigate("fullImage", {
+                          imageUrl: image,
+                        })
+                      }
+                    >
+                      <Image
+                        style={styles.hallOfFameImage}
+                        source={{
+                          uri: image,
+                        }}
+                        resizeMode="cover"
+                      />
+                    </Pressable>
+                  )
+                })}
+              </View>
+            </>
+          )}
 
-        {ratingAndReview.length > 0 && (
-          <View style={styles.reviewRatingContainer}>
-            <Text style={styles.frappyText}>
-              Ratings and Reviews(
-              {ratingAndReview.length})
-            </Text>
-          </View>
-        )}
-      </View>
+          {ratingAndReview.length > 0 && (
+            <View style={styles.reviewRatingContainer}>
+              <Text style={styles.frappyText}>
+                Ratings and Reviews(
+                {ratingAndReview.length})
+              </Text>
+            </View>
+          )}
+        </View>
+      </>
     )
   }
-  render() {
-    const { isLoadMorePressed, ratingAndReview } = this.state
 
-    const { isLoading } = this.state
+  render() {
+    const { isLoadMorePressed, ratingAndReview, isLoading } = this.state
+
     const length = ratingAndReview.length
 
     const flatListData =
       ratingAndReview.length > 5
         ? isLoadMorePressed
-          ? ratingAndReview.reverse()
-          : ratingAndReview.slice(length - 5, length - 0).reverse()
-        : ratingAndReview.reverse()
+          ? ratingAndReview
+          : ratingAndReview.slice(0, 4)
+        : ratingAndReview
 
     return (
       <>
@@ -502,6 +598,8 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               }
               keyExtractor={(item, index) => item.id.toString()}
               ListFooterComponent={this.renderFooter}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
             />
           </View>
         )}
@@ -517,7 +615,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  flatListContainer: { flex: 1, backgroundColor: colors.white },
+  flatListContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+    // paddingHorizontal: wp("3%"),
+    paddingTop: wp("8%"),
+  },
 
   ProfilePicStyles: {
     height: wp("9%"),
@@ -534,38 +637,16 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
   },
-  maincontainer: {
-    display: "flex",
-    backgroundColor: colors.white,
-  },
-  mainimage: {
-    // alignSelf: 'center',
-    // width: wp('77.06%'),
-    // height: hp('38.36%'),
-    // marginBottom: hp('4%'),
-    paddingLeft: "0%",
-  },
   userNameContainer: {
     display: "flex",
-    // flex: 1,
-    flexDirection: "column",
-    paddingLeft: wp("2%"),
+    flex: 1,
+    marginLeft: wp("3%"),
   },
-  container1: { display: "flex" },
-  container2: {
-    // display: 'flex',
-    position: "relative",
-    flexDirection: "column",
-  },
-  container3: {
-    paddingLeft: wp("5.6%"),
-    paddingTop: hp("6.07%"),
-    paddingBottom: hp("2%"),
-  },
+
   details: {
     display: "flex",
-    paddingLeft: hp("2%"),
-    paddingBottom: hp("3.55%"),
+    marginBottom: hp("3.55%"),
+    paddingHorizontal: wp("3%"),
   },
   restaurantname: {
     fontFamily: "ArchivoRegular",
@@ -610,7 +691,7 @@ const styles = StyleSheet.create({
   addressButton: { fontFamily: "AirbnbCerealBook", fontSize: wp("3%") },
   addressgetdirectionbutton: {
     display: "flex",
-    flex: 1,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -662,14 +743,14 @@ const styles = StyleSheet.create({
   },
   greycontainer: {
     display: "flex",
+
     flexDirection: "row",
     backgroundColor: colors.greyBackground,
     width: wp("100%"),
     height: hp("8.28%"),
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: wp("1%"),
-    paddingRight: hp("1%"),
+    paddingHorizontal: wp("3%"),
   },
   greyboxtext: {
     fontFamily: "AirbnbCerealBook",
@@ -693,6 +774,7 @@ const styles = StyleSheet.create({
     marginBottom: wp("1%"),
     paddingLeft: hp("2%"),
     width: "100%",
+    justifyContent: "space-between",
   },
   TitleContainer: {
     display: "flex",
@@ -700,14 +782,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: wp("5%"),
-    paddingLeft: hp("2%"),
   },
   reviewRatingContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingLeft: hp("2%"),
     marginTop: 0,
     marginBottom: wp("6%"),
   },
@@ -716,7 +792,8 @@ const styles = StyleSheet.create({
     fontSize: wp("3.73%"),
     color: colors.grey,
     paddingRight: wp("2%"),
-    // paddingBottom: hp('2.5%'),
+
+    textAlign: "justify",
   },
   readmore: {
     color: colors.darkorange,
@@ -737,24 +814,26 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("4%"),
     lineHeight: wp("5.7%"),
-    color: colors.darkBlack,
+    color: colors.white,
     marginRight: wp("2%"),
   },
   sectionHeaderWrapper: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: wp("9%"),
+    padding: wp("2%"),
+    backgroundColor: colors.orange,
+    borderRadius: wp("4%"),
   },
   hallOfFameImage: {
-    width: wp("27%"),
+    width: "100%",
     height: wp("27%"),
-    margin: wp("1.5%"),
+
     borderRadius: wp("5%"),
   },
   hallOfFameImageMore: {
-    width: wp("22%"),
-    height: wp("22%"),
+    width: "100%",
+    height: wp("15%"),
   },
   loadmorecontainer: {
     display: "flex",
@@ -775,7 +854,7 @@ const styles = StyleSheet.create({
   reviewcontainer: {
     display: "flex",
     flexDirection: "row",
-    // alignItems: 'center',
+    alignItems: "flex-start",
     paddingHorizontal: wp("3%"),
   },
   searchcontainer: {
@@ -813,12 +892,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginVertical: hp("1.5%"),
-    paddingLeft: hp("2%"),
     width: "100%",
-    paddingRight: wp("2%"),
-    marginLeft: -wp("5%"),
+    marginVertical: hp("1.5%"),
   },
 })
 

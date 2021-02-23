@@ -33,6 +33,7 @@ import {
   getFormatedDate,
   getCurrentMonthArray,
   convertToTweleveHoursFormat,
+  convertToTwentyFourHoursFormat,
 } from "../lib/helper"
 // service
 import PlannerService from "../services/planner.service"
@@ -74,7 +75,7 @@ class AddDateToCalender extends Component<IProps, IState> {
       mode: "date",
       show: false,
       description: "",
-      dateArray: getCurrentMonthArray(),
+      dateArray: getCurrentMonthArray(0),
 
       switchArray: [
         {
@@ -194,19 +195,22 @@ class AddDateToCalender extends Component<IProps, IState> {
     )
   }
 
-  handlePressableDate = (ind: number): any => {
-    const { dateArray } = this.state
-    const mutatedArray = dateArray.map((ele: boolean, index: number) => {
-      if (index === ind) {
-        return !ele
-      }
-      return 0
-    })
-    this.setState({
-      ...this.state,
-      dateArray: mutatedArray,
-      date: new Date(this.date.getFullYear(), this.date.getMonth(), ind + 1),
-    })
+  handlePressableDate = (ele: number, ind: number): any => {
+    console.log(ele, "element123")
+    if (ele !== -1) {
+      const { dateArray } = this.state
+      const mutatedArray = dateArray.map((ele: boolean, index: number) => {
+        if (index === ind) {
+          return 1
+        } else if (index < this.date.getDate() - 1) return -1
+        else return 0
+      })
+      this.setState({
+        ...this.state,
+        dateArray: mutatedArray,
+        date: new Date(this.date.getFullYear(), this.date.getMonth(), ind + 1),
+      })
+    }
   }
 
   flatListRenderItem = (item: any, index: number) => {
@@ -222,17 +226,18 @@ class AddDateToCalender extends Component<IProps, IState> {
         <Text
           style={[
             styles.dateTextStyle,
+            styles.dateArrayItem,
             {
-              backgroundColor: item ? colors.orange : colors.white,
-              color: item ? colors.white : colors.darkBlack,
-              width: wp("10%"),
-              height: wp("10%"),
-              borderRadius: wp("5%"),
-              textAlign: "center",
-              textAlignVertical: "center",
+              backgroundColor: item === 1 ? colors.orange : colors.white,
+              color:
+                item === 1
+                  ? colors.white
+                  : item === -1
+                  ? colors.lightGreyThree
+                  : colors.darkBlack,
             },
           ]}
-          onPress={() => this.handlePressableDate(index)}
+          onPress={() => this.handlePressableDate(item, index)}
         >
           {index + 1}
         </Text>
@@ -265,12 +270,16 @@ class AddDateToCalender extends Component<IProps, IState> {
 
   pressPlan = () => {
     const { date, fromTime, toTime, description, switchArray } = this.state
-    const category = switchArray.filter((ele) => {
-      if (ele) return ele.name
+    let category = switchArray.map((ele) => {
+      if (ele.on) return ele.name
+    })
+    category = category.filter((ele) => {
+      if (ele) return ele
     })
     const data = {
-      from_time: fromTime !== "From" ? fromTime.replace(/\s/g, "") : "",
-      to_time: toTime !== "From" ? toTime.replace(/\s/g, "") : "",
+      from_time:
+        fromTime !== "From" ? convertToTwentyFourHoursFormat(fromTime) : "",
+      to_time: toTime !== "From" ? convertToTwentyFourHoursFormat(toTime) : "",
       date: getFormatedDate(date),
       start_location: this.fromLocationRef.current.getAddressText(),
       end_location: this.toLocationRef.current.getAddressText(),
@@ -331,7 +340,11 @@ class AddDateToCalender extends Component<IProps, IState> {
     } = this.state
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
-        <ScrollView keyboardShouldPersistTaps="handled">
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator color={colors.darkBlack} size="large" />
@@ -480,6 +493,7 @@ class AddDateToCalender extends Component<IProps, IState> {
               is24Hour={false}
               display="default"
               onChange={this.onChangePicker}
+              minimumDate={this.date}
             />
           )}
         </ScrollView>
@@ -490,6 +504,13 @@ class AddDateToCalender extends Component<IProps, IState> {
 export default AddDateToCalender
 
 const styles = StyleSheet.create({
+  dateArrayItem: {
+    width: wp("10%"),
+    height: wp("10%"),
+    borderRadius: wp("5%"),
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
   locationBox: {
     backgroundColor: "red",
   },

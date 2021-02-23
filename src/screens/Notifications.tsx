@@ -42,7 +42,11 @@ class Notifications extends Component<IProps, {}> {
     return (
       <View style={styles.mainContainer}>
         <View style={styles.heading}>{this.heading()}</View>
-        <ScrollView style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <View style={styles.notificationCard}>
             <Text style={styles.notificationText}>
               You have one new Notification

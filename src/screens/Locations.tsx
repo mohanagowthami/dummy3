@@ -44,7 +44,11 @@ class Locations extends Component<IProps, Istate> {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.mainContainer}>
+        <ScrollView
+          style={styles.mainContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <View style={styles.borders}>
             <View style={styles.heading}>
               <Text style={styles.title}>Explore</Text>

@@ -1,5 +1,10 @@
 // endpoints
-import { LOGIN, SIGN_UP } from "./../lib/endpoints"
+import {
+  LOGIN,
+  SIGN_UP,
+  FORGOT_PASSWORD,
+  RESET_PASSWORD,
+} from "./../lib/endpoints"
 // axios
 import axios from "axios"
 // service
@@ -28,13 +33,32 @@ class AuthService extends APIService {
       })
   }
 
-  authenticateUser(accessToken: string, refreshToken: string): void {
+  authenticateUser(accessToken: string, refreshToken?: string): void {
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-    this.setAccessToken(accessToken)
-    this.setRefreshToken(refreshToken)
+    if (accessToken) this.setAccessToken(accessToken)
+    if (refreshToken) this.setRefreshToken(refreshToken)
   }
 
   logOut(): void {}
+
+  forgotPassword(data: any): Promise<any> {
+    return this.post(FORGOT_PASSWORD, data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
+  resetPassword(data: any): Promise<any> {
+    return this.post(RESET_PASSWORD, data)
+      .then((response: any) => {
+        return response.data
+      })
+      .catch((error: any) => {
+        throw error.response.data
+      })
+  }
 }
 
 export default AuthService

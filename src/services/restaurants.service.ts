@@ -14,11 +14,13 @@ import UserService from "./user.service"
 const userService = new UserService()
 class RestaurantService extends APIService {
   getCurrentUserLocationBasedData(page?: number): Promise<any> {
-    return this.get(FAVORITE_RESTAURANTS((page = 1)))
+    return this.get(FAVORITE_RESTAURANTS(page))
       .then((response: any) => {
+        console.log(response, "response in favourties")
         return response.data
       })
       .catch((error: any) => {
+        console.log(error, "in render local ")
         throw error.response.data
       })
   }
@@ -45,6 +47,7 @@ class RestaurantService extends APIService {
   getRecap(): Promise<any> {
     return this.get(RECAP_CATEGORY("food"))
       .then((response: any) => {
+        // console.log(response, "response in recap")
         return response.data
       })
       .catch((error: any) => {

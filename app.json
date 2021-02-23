@@ -12,7 +12,11 @@
       "backgroundColor": "#ffffff"
     },
     "notification": {
-      "icon": "./assets/frappyIcon.png"
+      "icon": "./assets/pushIcon.png",
+      "color": "#311b92",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Frappy",
+      "iosDisplayInForeground": true
     },
     "updates": {
       "fallbackToCacheTimeout": 0

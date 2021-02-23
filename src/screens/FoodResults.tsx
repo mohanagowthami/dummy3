@@ -33,8 +33,8 @@ import RestaurantService from "../services/restaurants.service"
 import TravelService from "../services/travel.service"
 import ShoppingMallService from "../services/shoppingmall.service"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { deriveArrayFromString } from "../lib/helper"
-import { add } from "react-native-reanimated"
+import { deriveArrayFromString, getDistanceFromLatLon } from "../lib/helper"
+import { Context } from "../lib/content"
 
 interface IProps {
   navigation: any
@@ -172,16 +172,14 @@ class FoodSearchResults extends Component<IProps, Istate> {
             uri: image,
           }}
         />
-        {/* <View style={styles.paginationContainer}>{this.pagination}</View> */}
       </View>
     )
   }
 
   getDataFromSearchAPI = () => {
-    const { searchText, currentPage } = this.state
+    const { searchText, currentPage, category } = this.state
 
     if (searchText !== "") {
-      const { category, searchText } = this.state
       let service
       if (category === "food") service = restaurantService
       else if (category === "travel") service = travelService
@@ -208,6 +206,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
           stateData.flatListLoading = false
         })
         .finally(() => {
+          stateData.searchText = this.state.searchText
           this.setState(stateData)
         })
     } else {
@@ -222,7 +221,10 @@ class FoodSearchResults extends Component<IProps, Istate> {
       if (categorySearchResults.length == 0) stateData.flatListLoading = true
       this.setState(stateData)
       const timeout = categorySearchResults.length === 0 ? 0 : 300
-      setTimeout(() => this.getDataFromSearchAPI(), timeout)
+      const classThis = this
+      setTimeout(function () {
+        classThis.getDataFromSearchAPI()
+      }, timeout)
     } else if (searchText === "" && categorySearchResults.length !== 0) {
       this.setState({ ...this.state, categorySearchResults: [] })
     }
@@ -238,13 +240,30 @@ class FoodSearchResults extends Component<IProps, Istate> {
   flatListRenderItem = (prop: any) => {
     const { categorySearchResults } = this.state
     const number_of_ratings = categorySearchResults.length
-    const { menu_images, name, tags, dining_rating, address, id } = prop.item
+    const {
+      menu_images,
+      name,
+      tags,
+      dining_rating,
+      address,
+      id,
+      latitude,
+      longitude,
+    } = prop.item
     const images =
       menu_images.length > 0 ? menu_images : this.getShuffleImagesList()
     const place = address.split(",")
     const formattedTags = deriveArrayFromString(tags)
+
     return (
-      <Pressable onPress={() => this.navigateToDeatailScreen(id)}>
+      <Pressable
+        onPress={() =>
+          this.props.navigation.navigate("itemInDetail", {
+            id: id,
+            address: address,
+          })
+        }
+      >
         <Carousel
           layout={"stack"}
           layoutCardOffset={wp("5%")}
@@ -260,42 +279,48 @@ class FoodSearchResults extends Component<IProps, Istate> {
             <Text style={styles.restaurantName}>{name}</Text>
           </View>
           <View style={styles.detailsContainerWrapper}>
-            <View style={styles.detailsContainer}>
-              {formattedTags.map((tag: string, index: number) => {
-                return (
-                  <View style={styles.formattedTagsContainer} key={index}>
-                    <View style={styles.dotStyle}></View>
-                    <Text style={styles.restaurantType}>
-                      {tag.charAt(0).toUpperCase() + tag.slice(1)}
-                    </Text>
-                  </View>
-                )
-              })}
-            </View>
+            <View style={{ width: "90%" }}>
+              {formattedTags.length > 0 && (
+                <View style={styles.detailsContainer}>
+                  {formattedTags.map((tag: string, index: number) => {
+                    return (
+                      <View style={styles.formattedTagsContainer} key={index}>
+                        <View style={styles.dotStyle}></View>
+                        <Text style={styles.restaurantType}>
+                          {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                        </Text>
+                      </View>
+                    )
+                  })}
+                </View>
+              )}
+              <View style={styles.rating}>
+                <Text style={styles.ratingNumber}>{dining_rating}</Text>
 
+                <Rating width={wp("4%")} height={hp("3%")} />
+
+                <Text style={styles.ratingText}>
+                  {`${number_of_ratings} Ratings`}
+                </Text>
+                <View style={styles.clockWrapper}>
+                  <ClockIcon width={wp("6%")} height={hp("5%")} />
+                  <Text style={styles.timeText}>
+                    {getDistanceFromLatLon(
+                      parseFloat(latitude),
+                      parseFloat(longitude),
+                      parseFloat(this.context.latitude),
+                      parseFloat(this.context.longitude)
+                    )}
+                  </Text>
+                </View>
+              </View>
+            </View>
             <Pressable
               style={styles.navigationIcon}
               onPress={() => this.handleNavigation(address)}
             >
               <NavigationIcon width={wp("7.46%")} height={hp("3.68%")} />
             </Pressable>
-          </View>
-          <View>
-            <View style={styles.rating}>
-              <Text style={styles.ratingNumber}>{dining_rating}</Text>
-
-              <Rating width={wp("4%")} height={hp("3%")} />
-
-              <Text style={styles.ratingText}>
-                {`${number_of_ratings} Ratings`}
-              </Text>
-              <View style={styles.clockWrapper}>
-                <ClockIcon width={wp("6%")} height={hp("5%")} />
-                <Text style={styles.timeText}>
-                  {/* {item.time} min */}25 min
-                </Text>
-              </View>
-            </View>
           </View>
         </View>
       </Pressable>
@@ -315,6 +340,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
 
   renderCategoryButtons = () => {
     const { searchText, category } = this.state
+    console.log(searchText, "searchText in category")
     return (
       <React.Fragment>
         <View style={styles.searchButton}>
@@ -440,7 +466,6 @@ class FoodSearchResults extends Component<IProps, Istate> {
     return (
       <SafeAreaView style={styles.safeAreaViewStyle}>
         <View style={styles.mainContainer}>
-          {this.renderCategoryButtons()}
           {isLoading ? (
             <ActivityIndicator color={colors.darkBlack} size="large" />
           ) : (
@@ -452,6 +477,8 @@ class FoodSearchResults extends Component<IProps, Istate> {
               ListFooterComponent={this.renderFooter()}
               ref={(ref) => (this.flatListRef = ref)}
               keyboardShouldPersistTaps="always"
+              ListHeaderComponent={this.renderCategoryButtons()}
+              showsVerticalScrollIndicator={false}
             />
           )}
         </View>
@@ -459,6 +486,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
     )
   }
 }
+FoodSearchResults.contextType = Context
 
 const styles = StyleSheet.create({
   crossIcon: {
@@ -612,7 +640,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     display: "flex",
     flexDirection: "row",
-
+    marginBottom: hp("0.8%"),
     flexWrap: "wrap",
     width: "75%",
   },
@@ -659,7 +687,6 @@ const styles = StyleSheet.create({
   rating: {
     display: "flex",
     flexDirection: "row",
-    paddingTop: hp("0.789%"),
     alignItems: "center",
   },
   ratingText: {

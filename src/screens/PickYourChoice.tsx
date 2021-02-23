@@ -322,7 +322,10 @@ class PickYourChoice extends Component<IProps, IState> {
                   ]}
                 />
               </View>
-              <ScrollView showsVerticalScrollIndicator={false}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+              >
                 {category === "food" ? (
                   <View style={styles.typeContainer}>
                     {foodTypesList.map((element: any, index: number) => {

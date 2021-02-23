@@ -27,7 +27,11 @@ class FrappyPlannerCards extends Component<IProps, {}> {
   }
   render() {
     return (
-      <ScrollView style={styles.mainContainer}>
+      <ScrollView
+        style={styles.mainContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <View style={styles.heading}>
           <Text style={styles.title}>Frappy Planner</Text>
           <View style={styles.notificationIcon}>

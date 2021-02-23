@@ -73,9 +73,6 @@ class FeedBackScreen extends Component<IProps, IState> {
               style={styles.thankYouImage}
             />
             <Text style={styles.thankYouText}>Thankyou!</Text>
-            <Text style={styles.thankYouDescription}>
-              Dummy text is text that is used in the publishing industry
-            </Text>
           </View>
         </Modal>
       </View>
@@ -88,7 +85,10 @@ class FeedBackScreen extends Component<IProps, IState> {
       <>
         {showModal && this.renderModal()}
         <SafeAreaView style={styles.safeareaviewContainer}>
-          <ScrollView>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
             <View style={styles.container}>
               <Text style={styles.feedbackTitle}>Feedback</Text>
               <Text style={styles.feedbackDescription}>

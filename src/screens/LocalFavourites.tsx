@@ -253,6 +253,7 @@ class LocalFavourites extends Component<IProps, IState> {
         keyExtractor={(item: any) => item.id.toString()}
         extraData={category}
         ListFooterComponent={this.renderFooter}
+        showsVerticalScrollIndicator={false}
       />
     )
   }

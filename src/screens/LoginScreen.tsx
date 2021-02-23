@@ -32,12 +32,14 @@ import { colors } from "../lib/colors"
 // services
 import AuthService from "../services/auth.service"
 import UserService from "../services/user.service"
-import { Logo } from "../../assets/svgs/icons"
+import { CloseEye, Logo, OpenEye } from "../../assets/svgs/icons"
 import * as Facebook from "expo-facebook"
 import * as Google from "expo-google-app-auth"
 import * as AppAuth from "expo-app-auth"
 import * as yup from "yup"
 import { Formik } from "formik"
+import SocialLoginService from "../services/social-login.service"
+import { APPID } from "../lib/content"
 
 // props for login screen
 interface ILoginScreen {
@@ -49,22 +51,46 @@ interface State {
   isLoading: boolean
   showError: boolean
   errorText: string
+  showPassword: boolean
+  showOnlyEmail: boolean
+  showOnlyPasswords: boolean
+  showConfirmPassword: boolean
 }
 const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
 const userService = new UserService()
+const socialLoginService = new SocialLoginService()
 
-const loginValidationSchema = yup.object().shape({
+export const loginValidationSchema = yup.object().shape({
+  showOnlyEmail: yup.boolean(),
+  showOnlyPasswords: yup.boolean(),
   email: yup
     .string()
-    .email("Please enter valid email")
-    .required("Email Address is Required"),
-  password: yup.string().required("Password is required"),
-})
+    .email("Enter valid email address")
+    .when("showOnlyPasswords", {
+      is: false,
+      then: yup.string().required("Email address is required"),
+    }),
 
+  password: yup.string().when("showOnlyEmail", {
+    is: true,
+    then: yup.string().required("Password is required"),
+  }),
+  confirmPassword: yup.string().when("showOnlyPasswords", {
+    is: true,
+    then: yup
+      .string()
+      .oneOf(
+        [yup.ref("password"), null],
+        "Password and Confirmation Password must match"
+      )
+      .required("Confirm Password is required"),
+  }),
+})
 class LoginScreen extends React.Component<ILoginScreen, State> {
   inputRef: any
   values: any
+  token: any
   constructor(props: ILoginScreen) {
     super(props)
     this.state = {
@@ -72,7 +98,12 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       isLoading: false,
       showError: false,
       errorText: "",
+      showPassword: false,
+      showOnlyEmail: false,
+      showOnlyPasswords: false,
+      showConfirmPassword: false,
     }
+    this.token = null
     this.inputRef = Array(4).fill(React.createRef())
     this.values = {}
   }
@@ -111,75 +142,135 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       modalVisible: !prevState.modalVisible,
     }))
   }
-  // Get OTP Button function
-  onSubmitValues = (data: any) => {
-    // this.setModalVisible()
+
+  onSubmitValues = (values: any) => {
     this.setState({
       ...this.state,
       isLoading: true,
     })
-    console.log(data, "data in login screen")
-    authService
-      .logIn(data)
-      .then((response) => {
-        console.log(response, "response")
-        this.setState({
-          ...this.state,
-          isLoading: false,
-          modalVisible: true,
-        })
+    const { showOnlyEmail, showOnlyPasswords } = this.state
 
-        authService.authenticateUser(response.access, response.refresh)
-      })
-      .then(() => {
-        this.setState(
-          {
+    if (showOnlyEmail) {
+      authService
+        .forgotPassword({ email: values.email })
+        .then((response) => {
+          console.log(response, "email")
+          if (response.token) this.token = response.token
+          this.setState({
+            ...this.state,
+            showOnlyPasswords: true,
+            isLoading: false,
+            showOnlyEmail: false,
+          })
+        })
+        .catch((e: any) => {
+          console.log(e, " error email")
+          this.token = null
+          this.setState({
+            ...this.state,
+
+            isLoading: false,
+            showError: true,
+            errorText: "Please enter valid email address",
+          })
+        })
+    } else if (showOnlyPasswords) {
+      console.log(this.token, "this.token")
+      authService
+        .resetPassword({
+          token: this.token,
+          new_password: values.password,
+          confirm_password: values.confirmPassword,
+        })
+        .then((response) => {
+          console.log(response, "response in pass")
+          authService.authenticateUser(response.access, response.refresh)
+        })
+        .then(() => {
+          this.props.navigation.navigate("bottomTab")
+        })
+        .catch((e: any) => {
+          console.log(e.error, "error in pass")
+          this.setState({
+            ...this.state,
+
+            showOnlyPasswords: false,
+            isLoading: false,
+            showError: true,
+            errorText: e.error,
+          })
+        })
+    } else {
+      authService
+        .logIn({ email: values.email, password: values.password })
+        .then((response) => {
+          console.log(response, "response")
+          this.setState({
             ...this.state,
             isLoading: false,
-            modalVisible: false,
-          },
-          () => this.props.navigation.navigate("bottomTab")
-        )
-      })
-      .catch((error) => {
-        console.log(error, "in login")
-        this.setState({
-          ...this.state,
-          isLoading: false,
-          showError: true,
-          modalVisible: false,
-          errorText: error.detail,
-        })
-      })
-  }
+            modalVisible: true,
+          })
 
+          authService.authenticateUser(response.access, response.refresh)
+        })
+        .then(() => {
+          this.setState(
+            {
+              ...this.state,
+              isLoading: false,
+              modalVisible: false,
+            },
+            () => this.props.navigation.navigate("bottomTab")
+          )
+        })
+        .catch((error) => {
+          console.log(error, "in login")
+          this.setState({
+            ...this.state,
+            isLoading: false,
+            showError: true,
+            modalVisible: false,
+            errorText: error.detail,
+          })
+        })
+    }
+  }
   onChange = (name: string, value: string) => {
     this.values[name] = value
+  }
+
+  handleEyeIconPress = (confirm?: string) => {
+    console.log("calling")
+    if (confirm)
+      this.setState({
+        ...this.state,
+        showConfirmPassword: !this.state.showConfirmPassword,
+      })
+    else
+      this.setState({ ...this.state, showPassword: !this.state.showPassword })
+  }
+  onPressForgotPassword = () => {
+    this.setState({ ...this.state, showOnlyEmail: true })
   }
 
   logIn = async () => {
     try {
       await Facebook.initializeAsync({
-        appId: "881191042676304",
+        appId: APPID,
       })
       const { type, token }: any = await Facebook.logInWithReadPermissionsAsync(
         {
-          permissions: ["public_profile"],
+          permissions: ["public_profile", "email"],
         }
       )
-      if (type === "success") {
-        // Get the user's name using Facebook's Graph API
-        const response = await fetch(
-          `https://graph.facebook.com/me?access_token=${token}`
-        )
-        const jsonResponse = await response.json()
 
-        alert(` ${(await response.json()).name}!`)
-      } else {
-        // type === 'cancel'
+      if (type === "success") {
+        const response = await socialLoginService.facebookSignIn({
+          token: token,
+        })
       }
-    } catch ({ message }) {
-      alert(`Facebook Login Error: ${message}`)
+    } catch (error: any) {
+      console.log(error)
     }
   }
 
@@ -188,27 +279,47 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       androidClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
       scopes: ["profile", "email"],
       redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google`,
-      androidStandaloneAppClientId:
+      androidStandaloneAppClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
+      clientId:
         "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
     })
-    console.log(type, accessToken, "type,accessToken")
 
     if (type === "success") {
-      // Then you can use the Google REST API
-      let userInfoResponse = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      )
-      const userInfoResponseJson = await userInfoResponse.json()
-      console.log(userInfoResponseJson, "responseJson in google")
+      this.setState({ ...this.state, isLoading: true })
+      socialLoginService
+        .googleSignIn({ token: accessToken })
+        .then((response) => {
+          this.props.navigation.navigate("pickYourChoice")
+        })
+        .catch((error) => {
+          console.log(error, "error")
+          this.setState({
+            ...this.state,
+            isLoading: false,
+            showError: true,
+            errorText: error,
+          })
+        })
     }
   }
   render() {
     // navigation as prop
     const { navigation } = this.props
-    const { isLoading, errorText, showError, modalVisible } = this.state
+    const {
+      isLoading,
+      errorText,
+      showError,
+      modalVisible,
+      showPassword,
+      showOnlyEmail,
+      showOnlyPasswords,
+      showConfirmPassword,
+    } = this.state
+    const loginTitle = showOnlyEmail
+      ? "Confirm Email"
+      : showOnlyPasswords
+      ? "Reset Password"
+      : "Login"
 
     return (
       <>
@@ -221,10 +332,18 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           <ScrollView
             style={styles.mainContainer}
             keyboardShouldPersistTaps="always"
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
           >
             <Formik
               validationSchema={loginValidationSchema}
-              initialValues={{ email: "", password: "" }}
+              initialValues={{
+                email: "",
+                password: "",
+                confirmPassword: "",
+                showOnlyEmail: showOnlyEmail,
+                showOnlyPasswords: showOnlyPasswords,
+              }}
               onSubmit={(values) => {
                 this.onSubmitValues(values)
               }}
@@ -255,31 +374,121 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                     {showError && (
                       <Text style={styles.errorStyles}>{errorText}</Text>
                     )}
-                    <TextInput
-                      onChangeText={handleChange("email")}
-                      placeholder="Enter Email Id"
-                      style={styles.inputBox}
-                      value={values.email}
-                    />
+                    {!showOnlyPasswords && (
+                      <TextInput
+                        onChangeText={handleChange("email")}
+                        placeholder="Enter Email Id"
+                        style={styles.inputBox}
+                        value={values.email}
+                      />
+                    )}
                     {touched.email && errors.email ? (
                       <Text style={styles.error}>{errors.email}</Text>
                     ) : null}
-                    <TextInput
-                      onChangeText={handleChange("password")}
-                      placeholder="Enter Password"
-                      style={styles.inputBox}
-                      secureTextEntry
-                      value={values.password}
-                    />
-                    {touched.password && errors.password ? (
-                      <Text style={styles.error}>{errors.password}</Text>
-                    ) : null}
+                    {!showOnlyEmail && (
+                      <>
+                        <View style={styles.passwordContainer}>
+                          <TextInput
+                            onChangeText={handleChange("password")}
+                            placeholder="Enter Password"
+                            style={[styles.inputBox, styles.passwordBox]}
+                            secureTextEntry={showPassword ? false : true}
+                            value={values.password}
+                          />
+                          {values.password !== "" &&
+                            (showPassword ? (
+                              <Pressable
+                                onPress={() => this.handleEyeIconPress()}
+                                hitSlop={{
+                                  top: 30,
+                                  bottom: 30,
+                                  left: 30,
+                                  right: 30,
+                                }}
+                              >
+                                <OpenEye width={wp("5%")} height={wp("5%")} />
+                              </Pressable>
+                            ) : (
+                              <Pressable
+                                onPress={() => this.handleEyeIconPress()}
+                              >
+                                <CloseEye
+                                  width={wp("5%")}
+                                  height={wp("5%")}
+                                  hitSlop={{
+                                    top: 30,
+                                    bottom: 30,
+                                    left: 30,
+                                    right: 30,
+                                  }}
+                                />
+                              </Pressable>
+                            ))}
+                        </View>
+                        {touched.password && errors.password ? (
+                          <Text style={styles.error}>{errors.password}</Text>
+                        ) : null}
+                        {showOnlyPasswords && (
+                          <>
+                            <View style={styles.passwordContainer}>
+                              <TextInput
+                                onChangeText={handleChange("confirmPassword")}
+                                placeholder="Enter Confirm Password"
+                                style={[styles.inputBox, styles.passwordBox]}
+                                secureTextEntry={
+                                  showConfirmPassword ? false : true
+                                }
+                                value={values.confirmPassword}
+                              />
+                              {values.confirmPassword !== "" &&
+                                (showConfirmPassword ? (
+                                  <Pressable
+                                    onPress={() =>
+                                      this.handleEyeIconPress("confirmPassword")
+                                    }
+                                  >
+                                    <OpenEye
+                                      width={wp("5%")}
+                                      height={wp("5%")}
+                                    />
+                                  </Pressable>
+                                ) : (
+                                  <Pressable
+                                    onPress={() =>
+                                      this.handleEyeIconPress("confirmPassword")
+                                    }
+                                  >
+                                    <CloseEye
+                                      width={wp("5%")}
+                                      height={wp("5%")}
+                                    />
+                                  </Pressable>
+                                ))}
+                            </View>
+                            {touched.confirmPassword &&
+                            errors.confirmPassword ? (
+                              <Text style={styles.error}>
+                                {errors.confirmPassword}
+                              </Text>
+                            ) : null}
+                          </>
+                        )}
+                      </>
+                    )}
                     <View>
                       <CustomButton
-                        title="Login"
+                        title={loginTitle}
                         onPressButton={handleSubmit}
                         buttonTextStyles={styles.verifyContinueButtonText}
                       />
+                      {!(showOnlyEmail || showOnlyPasswords) && (
+                        <Text
+                          style={styles.forgotYourPasswordStyles}
+                          onPress={this.onPressForgotPassword}
+                        >
+                          Forgot your password?
+                        </Text>
+                      )}
                     </View>
 
                     <View style={styles.loginBottom}>
@@ -292,7 +501,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                           />
                         </Pressable>
 
-                        <TwitterSvg width={wp("14.66%")} height={hp("7.23%")} />
                         <Pressable onPress={this.googleLogin}>
                           <GoogleSvg
                             width={wp("14.66%")}
@@ -322,6 +530,26 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 }
 
 const styles = StyleSheet.create({
+  forgotYourPasswordStyles: {
+    fontSize: wp("4%"),
+    color: colors.orange,
+    fontFamily: "ArchivoRegular",
+    marginVertical: wp("4%"),
+    textAlign: "center",
+  },
+  passwordBox: {
+    borderBottomWidth: 0,
+    width: "85%",
+    padding: 0,
+  },
+  passwordContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 1,
+    borderBottomWidth: 2,
+    borderBottomColor: "#DFE1E6",
+    alignItems: "center",
+  },
   error: {
     color: colors.orange,
     fontSize: wp("3%"),
@@ -331,9 +559,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   errorStyles: {
+    fontSize: wp("4%"),
     color: colors.orange,
-    fontSize: wp("6%"),
-    fontFamily: "AirbnbCerealBold",
+    fontFamily: "ArchivoRegular",
+    marginVertical: wp("4%"),
+    textAlign: "center",
   },
 
   mainContainer: { backgroundColor: colors.white },
@@ -447,7 +677,8 @@ const styles = StyleSheet.create({
     fontFamily: "AirbnbCerealBold",
   },
   inputBox: {
-    width: wp("85.33%"),
+    flex: 1,
+    width: "100%",
     margin: "3%",
     marginLeft: wp("0%"),
     fontSize: wp("4.26%"),
@@ -492,8 +723,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    width: wp("54.66%"),
+    justifyContent: "space-around",
+    width: wp("40.66%"),
   },
   hurryText: {
     fontFamily: "AirbnbCerealBold",

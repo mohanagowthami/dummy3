@@ -26,6 +26,8 @@ import WavingHand from "./WavingHand"
 import Logo from "./Logo"
 import FrappyIcon from "./FrappyIcon"
 import CircleIcon from "./CircleIcon"
+import OpenEye from "./OpenEye"
+import CloseEye from "./CloseEye"
 
 export {
   CalenderSvg,
@@ -56,4 +58,6 @@ export {
   Logo,
   FrappyIcon,
   CircleIcon,
+  OpenEye,
+  CloseEye,
 }
