@@ -76,3 +76,5 @@ export const FACEBOOK_SIGNIN = `${BACKEND_API}api/facebook/login/`
 
 export const FORGOT_PASSWORD = `${BACKEND_API}api/password/reset/`
 export const RESET_PASSWORD = `${BACKEND_API}api/password/reset/confirm/`
+
+export const FEEDBACK = `${BACKEND_API}api/feedback/`

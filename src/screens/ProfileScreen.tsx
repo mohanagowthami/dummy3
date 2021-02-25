@@ -10,6 +10,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Share as RNShare,
 } from "react-native"
 // react-native-responsive-screen
 import {
@@ -72,20 +73,41 @@ class ProfileScreen extends Component<IProps, Istate> {
     }
   }
 
+  onShare = async () => {
+    try {
+      const result = await RNShare.share({
+        message: `Frappy https://frappy-cms.vercel.app/auth/signin`,
+      })
+
+      if (result.action === RNShare.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === RNShare.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      console.log("something went wrong in share")
+    }
+  }
+
   handleLogout = () => {
     this.setState({ ...this.state, isLoading: true })
     userService
       .removeAccessToken()
       .then((response) => {
         console.log(response, "response in logout")
-        if (response)
+        if (response) {
+          this.setState({ ...this.state, isLoading: false })
           this.props.navigation.dispatch(
             CommonActions.navigate({
               name: "login",
-              params: {},
             })
           )
-        else alert("Logout is unsuccessful, please try again")
+          // this.props.navigation.navigate("home")
+        } else alert("Logout is unsuccessful, please try again")
       })
       .catch((e) => {
         this.setState({ ...this.state, isLoading: false })
@@ -141,11 +163,25 @@ class ProfileScreen extends Component<IProps, Istate> {
                       }}
                     />
                   ) : (
-                    <Profile
-                      color={colors.greyTwo}
-                      width={wp("25%")}
-                      height={wp("25%")}
-                    />
+                    <View
+                      style={[
+                        styles.profileimage,
+                        {
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: colors.white,
+                          borderColor: colors.greyThree,
+                          borderWidth: 1,
+                        },
+                      ]}
+                    >
+                      <Profile
+                        color={colors.greyTwo}
+                        width={wp("20%")}
+                        height={wp("20%")}
+                      />
+                    </View>
                   )}
                   <View style={styles.imageAndEdit}>
                     <Pressable
@@ -198,16 +234,19 @@ class ProfileScreen extends Component<IProps, Istate> {
                     </Pressable> */}
                   {/* </View> */}
                 </View>
-                <View style={styles.optioncontainer}>
+                <Pressable
+                  style={styles.optioncontainer}
+                  onPress={this.onShare}
+                >
                   <Share width={wp("5.86%")} height={hp("2.89%")} />
                   <Text style={styles.optionstext}>
                     Share with your friends
                   </Text>
-                </View>
-                <View style={styles.optioncontainer}>
+                </Pressable>
+                {/* <View style={styles.optioncontainer}>
                   <Social width={wp("5.86%")} height={hp("2.89%")} />
                   <Text style={styles.optionstext}>Social</Text>
-                </View>
+                </View> */}
                 <Pressable
                   onPress={() =>
                     this.props.navigation.navigate("accountSettings")
@@ -256,10 +295,8 @@ const styles = StyleSheet.create({
   imageandbackicon: {
     display: "flex",
     flexDirection: "row",
-    // height: wp('12.368%'),
-    paddingRight: wp("12.8%"),
+
     justifyContent: "space-between",
-    // backgroundColor: 'yellow',
   },
   profileimage: {
     width: wp("28.006%"),

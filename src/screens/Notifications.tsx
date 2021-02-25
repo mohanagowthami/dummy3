@@ -30,7 +30,11 @@ class Notifications extends Component<IProps, {}> {
         <View style={styles.backicon}>
           <View style={styles.headingContainer}>
             <Pressable onPress={() => this.props.navigation.goBack()}>
-              <BackIcon width={wp("3.13%")} height={hp("2.84%")} />
+              <BackIcon
+                width={wp("3.13%")}
+                height={hp("2.84%")}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+              />
             </Pressable>
             <Text style={styles.title}>Notifications</Text>
           </View>

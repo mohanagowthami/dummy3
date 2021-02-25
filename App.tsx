@@ -36,17 +36,6 @@ const userService = new UserService()
 
 // loading fonts using useFonts()
 
-async function schedulePushNotification() {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: "Here is the notification body",
-      data: { data: "goes here" },
-    },
-    trigger: { seconds: 2 },
-  })
-}
-
 async function registerForPushNotificationsAsync() {
   let token
   if (Constants.isDevice) {
@@ -113,28 +102,38 @@ export default function App() {
   // }, [])
   useEffect(() => {
     isMounted = true
+
     async function getUser() {
       try {
         let { status } = await Location.requestPermissionsAsync()
         if (status !== "granted") {
+          setLoadingStatus(false)
           alert("please grant permission to access current location")
         } else {
-          let location = await Location.getCurrentPositionAsync({})
-
-          setLatitude(location.coords.latitude)
-          setLongitude(location.coords.longitude)
-        }
-        const response = await userService.getUser()
-        if (response) {
-          if (response.id && isMounted) {
-            setSignedIn(true)
-            setLoadingStatus(false)
+          if (isMounted) {
+            Promise.all([
+              Location.getCurrentPositionAsync({}),
+              userService.getUser(),
+            ])
+              .then((values) => {
+                console.log(values, "values in app.tsx")
+                setLatitude(values[0].coords.latitude)
+                setLongitude(values[0].coords.longitude)
+                if (values[1] && values[1].id) {
+                  setSignedIn(true)
+                  setLoadingStatus(false)
+                } else {
+                  setSignedIn(false)
+                  setLoadingStatus(false)
+                }
+              })
+              .catch((error) => {
+                setLoadingStatus(false)
+                setLoadingStatus(false)
+              })
           }
         }
-      } catch (error) {
-      } finally {
-        setLoadingStatus(false)
-      }
+      } catch (error) {}
     }
     getUser()
     return () => {
@@ -149,7 +148,7 @@ export default function App() {
   })
 
   // conditioning to check loaded fonts
-
+  console.log(isLoading, !loaded, isSignedIn, "owthami loading status")
   return (
     <Context.Provider value={{ latitude: latitude, longitude: longitude }}>
       <NavigationContainer>
@@ -170,6 +169,12 @@ export default function App() {
               <Stack.Screen
                 name="login"
                 component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name="pickYourChoice"
+                component={PickYourChoice}
                 options={{ headerShown: false }}
               />
 

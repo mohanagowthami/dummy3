@@ -50,7 +50,7 @@ interface IDetailsType {
 interface Istate {
   userDetails: {
     username: string
-    phoneNumber: string
+    phone: string
     email: string
     gender: string
     dob: any
@@ -80,7 +80,7 @@ class Profile extends Component<IProps, Istate> {
     this.state = {
       userDetails: {
         username: "",
-        phoneNumber: "",
+        phone: "",
         email: "",
         gender: "",
         dob: new Date(),
@@ -100,12 +100,10 @@ class Profile extends Component<IProps, Istate> {
       .then((response) => {
         let stateData = { ...this.state }
         stateData.userDetails.username = response.username
-        stateData.userDetails.phoneNumber = response.PhoneNumbe
-          ? response.PhoneNumber
-          : ""
+        stateData.userDetails.phone = response.phone ? response.phone : ""
         stateData.userDetails.email = response.email
         stateData.userDetails.gender = response.gender ? response.gender : ""
-        stateData.userDetails.dob = response.dob ? response.dob : new Date()
+        stateData.userDetails.dob = response.dob
         stateData.userDetails.userId = response.id
         stateData.userDetails.profile_pic = response.profile_pic
 
@@ -145,8 +143,7 @@ class Profile extends Component<IProps, Istate> {
   updateUserDetails = (imageUrl?: string) => {
     const { userDetails } = this.state
     const data = { ...userDetails }
-    if (data.dob === "------") data.dob = ""
-    else data.dob = getFormatedDate(data.dob)
+    if (data.dob) data.dob = getFormatedDate(data.dob)
 
     if (imageUrl) data.profile_pic = imageUrl
     userService
@@ -168,7 +165,7 @@ class Profile extends Component<IProps, Istate> {
     const data = { ...userDetails }
     this.setState({ ...this.state, isLoading: true })
 
-    if (data.profile_pic.uri) {
+    if (data.profile_pic && data.profile_pic.uri) {
       const uri = "file:///" + data.profile_pic.uri.split("file:/").join("")
       const imageData = {
         uri: uri,
@@ -227,7 +224,11 @@ class Profile extends Component<IProps, Istate> {
         <Pressable
           onPress={() => this.props.navigation.navigate("profileScreen")}
         >
-          <BackIcon width={wp("2.92%")} height={hp("2.86%")} />
+          <BackIcon
+            width={wp("2.92%")}
+            height={hp("2.86%")}
+            hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+          />
         </Pressable>
         <View style={styles.profileWrapper}>
           <View style={{ position: "relative" }}>
@@ -267,7 +268,7 @@ class Profile extends Component<IProps, Istate> {
   }
   _renderdetails = () => {
     const {
-      userDetails: { username, phoneNumber, dob, email, gender },
+      userDetails: { username, phone, dob, email, gender },
       showModal,
     } = this.state
     console.log(dob, "date of birth")
@@ -305,9 +306,9 @@ class Profile extends Component<IProps, Istate> {
           <TextInput
             style={styles.details}
             onChangeText={(text) => {
-              this.handleChange(text, "phoneNumber")
+              this.handleChange(text, "phone")
             }}
-            value={phoneNumber}
+            value={phone}
             placeholder="------"
             editable={isEditable}
           />
@@ -331,7 +332,7 @@ class Profile extends Component<IProps, Istate> {
           <View style={styles.calenderContainer}>
             <TextInput
               style={styles.details}
-              value={dateComparision(dob) ? "------" : getFormatedDate(dob)}
+              value={dob && getFormatedDate(dob)}
               placeholder="------"
               editable={isEditable}
             />
@@ -356,7 +357,7 @@ class Profile extends Component<IProps, Istate> {
       showModal,
       userDetails: { dob },
     } = this.state
-    const dateOfBirth = typeof dob === "string" ? new Date(dob) : dob
+
     return (
       <>
         {isLoading ? (
@@ -375,7 +376,7 @@ class Profile extends Component<IProps, Istate> {
             {showModal && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={dateOfBirth}
+                value={new Date()}
                 mode="date"
                 display="default"
                 onChange={this.onChangePicker}

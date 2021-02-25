@@ -33,10 +33,19 @@ class AuthService extends APIService {
       })
   }
 
-  authenticateUser(accessToken: string, refreshToken?: string): void {
+  authenticateUser(accessToken: string, refreshToken: string): Promise<any> {
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-    if (accessToken) this.setAccessToken(accessToken)
-    if (refreshToken) this.setRefreshToken(refreshToken)
+
+    return Promise.all([
+      this.setAccessToken(accessToken),
+      this.setRefreshToken(refreshToken),
+    ])
+      .then(() => {
+        return "successfully set tokens"
+      })
+      .catch((error) => {
+        throw error
+      })
   }
 
   logOut(): void {}

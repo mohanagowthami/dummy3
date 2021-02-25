@@ -22,6 +22,7 @@ import {
   CircleIcon,
   FrappyIcon,
   Logo,
+  NavigationIcon,
   SearchIcon,
 } from "../../assets/svgs/icons"
 import { Notifications } from "../../assets/svgs/icons/icons-profile"
@@ -31,6 +32,7 @@ import * as Location from "expo-location"
 import { decode } from "../lib/helper"
 import Loader from "../components/elements/Loader"
 import MapService from "../services/map.service"
+import { Context } from "../lib/content"
 
 interface IProps {
   navigation: any
@@ -44,6 +46,7 @@ interface Istate {
   finalLongitude: number | null
   coords: any
   isLoading: boolean
+  searchText: string
 }
 
 const mapService = new MapService()
@@ -57,46 +60,53 @@ class Navigation extends Component<IProps, Istate> {
       finalLatitude: null,
       finalLongitude: null,
       isLoading: true,
+      searchText: "",
     }
+  }
+
+  fetchData = (address: string) => {
+    this.setState({ ...this.state, isLoading: true })
+    mapService
+      .getPath({
+        latitude: this.context.latitude,
+        longitude: this.context.longitude,
+        destination: address,
+      })
+      .then((response) => {
+        if (response.routes.length) {
+          this.setState({
+            ...this.state,
+            coords: decode(response.routes[0].overview_polyline.points),
+            finalLatitude: response.routes[0].legs[0].end_location.lat,
+            finalLongitude: response.routes[0].legs[0].end_location.lng,
+            latitude: this.context.latitude,
+            longitude: this.context.longitude,
+            isLoading: false,
+            searchText: "",
+          })
+        }
+      })
+      .catch((e) => {
+        console.warn(e)
+        this.setState({ ...this.state, isLoading: false, searchText: "" })
+        alert("something went wrong, please try again")
+      })
   }
 
   async componentDidMount() {
     const { address } = this.props.route.params
 
-    let { status } = await Location.requestPermissionsAsync()
-    if (status !== "granted") {
-      alert("please grant permission to access current location")
-    } else {
-      let location = await Location.getCurrentPositionAsync({})
-
-      if (location) {
-        mapService
-          .getPath({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            destination: address,
-          })
-          .then((response) => {
-            if (response.routes.length) {
-              this.setState({
-                ...this.state,
-                coords: decode(response.routes[0].overview_polyline.points),
-                finalLatitude: response.routes[0].legs[0].end_location.lat,
-                finalLongitude: response.routes[0].legs[0].end_location.lng,
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                isLoading: false,
-              })
-            }
-          })
-          .catch((e) => {
-            console.warn(e)
-            this.setState({ ...this.state, isLoading: false })
-          })
-      }
+    if (this.context.latitude) {
+      this.fetchData(address)
     }
   }
 
+  handleChange = (text: string) => {
+    this.setState({ ...this.state, searchText: text })
+  }
+  onPressNavigation = () => {
+    this.fetchData(this.state.searchText)
+  }
   render() {
     const {
       latitude,
@@ -117,6 +127,7 @@ class Navigation extends Component<IProps, Istate> {
               style={styles.mainContainer}
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
+              keyboardShouldPersistTaps="always"
             >
               <View style={styles.borders}>
                 <View style={styles.heading}>
@@ -133,7 +144,17 @@ class Navigation extends Component<IProps, Istate> {
                 </View>
                 <View style={styles.searchButton}>
                   <SearchIcon width={wp("5%")} height={wp("5%")} />
-                  <TextInput placeholder="Search" style={styles.searchInput} />
+                  <View style={styles.searchAndNavigation}>
+                    <TextInput
+                      placeholder="Search"
+                      style={styles.searchInput}
+                      onChangeText={this.handleChange}
+                      value={this.state.searchText}
+                    />
+                    <Pressable onPress={this.onPressNavigation}>
+                      <NavigationIcon width={wp("5%")} height={wp("5%")} />
+                    </Pressable>
+                  </View>
                 </View>
               </View>
               <View>
@@ -186,7 +207,14 @@ class Navigation extends Component<IProps, Istate> {
     )
   }
 }
+Navigation.contextType = Context
 const styles = StyleSheet.create({
+  searchAndNavigation: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 1,
+    alignItems: "center",
+  },
   container: {
     display: "flex",
     flex: 1,
@@ -231,6 +259,7 @@ const styles = StyleSheet.create({
     marginRight: wp("7.73%"),
     borderRadius: wp("3%"),
     marginBottom: hp("3.68%"),
+    alignItems: "center",
   },
   searchInput: {
     flex: 1,

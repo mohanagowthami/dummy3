@@ -1,5 +1,5 @@
 // react-native-gesture-handler
-import { ScrollView } from "react-native-gesture-handler"
+import { ScrollView, TextInput } from "react-native-gesture-handler"
 // react
 import React, { Component } from "react"
 // react-native
@@ -18,13 +18,30 @@ import CustomButton from "../components/buttons/CustomButton"
 import CustomTextField from "../components/input-controllers/CustomTextField"
 // colors
 import { colors } from "../lib/colors"
+import FeedbackService from "../services/feedback.service"
+// yup
+import * as yup from "yup"
+// formik
+import { Formik } from "formik"
 
-interface IProps {}
+import Loader from "../components/elements/Loader"
+
+interface IProps {
+  navigation: any
+}
 interface IState {
   showModal: boolean
+  isLoading: boolean
 }
 
+const validationSchema = yup.object().shape({
+  food: yup.string().required("*required"),
+  travel: yup.string().required("*required"),
+  shopping: yup.string().required("*required"),
+})
 const feedBackList = ["Food", "Travel", "Shopping"]
+
+const feedbackService = new FeedbackService()
 class FeedBackScreen extends Component<IProps, IState> {
   values: any
   constructor(props: IProps) {
@@ -36,13 +53,22 @@ class FeedBackScreen extends Component<IProps, IState> {
     }
     this.state = {
       showModal: false,
+      isLoading: false,
     }
   }
-  onPressSubmit = () => {
-    const { showModal } = this.state
-    this.setState({
-      showModal: !showModal,
-    })
+  onPressSubmit = (values: any) => {
+    this.setState({ ...this.state, showModal: true })
+    console.log(values, "values in feed back screen")
+
+    feedbackService
+      .submitFeedback(values)
+      .then(() => {
+        this.setState({ ...this.state, showModal: false })
+        this.props.navigation.navigate("home")
+      })
+      .catch((error) => {
+        this.setState({ ...this.state, showModal: false })
+      })
   }
   showModal = () => {
     this.setState({
@@ -52,7 +78,7 @@ class FeedBackScreen extends Component<IProps, IState> {
       this.setState({
         showModal: false,
       })
-    }, 2000)
+    }, 200)
   }
   onBlur = (type: string, review: string) => {
     this.values[type.toLowerCase()] = review
@@ -80,47 +106,82 @@ class FeedBackScreen extends Component<IProps, IState> {
   }
 
   render() {
-    const { showModal } = this.state
+    const { showModal, isLoading } = this.state
     return (
       <>
-        {showModal && this.renderModal()}
-        <SafeAreaView style={styles.safeareaviewContainer}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-          >
-            <View style={styles.container}>
-              <Text style={styles.feedbackTitle}>Feedback</Text>
-              <Text style={styles.feedbackDescription}>
-                Your suggestions matter
-              </Text>
-              {feedBackList.map((element, index) => {
-                return (
-                  <View key={index}>
-                    <Text style={styles.subHeading}>{element}</Text>
-                    <CustomTextField
-                      placeholder="Wrire your review here"
-                      onChange={(review) => this.onBlur(element, review)}
-                      textAlign={"left"}
-                      multiline={true}
-                      textAlignVertical={"top"}
-                      style={styles.textInputStyles}
-                      placeholderTextColor={colors.grey}
-                    />
-                  </View>
-                )
-              })}
-              <View style={styles.submitButton}>
-                <CustomButton
-                  title="Submit"
-                  onPressButton={this.showModal}
-                  buttonStyles={styles.buttonStyles}
-                  buttonTextStyles={styles.buttonTextStyles}
-                />
-              </View>
-            </View>
-          </ScrollView>
-        </SafeAreaView>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            {showModal && this.renderModal()}
+
+            <SafeAreaView style={styles.safeareaviewContainer}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                keyboardShouldPersistTaps="always"
+              >
+                <Formik
+                  initialValues={{ food: "", travel: "", shopping: "" }}
+                  onSubmit={(values) => {
+                    this.onPressSubmit(values)
+                  }}
+                  validationSchema={validationSchema}
+                >
+                  {({
+                    handleChange,
+                    values,
+                    handleSubmit,
+                    touched,
+                    errors,
+                  }: any) => {
+                    return (
+                      <View style={styles.container}>
+                        <Text style={styles.feedbackTitle}>Feedback</Text>
+                        <Text style={styles.feedbackDescription}>
+                          Your suggestions matter
+                        </Text>
+                        {feedBackList.map((element: string, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <Text style={styles.subHeading}>{element}</Text>
+                              <TextInput
+                                placeholder="Wrire your review here"
+                                onChangeText={handleChange(
+                                  element.toLowerCase()
+                                )}
+                                textAlign={"left"}
+                                multiline={true}
+                                textAlignVertical={"top"}
+                                style={styles.textInputStyles}
+                                placeholderTextColor={colors.grey}
+                                value={values[element.toLowerCase()]}
+                              />
+                              {touched[element.toLowerCase()] &&
+                                errors[element.toLowerCase()] && (
+                                  <Text style={styles.error}>
+                                    {errors[element.toLowerCase()]}
+                                  </Text>
+                                )}
+                            </React.Fragment>
+                          )
+                        })}
+                        <View style={styles.submitButton}>
+                          <CustomButton
+                            title="Submit"
+                            onPressButton={handleSubmit}
+                            buttonStyles={styles.buttonStyles}
+                            buttonTextStyles={styles.buttonTextStyles}
+                          />
+                        </View>
+                      </View>
+                    )
+                  }}
+                </Formik>
+              </ScrollView>
+            </SafeAreaView>
+          </>
+        )}
       </>
     )
   }
@@ -128,6 +189,15 @@ class FeedBackScreen extends Component<IProps, IState> {
 export default FeedBackScreen
 
 const styles = StyleSheet.create({
+  error: {
+    color: colors.orange,
+    fontSize: wp("3%"),
+    fontFamily: "ArchivoRegular",
+    display: "flex",
+    alignSelf: "flex-start",
+    marginTop: -wp("1%"),
+    marginBottom: wp("2%"),
+  },
   safeareaviewContainer: {
     display: "flex",
     flex: 1,

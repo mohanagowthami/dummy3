@@ -257,56 +257,60 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               </>
             )}
           </View>
-          {item.showFullAddress ? (
-            <Text style={styles.reviewText}>{review}</Text>
-          ) : (
-            <Text
-              style={styles.reviewText}
-              numberOfLines={3}
-              onPress={() => this.handleFullDescription(index)}
-            >
-              {review}
-            </Text>
-          )}
-          <View
-            style={[
-              styles.reviewImages,
-              {
-                justifyContent: imagesAlignment
-                  ? "space-between"
-                  : "flex-start",
-              },
-            ]}
-          >
-            {review_images.map((item: any, index: number) => {
-              const { id, image } = item
+          {review !== "" &&
+            (item.showFullAddress ? (
+              <Text style={styles.reviewText}>{review}</Text>
+            ) : (
+              <Text
+                style={styles.reviewText}
+                numberOfLines={3}
+                onPress={() => this.handleFullDescription(index)}
+              >
+                {review}
+              </Text>
+            ))}
 
-              return (
-                <Pressable
-                  key={index}
-                  onPress={() =>
-                    this.props.navigation.navigate("fullImage", {
-                      imageUrl: image,
-                    })
-                  }
-                  style={{
-                    width: "20%",
-                    height: wp("15%"),
-                    overflow: "hidden",
-                    marginRight: imagesAlignment ? 0 : wp("2%"),
-                  }}
-                >
-                  <Image
-                    resizeMode="cover"
-                    style={styles.hallOfFameImageMore}
-                    source={{
-                      uri: image,
+          {review_images.length > 0 && (
+            <View
+              style={[
+                styles.reviewImages,
+                {
+                  justifyContent: imagesAlignment
+                    ? "space-between"
+                    : "flex-start",
+                },
+              ]}
+            >
+              {review_images.map((item: any, index: number) => {
+                const { id, image } = item
+
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() =>
+                      this.props.navigation.navigate("fullImage", {
+                        imageUrl: image,
+                      })
+                    }
+                    style={{
+                      width: "20%",
+                      height: wp("15%"),
+                      overflow: "hidden",
+                      marginRight: imagesAlignment ? 0 : wp("2%"),
                     }}
-                  />
-                </Pressable>
-              )
-            })}
-          </View>
+                  >
+                    <Image
+                      resizeMode="cover"
+                      style={styles.hallOfFameImageMore}
+                      source={{
+                        uri: image,
+                      }}
+                    />
+                  </Pressable>
+                )
+              })}
+            </View>
+          )}
         </View>
       </View>
     )
@@ -408,7 +412,11 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       <>
         <View style={{ paddingHorizontal: wp("3%") }}>
           <Pressable onPress={this.onPressBackIcon}>
-            <BackIcon width={wp("2.62%")} height={hp("2.26%")} />
+            <BackIcon
+              width={wp("2.62%")}
+              height={hp("2.26%")}
+              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            />
           </Pressable>
           {menu_images.length > 0 ? (
             <Image

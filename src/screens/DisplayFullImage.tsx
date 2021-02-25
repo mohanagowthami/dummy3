@@ -23,7 +23,11 @@ class DisplayFullImage extends React.Component<IProps, {}> {
     const { imageUrl } = this.props.route.params
     return (
       <View style={styles.container}>
-        <Pressable onPress={this.handleBack} style={styles.backIconStyle}>
+        <Pressable
+          onPress={this.handleBack}
+          style={styles.backIconStyle}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+        >
           <BackIcon />
         </Pressable>
 
@@ -54,7 +58,7 @@ const styles = StyleSheet.create({
   },
   backIconStyle: {
     position: "absolute",
-    top: hp("5%"),
-    left: hp("3%"),
+    top: hp("6%"),
+    left: hp("4%"),
   },
 })

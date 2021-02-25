@@ -119,6 +119,11 @@ class AccountSettings extends Component<IProps, IState> {
     }
   }
 
+  onPressAction = (title: string) => {
+    if (title === "Rate Us") {
+      this.props.navigation.navigate("feedBack")
+    }
+  }
   toggleSwitch = (index: number) => {
     let dummySwitchArray = [...this.state.switchArray]
     dummySwitchArray[index].isEnabled = !dummySwitchArray[index].isEnabled
@@ -180,7 +185,9 @@ class AccountSettings extends Component<IProps, IState> {
                     style={styles.switch}
                   />
                 ) : (
-                  <ActionIcon width={wp("4%")} height={hp("2.3%")} />
+                  <Pressable onPress={() => this.onPressAction(title)}>
+                    <ActionIcon width={wp("4%")} height={hp("2.3%")} />
+                  </Pressable>
                 )}
               </View>
               {description !=

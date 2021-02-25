@@ -15,16 +15,12 @@ abstract class APIService {
 
   // Setting access token
   async setAccessToken(value: string): Promise<any> {
-    try {
-      await AsyncStorage.setItem("accessToken", value)
-    } catch (e) {}
+    return await AsyncStorage.setItem("accessToken", value)
   }
 
   // Setting refresh token
   async setRefreshToken(value: string): Promise<any> {
-    try {
-      await AsyncStorage.setItem("refreshToken", value)
-    } catch (e) {}
+    return AsyncStorage.setItem("refreshToken", value)
   }
 
   async removeAccessToken() {

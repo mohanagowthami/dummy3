@@ -148,7 +148,11 @@ class FoodSearchResults extends Component<IProps, Istate> {
       <>
         <View style={styles.backicon}>
           <Pressable onPress={() => this.props.navigation.navigate("home")}>
-            <BackIcon width={wp("3.13%")} height={hp("2.84%")} />
+            <BackIcon
+              width={wp("3.13%")}
+              height={hp("2.84%")}
+              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            />
           </Pressable>
         </View>
 
@@ -305,12 +309,13 @@ class FoodSearchResults extends Component<IProps, Istate> {
                 <View style={styles.clockWrapper}>
                   <ClockIcon width={wp("6%")} height={hp("5%")} />
                   <Text style={styles.timeText}>
-                    {getDistanceFromLatLon(
+                    {/* {getDistanceFromLatLon(
                       parseFloat(latitude),
                       parseFloat(longitude),
                       parseFloat(this.context.latitude),
                       parseFloat(this.context.longitude)
-                    )}
+                    )} */}
+                    25 kms
                   </Text>
                 </View>
               </View>

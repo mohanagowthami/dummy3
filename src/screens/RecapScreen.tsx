@@ -118,19 +118,17 @@ class Recap extends Component<IProps, Istate> {
                         <View style={styles.restaurantTitleContainer}>
                           <Text style={styles.restaurantTitle}>{name}</Text>
                           {!showFullAddress ? (
-                            <View style={styles.showFullAddressWrapper}>
+                            <Pressable
+                              style={styles.showFullAddressWrapper}
+                              onPress={() => this.onPressReadMore(index)}
+                            >
                               <Text
                                 style={styles.recapCardText}
                                 numberOfLines={1}
                               >
                                 {address}
                               </Text>
-                              <ReadMoreComponent
-                                onPressReadmore={() =>
-                                  this.onPressReadMore(index)
-                                }
-                              />
-                            </View>
+                            </Pressable>
                           ) : (
                             <Text style={styles.recapCardText}>{address}</Text>
                           )}

@@ -37,6 +37,22 @@ import {
 } from "../lib/helper"
 // service
 import PlannerService from "../services/planner.service"
+// Formik
+import { Formik, FieldArray, validateYupSchema } from "formik"
+// yup
+import * as yup from "yup"
+
+export const switchList = [
+  {
+    name: "Food",
+  },
+  {
+    name: "Travel",
+  },
+  {
+    name: "Shopping",
+  },
+]
 
 // props
 interface IProps {
@@ -47,17 +63,20 @@ interface IState {
   date: any
   mode: any
   show: boolean
-  description: string
-  switchArray: Array<{
-    name: string
-    on: boolean
-  }>
-  fromTime: string
-  toTime: string
+  startLocationError: string
+  endLocationError: string
   dateArray: any
 
   isLoading: boolean
 }
+const validationSchema = yup.object().shape({
+  description: yup.string().required("*required"),
+  from_time: yup.string().required("*required"),
+  to_time: yup.string().required("*required"),
+  category: yup.array().compact().min(1, "atleast one category shoould select"),
+  start_location: yup.string().required("*required1"),
+  end_location: yup.string().required("*required1"),
+})
 
 const plannerService = new PlannerService()
 
@@ -67,6 +86,7 @@ class AddDateToCalender extends Component<IProps, IState> {
   fromLocationRef: any
   toLocationRef: any
   flatListRef: any
+  formRef: any
   constructor(props: IProps) {
     super(props)
     this.state = {
@@ -74,30 +94,15 @@ class AddDateToCalender extends Component<IProps, IState> {
       date: new Date(),
       mode: "date",
       show: false,
-      description: "",
+      startLocationError: "",
+      endLocationError: "",
       dateArray: getCurrentMonthArray(0),
-
-      switchArray: [
-        {
-          name: "Food",
-          on: false,
-        },
-        {
-          name: "Travel",
-          on: false,
-        },
-        {
-          name: "Shopping",
-          on: false,
-        },
-      ],
-      fromTime: "From",
-      toTime: "To",
     }
     this.ref = React.createRef()
     this.flatListRef = React.createRef()
     this.fromLocationRef = React.createRef()
     this.toLocationRef = React.createRef()
+    this.formRef = React.createRef()
   }
 
   showPicker = (mode: string) => {
@@ -110,6 +115,7 @@ class AddDateToCalender extends Component<IProps, IState> {
 
   onChangePicker = (event: any, selectedDate: any) => {
     const { mode } = this.state
+    console.log(mode, "mode")
     if (selectedDate) {
       let stateData = { ...this.state }
       stateData.show = false
@@ -140,59 +146,51 @@ class AddDateToCalender extends Component<IProps, IState> {
         }
       } else {
         if (this.ref.current === "from") {
+          console.log("from", 123)
           let minutes = selectedDate.getMinutes()
           if (minutes.toString().length === 1) minutes = "0" + minutes
 
-          stateData.fromTime = convertToTweleveHoursFormat(
-            selectedDate.getHours(),
-            minutes
+          console.log(this.formRef, "in getting field")
+          this.formRef.current.setFieldValue(
+            "from_time",
+            convertToTweleveHoursFormat(selectedDate.getHours(), minutes)
           )
         } else {
-          let minutes = selectedDate.getMinutes()
-          if (minutes.toString().length === 1) minutes = "0" + minutes
-          stateData.toTime = convertToTweleveHoursFormat(
-            selectedDate.getHours(),
-            minutes
+          console.log(
+            this.formRef.current.values.start_time,
+            "start_time1234566"
           )
-        }
-      }
+          const fromTimeSting = convertToTwentyFourHoursFormat(
+            this.formRef.current.values.from_time
+          )
+          const fromTime = fromTimeSting.split(":")
 
-      this.setState(stateData)
+          if (parseInt(fromTime[0]) > selectedDate.getHours())
+            alert("Please select correct time range")
+          else if (parseInt(fromTime[0]) === selectedDate.getHours()) {
+            if (parseInt(fromTime[1]) > selectedDate.getMinutes()) {
+              alert("Please select correct time range")
+            }
+          } else {
+            let minutes = selectedDate.getMinutes()
+            if (minutes.toString().length === 1) minutes = "0" + minutes
+            this.formRef.current.setFieldValue(
+              "to_time",
+              convertToTweleveHoursFormat(selectedDate.getHours(), minutes)
+            )
+          }
+        }
+
+        console.log(this.formRef, "in getting field  after")
+
+        this.setState(stateData)
+      }
     }
   }
-
   toggleSwitch = (index: number) => {
-    let stateData = { ...this.state }
+    const list = this.formRef.current.values.category
 
-    stateData.switchArray[index].on = !stateData.switchArray[index].on
-    this.setState(stateData)
-  }
-
-  renderSelectCategorySwitches = () => {
-    const { switchArray } = this.state
-    return (
-      <>
-        {switchArray.map((element, index) => {
-          const { name, on } = element
-          return (
-            <View style={styles.categoryContainer} key={index}>
-              <Text style={styles.timeText}>{name}</Text>
-              <Switch
-                trackColor={{
-                  false: colors.lightGreyThree,
-                  true: "green",
-                }}
-                thumbColor={colors.white}
-                ios_backgroundColor={colors.grey}
-                onValueChange={() => this.toggleSwitch(index)}
-                value={on}
-                style={styles.switch}
-              />
-            </View>
-          )
-        })}
-      </>
-    )
+    this.formRef.current.setFieldValue(`category[${index}]`, !list[index])
   }
 
   handlePressableDate = (ele: number, ind: number): any => {
@@ -268,76 +266,80 @@ class AddDateToCalender extends Component<IProps, IState> {
     )
   }
 
-  pressPlan = () => {
-    const { date, fromTime, toTime, description, switchArray } = this.state
-    let category = switchArray.map((ele) => {
+  validatingAutoFillValues() {
+    if (
+      !this.fromLocationRef.current.getAddressText() &&
+      !this.toLocationRef.current.getAddressText()
+    ) {
+      this.setState({
+        ...this.state,
+        startLocationError: "*required",
+        endLocationError: "*required",
+      })
+    } else if (!this.fromLocationRef.current.getAddressText()) {
+      this.setState({
+        ...this.state,
+        startLocationError: "*required",
+        endLocationError: "",
+      })
+    } else if (!this.toLocationRef.current.getAddressText()) {
+      this.setState({
+        ...this.state,
+        startLocationError: "",
+        endLocationError: "*required",
+      })
+    }
+  }
+
+  formResetValues = () => {
+    this.formRef.current.resetForm()
+    this.fromLocationRef.current.setAddressText("")
+    this.toLocationRef.current.setAddressText("")
+    // this.formRef.current.setFieldValue("category[0].on", false)
+    // this.formRef.current.setFieldValue("category[1].on", false)
+    // this.formRef.current.setFieldValue("category[2].on", false)
+  }
+
+  pressPlan = (values: any) => {
+    let category = values.category.map((ele: any) => {
       if (ele.on) return ele.name
     })
-    category = category.filter((ele) => {
+    category = category.filter((ele: any) => {
       if (ele) return ele
     })
     const data = {
-      from_time:
-        fromTime !== "From" ? convertToTwentyFourHoursFormat(fromTime) : "",
-      to_time: toTime !== "From" ? convertToTwentyFourHoursFormat(toTime) : "",
-      date: getFormatedDate(date),
+      from_time: convertToTwentyFourHoursFormat(values.from_time),
+      to_time: convertToTwentyFourHoursFormat(values.to_time),
+      date: getFormatedDate(this.state.date),
       start_location: this.fromLocationRef.current.getAddressText(),
       end_location: this.toLocationRef.current.getAddressText(),
       category: category,
-      description: description,
+      description: values.description,
     }
     console.log(data, "before submitting")
     this.setState({ ...this.state, isLoading: true })
+
     plannerService
       .updateUserPlannerData(data)
       .then((response) => {
+        console.log(response, "response in add date to calender")
         this.props.navigation.navigate("frappyCalender")
       })
-      .catch((error) => {})
-  }
-
-  onChangeDescription = (text: string) => {
-    this.setState({ ...this.state, description: text })
+      .catch((error) => {
+        console.log(error, "error in add date to calender")
+        this.setState({ ...this.state, isLoading: false })
+      })
   }
   onPressDate = () => {
     this.showPicker("date")
   }
 
   onPressCancel = () => {
-    const stateData = { ...this.state }
-    stateData.date = new Date()
-    stateData.description = ""
-    stateData.dateArray = getCurrentMonthArray()
-    stateData.switchArray = [
-      {
-        name: "Food",
-        on: false,
-      },
-      {
-        name: "Travel",
-        on: false,
-      },
-      {
-        name: "Shopping",
-        on: false,
-      },
-    ]
-    stateData.fromTime = "From"
-    stateData.toTime = "To"
-    this.fromLocationRef.current.setAddressText("")
-    this.toLocationRef.current.setAddressText("")
-    this.setState(stateData)
+    this.formResetValues()
   }
   render() {
-    const {
-      isLoading,
-      date,
-      fromTime,
-      toTime,
-      show,
-      mode,
-      description,
-    } = this.state
+    const { isLoading, date, show, mode } = this.state
+    console.log(this.formRef.current, "formRef")
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
         <ScrollView
@@ -350,140 +352,225 @@ class AddDateToCalender extends Component<IProps, IState> {
               <ActivityIndicator color={colors.darkBlack} size="large" />
             </View>
           ) : (
-            <View style={styles.container}>
-              <View style={styles.TitleContainer}>
-                <Text style={styles.titleText}>Frappy planner</Text>
-                <Pressable
-                  onPress={() =>
-                    this.props.navigation.navigate("notifications")
-                  }
-                >
-                  <BellIcon width={wp("5.9%")} height={wp("5.9%")} />
-                </Pressable>
-              </View>
+            <Formik
+              validationSchema={validationSchema}
+              initialValues={{
+                from_time: "",
+                to_time: "",
+                date: "",
+                start_location: "",
+                end_location: "",
+                category: [false, false, false],
+                description: "",
+              }}
+              enableReinitialize
+              onSubmit={(values) => {
+                this.pressPlan(values)
+              }}
+              innerRef={this.formRef}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                touched,
+                errors,
+                setFieldError,
+                setFieldValue,
+              }) => {
+                if (this.fromLocationRef.current)
+                  console.log(
+                    this.fromLocationRef.current.getAddressText(),
+                    "getAddresss"
+                  )
+                return (
+                  <View style={styles.container}>
+                    <View style={styles.TitleContainer}>
+                      <Text style={styles.titleText}>Frappy planner</Text>
+                      <Pressable
+                        onPress={() =>
+                          this.props.navigation.navigate("notifications")
+                        }
+                      >
+                        <BellIcon width={wp("5.9%")} height={wp("5.9%")} />
+                      </Pressable>
+                    </View>
 
-              <Pressable onPress={this.onPressDate}>
-                <View style={styles.dateWrapper}>
-                  <Text style={styles.dateTextStyle}>Select Date</Text>
-                  <CalenderSvg
-                    color={colors.darkGrey}
-                    width={wp("5%")}
-                    height={wp("5%")}
-                  />
-                </View>
-              </Pressable>
+                    <Pressable onPress={this.onPressDate}>
+                      <View style={styles.dateWrapper}>
+                        <Text style={styles.dateTextStyle}>Select Date</Text>
+                        <CalenderSvg
+                          color={colors.darkGrey}
+                          width={wp("5%")}
+                          height={wp("5%")}
+                        />
+                      </View>
+                    </Pressable>
 
-              <Text style={styles.formattedDate}>{getFormatedDate(date)}</Text>
-              {this.renderDays()}
+                    <Text style={styles.formattedDate}>
+                      {getFormatedDate(date)}
+                    </Text>
+                    {this.renderDays()}
 
-              <Text
-                style={styles.selectDate}
-                onPress={() => this.showPicker("Date")}
-              >
-                Set Time
-              </Text>
-              <View style={styles.setTimeContainer}>
-                <View style={styles.timeBox}>
-                  <Pressable
-                    style={styles.timeBoxItem}
-                    onPress={() => {
-                      this.ref.current = "from"
-                      this.showPicker("time")
-                    }}
-                  >
-                    <Text style={styles.timeText}>{fromTime}</Text>
-                    <Clock width={wp("6.13%")} height={hp("3.02%")} />
-                  </Pressable>
-                </View>
-                <View style={styles.timeBox}>
-                  <Pressable
-                    style={styles.timeBoxItem}
-                    onPress={() => {
-                      this.ref.current = "to"
-                      this.showPicker("time")
-                    }}
-                  >
-                    <Text style={styles.timeText}>{toTime}</Text>
-                    <Clock width={wp("6.13%")} height={hp("3.02%")} />
-                  </Pressable>
-                </View>
-              </View>
-              <Text style={styles.selectDate}>Location</Text>
+                    <Text
+                      style={styles.selectDate}
+                      onPress={() => this.showPicker("Date")}
+                    >
+                      Set Time
+                    </Text>
+                    <View style={styles.setTimeContainer}>
+                      <View>
+                        <View style={styles.timeBox}>
+                          <Pressable
+                            style={styles.timeBoxItem}
+                            onPress={() => {
+                              this.ref.current = "from"
+                              this.showPicker("time")
+                            }}
+                          >
+                            <TextInput
+                              placeholder="From"
+                              style={[styles.timeText, { paddingBottom: 0 }]}
+                              value={values.from_time}
+                            />
+                            <Clock width={wp("6.13%")} height={hp("3.02%")} />
+                          </Pressable>
+                        </View>
+                        {touched.from_time && errors.from_time && (
+                          <Text style={styles.error}>{errors.from_time}</Text>
+                        )}
+                      </View>
+                      <View>
+                        <View style={styles.timeBox}>
+                          <Pressable
+                            style={styles.timeBoxItem}
+                            onPress={() => {
+                              this.ref.current = "to"
+                              this.showPicker("time")
+                            }}
+                          >
+                            <TextInput
+                              style={[styles.timeText, { paddingBottom: 0 }]}
+                              placeholder="To"
+                              value={values.to_time}
+                            ></TextInput>
+                            <Clock width={wp("6.13%")} height={hp("3.02%")} />
+                          </Pressable>
+                        </View>
+                        {touched.to_time && errors.to_time && (
+                          <Text style={styles.error}>{errors.to_time}</Text>
+                        )}
+                      </View>
+                    </View>
+                    <Text style={styles.selectDate}>Location</Text>
 
-              <GooglePlacesAutocomplete
-                ref={this.fromLocationRef}
-                placeholder="From Address"
-                onPress={(data, details = null) => {
-                  // 'details' is provided when fetchDetails = true
-                }}
-                query={{
-                  key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
-                  language: "en",
-                }}
-                autoFillOnNotFound={true}
-                enablePoweredByContainer={false}
-                styles={{
-                  container: {
-                    width: "100%",
-                    padding: wp("1%"),
-                    marginVertical: wp("1%"),
-                    borderColor: colors.greyTwo,
-                    borderWidth: wp("0.3%"),
-                    borderRadius: wp("2%"),
-                  },
-                  textInput: styles.timeText,
-                }}
-              />
-              <GooglePlacesAutocomplete
-                ref={this.toLocationRef}
-                placeholder="To Address"
-                onPress={(data, details = null) => {
-                  // 'details' is provided when fetchDetails = true
-                  console.log(data, details)
-                }}
-                query={{
-                  key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
-                  language: "en",
-                }}
-                enablePoweredByContainer={false}
-                styles={{
-                  container: {
-                    width: "100%",
-                    padding: wp("1%"),
-                    marginVertical: wp("1%"),
-                    borderColor: colors.greyTwo,
-                    borderWidth: wp("0.3%"),
-                    borderRadius: wp("2%"),
-                  },
-                  textInput: styles.timeText,
-                }}
-              />
+                    <GooglePlacesAutocomplete
+                      ref={this.fromLocationRef}
+                      placeholder="From Address"
+                      onPress={(data, details = null) => {
+                        console.log(data, details)
+                        setFieldValue("start_location", data.description)
+                      }}
+                      query={{
+                        key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
+                        language: "en",
+                      }}
+                      autoFillOnNotFound={true}
+                      enablePoweredByContainer={false}
+                      styles={{
+                        container: {
+                          width: "100%",
+                          padding: wp("1%"),
+                          marginVertical: wp("1%"),
+                          borderColor: colors.greyTwo,
+                          borderWidth: wp("0.3%"),
+                          borderRadius: wp("2%"),
+                        },
+                        textInput: styles.timeText,
+                      }}
+                    />
+                    {errors.start_location && (
+                      <Text style={styles.error}>{errors.start_location}</Text>
+                    )}
+                    <GooglePlacesAutocomplete
+                      ref={this.toLocationRef}
+                      placeholder="To Address"
+                      onPress={(data, details = null) => {
+                        setFieldValue("end_location", data.description)
+                      }}
+                      query={{
+                        key: "AIzaSyCSbkKGUl_KI56DZi_aBGr5SIF7Q56utJk",
+                        language: "en",
+                      }}
+                      enablePoweredByContainer={false}
+                      styles={{
+                        container: {
+                          width: "100%",
+                          padding: wp("1%"),
+                          marginVertical: wp("1%"),
+                          borderColor: colors.greyTwo,
+                          borderWidth: wp("0.3%"),
+                          borderRadius: wp("2%"),
+                        },
+                        textInput: styles.timeText,
+                      }}
+                    />
+                    {errors.end_location && (
+                      <Text style={styles.error}>{errors.end_location}</Text>
+                    )}
+                    <Text style={styles.selectDate}>Select Category</Text>
+                    {switchList.map((element: any, index: number) => {
+                      return (
+                        <View style={styles.categoryContainer} key={index}>
+                          <Text style={styles.timeText}>{element.name}</Text>
+                          <Switch
+                            trackColor={{
+                              false: colors.lightGreyThree,
+                              true: "green",
+                            }}
+                            thumbColor={colors.white}
+                            ios_backgroundColor={colors.grey}
+                            onValueChange={() => this.toggleSwitch(index)}
+                            value={values.category[index]}
+                            style={styles.switch}
+                          />
+                        </View>
+                      )
+                    })}
+                    {errors.category && (
+                      <Text style={styles.error}>{errors.category}</Text>
+                    )}
 
-              <Text style={styles.selectDate}>Select Category</Text>
-              {this.renderSelectCategorySwitches()}
-              <TextInput
-                onChangeText={this.onChangeDescription}
-                textAlignVertical="top"
-                placeholderTextColor={colors.greyTwo}
-                placeholder={"Description"}
-                style={styles.customTextField}
-                value={description}
-              />
-              <View style={styles.bottomContainer}>
-                <CustomButton
-                  onPressButton={this.onPressCancel}
-                  buttonStyles={styles.buttonStyles}
-                  title="Cancel"
-                  buttonTextStyles={styles.buttonTextStyles}
-                ></CustomButton>
-                <CustomButton
-                  onPressButton={this.pressPlan}
-                  buttonStyles={styles.buttonStylesPlan}
-                  title="Plan"
-                  buttonTextStyles={[styles.buttonTextStylesPlan]}
-                />
-              </View>
-            </View>
+                    <TextInput
+                      onChangeText={handleChange("description")}
+                      textAlignVertical="top"
+                      placeholderTextColor={colors.greyTwo}
+                      placeholder={"Description"}
+                      style={styles.customTextField}
+                      value={values.description}
+                    />
+                    {touched.description && errors.description && (
+                      <Text style={styles.error}>{errors.description}</Text>
+                    )}
+                    <View style={styles.bottomContainer}>
+                      <CustomButton
+                        onPressButton={this.onPressCancel}
+                        buttonStyles={styles.buttonStyles}
+                        title="Cancel"
+                        buttonTextStyles={styles.buttonTextStyles}
+                      ></CustomButton>
+                      <CustomButton
+                        onPressButton={handleSubmit}
+                        buttonStyles={styles.buttonStylesPlan}
+                        title="Plan"
+                        buttonTextStyles={[styles.buttonTextStylesPlan]}
+                      />
+                    </View>
+                  </View>
+                )
+              }}
+            </Formik>
           )}
           {show && (
             <DateTimePicker
@@ -504,6 +591,13 @@ class AddDateToCalender extends Component<IProps, IState> {
 export default AddDateToCalender
 
 const styles = StyleSheet.create({
+  error: {
+    color: colors.orange,
+    fontSize: wp("3%"),
+    fontFamily: "ArchivoRegular",
+    display: "flex",
+    alignSelf: "flex-start",
+  },
   dateArrayItem: {
     width: wp("10%"),
     height: wp("10%"),
@@ -519,6 +613,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   dateTextStyle2: {
     fontFamily: "ArchivoRegular",
@@ -580,13 +675,14 @@ const styles = StyleSheet.create({
   timeBox: {
     width: wp("41%"),
     padding: wp("2%"),
-    paddingVertical: wp("2.8%"),
+
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     borderColor: colors.greyTwo,
     borderWidth: wp("0.3%"),
     borderRadius: wp("2%"),
+    alignItems: "center",
   },
   timeText: {
     display: "flex",

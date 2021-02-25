@@ -57,10 +57,11 @@ class SignUpForm extends Component<ISignUpFormProps, IState> {
     authService
       .register(values)
       .then((response) => {
-        authService.authenticateUser(response.access, response.refresh)
-      })
-      .then(() => {
-        this.props.navigation.navigate("pickYourChoice")
+        authService
+          .authenticateUser(response.access, response.refresh)
+          .then(() => {
+            this.props.navigation.navigate("pickYourChoice")
+          })
       })
       .catch((error) => {
         onPressSignUp(false, error)

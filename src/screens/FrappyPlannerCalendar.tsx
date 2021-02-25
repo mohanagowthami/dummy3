@@ -199,6 +199,8 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
         getItemLayout={this.getItemLayout.bind(this)}
         ref={(ref) => (this.flatListRef = ref)}
         initialScrollIndex={selectedDate.getDate() - 1}
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
       />
     )
   }

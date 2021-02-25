@@ -176,7 +176,10 @@ class LocalFavourites extends Component<IProps, IState> {
 
   flatListRenderItem = ({ item }: any) => {
     const { menu_images, overall_rating, name, tags, id, address } = item
-    const formatedCusines = deriveArrayFromString(tags)
+    let formatedCusines
+    if (typeof tags === "string") formatedCusines = deriveArrayFromString(tags)
+    else formatedCusines = tags
+
     return (
       <Pressable
         onPress={() =>

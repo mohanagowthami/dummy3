@@ -171,7 +171,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
             isLoading: false,
             showError: true,
-            errorText: "Please enter valid email address",
+            errorText: "Please enter registered email address",
           })
         })
     } else if (showOnlyPasswords) {
@@ -184,11 +184,17 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
         })
         .then((response) => {
           console.log(response, "response in pass")
-          authService.authenticateUser(response.access, response.refresh)
+
+          this.setState({
+            ...this.state,
+            isLoading: false,
+            showOnlyEmail: false,
+            showOnlyPasswords: false,
+          })
+          alert("your password has beeen updated succesfully")
+          // authService.authenticateUser(response.access, response.refresh)
         })
-        .then(() => {
-          this.props.navigation.navigate("bottomTab")
-        })
+
         .catch((e: any) => {
           console.log(e.error, "error in pass")
           this.setState({
@@ -198,7 +204,9 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             isLoading: false,
             showError: true,
             errorText: e.error,
+            showOnlyEmail: false,
           })
+          alert("something went wrong, please try later")
         })
     } else {
       authService
@@ -211,17 +219,18 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             modalVisible: true,
           })
 
-          authService.authenticateUser(response.access, response.refresh)
-        })
-        .then(() => {
-          this.setState(
-            {
-              ...this.state,
-              isLoading: false,
-              modalVisible: false,
-            },
-            () => this.props.navigation.navigate("bottomTab")
-          )
+          authService
+            .authenticateUser(response.access, response.refresh)
+            .then(() => {
+              this.setState(
+                {
+                  ...this.state,
+                  isLoading: false,
+                  modalVisible: false,
+                },
+                () => this.props.navigation.navigate("bottomTab")
+              )
+            })
         })
         .catch((error) => {
           console.log(error, "in login")
@@ -250,7 +259,12 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       this.setState({ ...this.state, showPassword: !this.state.showPassword })
   }
   onPressForgotPassword = () => {
-    this.setState({ ...this.state, showOnlyEmail: true })
+    this.setState({
+      ...this.state,
+      showOnlyEmail: true,
+      showError: false,
+      errorText: "",
+    })
   }
 
   logIn = async () => {
@@ -265,22 +279,39 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       )
 
       if (type === "success") {
-        const response = await socialLoginService.facebookSignIn({
-          token: token,
-        })
+        this.setState({ ...this.state, isLoading: true })
+        socialLoginService
+          .facebookSignIn({
+            token: token,
+          })
+          .then((response) => {
+            this.setState({ ...this.state, isLoading: false })
+            console.log(response, "response after facebook signin")
+            if (response["username"])
+              this.props.navigation.navigate("pickYourChoice")
+            else this.props.navigation.navigate("bottomTab")
+          })
+          .catch((error) => {
+            console.log(error)
+            this.setState({ ...this.state, isLoading: false })
+            alert("something went wrong, please try later")
+          })
       }
     } catch (error: any) {
       console.log(error)
+      alert("something went wrong, please try later")
     }
   }
 
   googleLogin = async () => {
+    //  androidStandaloneAppClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
     const { type, accessToken, user }: any = await Google.logInAsync({
-      androidClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
       scopes: ["profile", "email"],
       redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google`,
-      androidStandaloneAppClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
+
       clientId:
+        "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
+      androidClientId:
         "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
     })
 
@@ -289,7 +320,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       socialLoginService
         .googleSignIn({ token: accessToken })
         .then((response) => {
-          this.props.navigation.navigate("pickYourChoice")
+          this.setState({ ...this.state, isLoading: false })
+          if (response["username"])
+            this.props.navigation.navigate("pickYourChoice")
+          else this.props.navigation.navigate("bottomTab")
         })
         .catch((error) => {
           console.log(error, "error")
@@ -299,6 +333,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             showError: true,
             errorText: error,
           })
+          alert("something went wrong, please try later")
         })
     }
   }
@@ -325,7 +360,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       <>
         {isLoading ? (
           <View style={styles.loaderContainer}>
-            {/* {this.renderModalContent()} */}
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (

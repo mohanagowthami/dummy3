@@ -8,29 +8,25 @@ import UserService from "./user.service"
 
 const userService = new UserService()
 class SocialLoginService extends APIService {
-  googleSignIn(data: any): Promise<any> {
-    return this.post(GOOGLE_SIGNIN, data)
-      .then((response: any) => {
-        console.log("response.data.accessToken", response.data.accessToken)
-        this.setAccessToken(response.data.accessToken).then(() => {
-          return "successfullY google signin"
-        })
-      })
-      .catch((error: any) => {
-        throw error.response.data
-      })
+  async googleSignIn(data: any): Promise<any> {
+    try {
+      const response = await this.post(GOOGLE_SIGNIN, data)
+      await this.setAccessToken(response.data.access)
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      throw error.response.data
+    }
   }
-  facebookSignIn(data: any): Promise<any> {
-    return this.post(FACEBOOK_SIGNIN, data)
-      .then((response: any) => {
-        console.log("(response.data.accessToken", response.data.accessToken)
-        this.setAccessToken(response.data.accessToken).then(() => {
-          return "successfullY facebook signin"
-        })
-      })
-      .catch((error: any) => {
-        throw error.response.data
-      })
+  async facebookSignIn(data: any): Promise<any> {
+    try {
+      const response = await this.post(FACEBOOK_SIGNIN, data)
+      await this.setAccessToken(response.data.access)
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      throw error.response.data
+    }
   }
 }
 

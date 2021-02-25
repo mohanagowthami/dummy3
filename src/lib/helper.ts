@@ -87,9 +87,14 @@ export function convertToTweleveHoursFormat(
   } else {
     const hoursArray = hours.split(":")
     if (parseInt(hoursArray[0]) > 12) {
-      return `${parseInt(hoursArray[0]) - 1}:${hoursArray[1]} PM`
+      let hrs: string = (parseInt(hoursArray[0]) - 12).toString()
+      console.log(hrs, "hrs")
+
+      hrs = hrs.length === 2 ? hoursArray[0] : 0 + hrs
+      return `${hrs}:${hoursArray[1]} PM`
     } else {
-      return `${hoursArray[0]}:${hoursArray[1]} AM`
+      const hrs = hoursArray[0].length === 2 ? hoursArray[0] : 0 + hoursArray[0]
+      return `${hrs}:${hoursArray[1]} AM`
     }
   }
 }
