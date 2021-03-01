@@ -1,5 +1,3 @@
-// react-native-gesture-handler
-import { ScrollView } from "react-native-gesture-handler"
 // react
 import React, { Component, createRef } from "react"
 // react-native
@@ -19,7 +17,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
 // react-native-snap-carousel
-import Carousel, { Pagination } from "react-native-snap-carousel"
+import Carousel from "react-native-snap-carousel"
 //icons
 import {
   NavigationIcon,
@@ -28,12 +26,20 @@ import {
 import { Rating, ClockIcon, SearchIcon } from "../../assets/svgs/icons"
 // colors
 import { colors } from "../lib/colors"
+// components
 import CustomButton from "../components/buttons/CustomButton"
+// service
 import RestaurantService from "../services/restaurants.service"
 import TravelService from "../services/travel.service"
 import ShoppingMallService from "../services/shoppingmall.service"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { deriveArrayFromString, getDistanceFromLatLon } from "../lib/helper"
+// helper
+import {
+  deriveArrayFromString,
+  getDistanceFromLatLon,
+  getRequireImage,
+} from "../lib/helper"
+// content
 import { Context } from "../lib/content"
 
 interface IProps {
@@ -117,11 +123,6 @@ const details = {
   ],
 }
 
-const imagesList = [
-  "https://media.istockphoto.com/photos/mutton-gosht-biryani-picture-id469866881?k=6&m=469866881&s=612x612&w=0&h=XjVN6-kyp9WLgEJaRqqLyvP5ve-kS5e6Y5Bfl-jaSXs=",
-  "https://media.istockphoto.com/photos/fish-biryani-with-basmati-rice-indian-food-picture-id488481490?k=6&m=488481490&s=612x612&w=0&h=J8lIVq-5pPU-ta0BRZPaHY3WVXf6nbSJqAW9E2J-qDs=",
-  "https://media.istockphoto.com/photos/indian-chicken-biryani-served-in-a-terracotta-bowl-with-yogurt-over-picture-id979891994?k=6&m=979891994&s=612x612&w=0&h=AZUYF4BdDzWeZ6q2puAzcqD0miXvAct42o7Hgump6ZA=",
-]
 const restaurantService = new RestaurantService()
 const travelService = new TravelService()
 const shoppingService = new ShoppingMallService()
@@ -161,21 +162,19 @@ class FoodSearchResults extends Component<IProps, Istate> {
     )
   }
 
-  getShuffleImagesList = () => {
-    return imagesList.map((image) => {
-      return imagesList[Math.floor(Math.random() * imagesList.length)]
-    })
-  }
   _renderItem({ item, index }: any) {
-    const image = item.image ? item.image : item
     return (
       <View style={styles.renderItemsContainer} key={index}>
-        <Image
-          style={styles.sliderImage}
-          source={{
-            uri: image,
-          }}
-        />
+        {item.image ? (
+          <Image
+            style={styles.sliderImage}
+            source={{
+              uri: item.image,
+            }}
+          />
+        ) : (
+          <Image style={styles.sliderImage} source={item} />
+        )}
       </View>
     )
   }
@@ -242,7 +241,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
   }
 
   flatListRenderItem = (prop: any) => {
-    const { categorySearchResults } = this.state
+    const { categorySearchResults, category } = this.state
     const number_of_ratings = categorySearchResults.length
     const {
       menu_images,
@@ -253,11 +252,25 @@ class FoodSearchResults extends Component<IProps, Istate> {
       id,
       latitude,
       longitude,
+      establishment_category,
     } = prop.item
+    let formatedCusines = []
+    if (typeof tags === "string") formatedCusines = deriveArrayFromString(tags)
+    else formatedCusines = tags
+    let taggedName = formatedCusines[0] ? formatedCusines[0] : name
     const images =
-      menu_images.length > 0 ? menu_images : this.getShuffleImagesList()
+      menu_images.length > 0
+        ? menu_images
+        : [getRequireImage(taggedName, establishment_category)]
+
     const place = address.split(",")
-    const formattedTags = deriveArrayFromString(tags)
+
+    const durationDetails = getDistanceFromLatLon(
+      parseFloat(latitude),
+      parseFloat(longitude),
+      parseFloat(this.context.latitude),
+      parseFloat(this.context.longitude)
+    )
 
     return (
       <Pressable
@@ -284,9 +297,9 @@ class FoodSearchResults extends Component<IProps, Istate> {
           </View>
           <View style={styles.detailsContainerWrapper}>
             <View style={{ width: "90%" }}>
-              {formattedTags.length > 0 && (
+              {formatedCusines.length > 0 && (
                 <View style={styles.detailsContainer}>
-                  {formattedTags.map((tag: string, index: number) => {
+                  {formatedCusines.map((tag: string, index: number) => {
                     return (
                       <View style={styles.formattedTagsContainer} key={index}>
                         <View style={styles.dotStyle}></View>
@@ -308,15 +321,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
                 </Text>
                 <View style={styles.clockWrapper}>
                   <ClockIcon width={wp("6%")} height={hp("5%")} />
-                  <Text style={styles.timeText}>
-                    {/* {getDistanceFromLatLon(
-                      parseFloat(latitude),
-                      parseFloat(longitude),
-                      parseFloat(this.context.latitude),
-                      parseFloat(this.context.longitude)
-                    )} */}
-                    25 kms
-                  </Text>
+                  <Text style={styles.timeText}>{durationDetails.time}</Text>
                 </View>
               </View>
             </View>
@@ -476,7 +481,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
           ) : (
             <FlatList
               data={categorySearchResults}
-              renderItem={this.flatListRenderItem}
+              renderItem={this.flatListRenderItem.bind(this)}
               keyExtractor={(item: any) => item.id.toString()}
               extraData={category}
               ListFooterComponent={this.renderFooter()}

@@ -28,7 +28,6 @@ import {
 import { Notifications } from "../../assets/svgs/icons/icons-profile"
 // colors
 import { colors } from "../lib/colors"
-import * as Location from "expo-location"
 import { decode } from "../lib/helper"
 import Loader from "../components/elements/Loader"
 import MapService from "../services/map.service"
@@ -105,7 +104,8 @@ class Navigation extends Component<IProps, Istate> {
     this.setState({ ...this.state, searchText: text })
   }
   onPressNavigation = () => {
-    this.fetchData(this.state.searchText)
+    const { searchText } = this.state
+    this.fetchData(searchText)
   }
   render() {
     const {
@@ -115,6 +115,7 @@ class Navigation extends Component<IProps, Istate> {
       longitude,
       isLoading,
       coords,
+      searchText,
     } = this.state
 
     return (
@@ -149,7 +150,7 @@ class Navigation extends Component<IProps, Istate> {
                       placeholder="Search"
                       style={styles.searchInput}
                       onChangeText={this.handleChange}
-                      value={this.state.searchText}
+                      value={searchText}
                     />
                     <Pressable onPress={this.onPressNavigation}>
                       <NavigationIcon width={wp("5%")} height={wp("5%")} />

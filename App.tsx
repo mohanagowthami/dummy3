@@ -12,13 +12,17 @@ import LoginScreen from "./src/screens/LoginScreen"
 import SignUpScreen from "./src/screens/SignUpScreen"
 import OnboardingScreens from "./src/screens/OnboardingScreens"
 import PickYourChoice from "./src/screens/PickYourChoice"
+import LogoScreen from "./src/screens/LogoScreen"
 // components
 import BottomTab from "./src/components/elements/BottomTab"
+// services
 import UserService from "./src/services/user.service"
-import LogoScreen from "./src/screens/LogoScreen"
+// content
 import { Context } from "./src/lib/content"
+// location
 import * as Location from "expo-location"
-import Constants from "expo-constants"
+
+// expo -notifications
 import * as Notifications from "expo-notifications"
 
 Notifications.setNotificationHandler({
@@ -36,36 +40,6 @@ const userService = new UserService()
 
 // loading fonts using useFonts()
 
-async function registerForPushNotificationsAsync() {
-  let token
-  if (Constants.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync()
-    let finalStatus = existingStatus
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync()
-      finalStatus = status
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!")
-      return
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data
-  } else {
-    alert("Must use physical device for Push Notifications")
-  }
-
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    })
-  }
-
-  return token
-}
-
 export default function App() {
   let isMounted: boolean = false
   const [isSignedIn, setSignedIn] = useState(false)
@@ -77,29 +51,23 @@ export default function App() {
   const notificationListener: any = useRef<any>()
   const responseListener: any = useRef<any>()
 
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync().then((token) => {
-  //     console.log("token,", token)
-  //     setExpoPushToken(token)
-  //   })
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        setNotification(notification)
+      }
+    )
 
-  //   notificationListener.current = Notifications.addNotificationReceivedListener(
-  //     (notification) => {
-  //       setNotification(notification)
-  //     }
-  //   )
-
-  //   responseListener.current = Notifications.addNotificationResponseReceivedListener(
-  //     (response) => {
-  //       console.log(response, "response in notification listener")
-  //     }
-  //   )
-
-  //   return () => {
-  //     Notifications.removeNotificationSubscription(notificationListener)
-  //     Notifications.removeNotificationSubscription(responseListener)
-  //   }
-  // }, [])
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response, "response in notification listener")
+      }
+    )
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener)
+      Notifications.removeNotificationSubscription(responseListener)
+    }
+  }, [])
   useEffect(() => {
     isMounted = true
 

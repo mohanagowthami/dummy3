@@ -10,12 +10,16 @@ import { widthPercentageToDP as wp } from "react-native-responsive-screen"
 import CustomButton from "../buttons/CustomButton"
 // services
 import AuthService from "../../services/auth.service"
+import NotificationsService from "../../services/notifications.service"
 // yup
 import * as yup from "yup"
 // colors
 import { colors } from "../../lib/colors"
 // icons
 import { CloseEye, OpenEye } from "../../../assets/svgs/icons"
+// expo -notifications
+import * as Notifications from "expo-notifications"
+import { registerForPushNotificationsAsync } from "../../lib/helper"
 
 interface ISignUpFormProps {
   onPressSignUp: (loading: boolean, username?: string, email?: string) => void
@@ -37,7 +41,10 @@ const loginValidationSchema = yup.object().shape({
 })
 interface IState {
   showPassword: boolean
+  token: string
 }
+
+export const notificationService = new NotificationsService()
 class SignUpForm extends Component<ISignUpFormProps, IState> {
   formRef: any
   constructor(props: ISignUpFormProps) {
@@ -45,23 +52,34 @@ class SignUpForm extends Component<ISignUpFormProps, IState> {
     {
       this.state = {
         showPassword: false,
+        token: "",
       }
       this.formRef = React.createRef()
     }
   }
 
+  componentDidMount() {
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        this.setState({ ...this.state, token: token })
+      })
+      .catch(() => {})
+  }
+
   onSubmitValues = (values: any) => {
     const { onPressSignUp } = this.props
+    const { token } = this.state
     onPressSignUp(true)
 
     authService
       .register(values)
       .then((response) => {
-        authService
-          .authenticateUser(response.access, response.refresh)
-          .then(() => {
-            this.props.navigation.navigate("pickYourChoice")
-          })
+        Promise.all([
+          authService.authenticateUser(response.access, response.refresh),
+          notificationService.pushToken({ token: token }),
+        ]).then(() => {
+          this.props.navigation.navigate("pickYourChoice")
+        })
       })
       .catch((error) => {
         onPressSignUp(false, error)

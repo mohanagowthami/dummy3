@@ -29,7 +29,7 @@ import image13 from "../../assets/images/image24.png"
 // mallist
 import mall1 from "../../assets/images/mall1.png"
 import mall2 from "../../assets/images/mall2.png"
-import mall3 from "../../assets/images/mall3.png"
+
 import mall4 from "../../assets/images/mall4.png"
 import mall5 from "../../assets/images/mall5.png"
 // local market images
@@ -67,7 +67,7 @@ import hc3 from "../../assets/images/hc3.png"
 import hc4 from "../../assets/images/hc4.png"
 import hc5 from "../../assets/images/hc5.png"
 
-export const mallList = [mall1, mall2, mall3, mall4, mall5]
+export const mallList = [mall1, mall2, mall4, mall5]
 
 export const localMarkets = [lcm1, lcm2, lcm3, lcm4, lcm5]
 
@@ -99,7 +99,7 @@ export const travellingList = [
 export const shoppingMallList = [
   mall1,
   mall2,
-  mall3,
+
   lcm1,
   lcm2,
   lcm3,

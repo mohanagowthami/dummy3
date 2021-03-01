@@ -5,8 +5,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
-  ScrollView,
   TextInput,
   Pressable,
   ImageBackground,
@@ -23,8 +21,11 @@ import { NavigationIcon } from "../../assets/svgs/icons/icons-directions"
 import { BellIcon, SearchIcon } from "../../assets/svgs/icons"
 // colors
 import { colors } from "../lib/colors"
+// helper
 import { deriveArrayFromString } from "../lib/helper"
+// content
 import { dishesList } from "../lib/content"
+// services
 import RestaurantService from "../services/restaurants.service"
 import TravelService from "../services/travel.service"
 import ShoppingMallService from "../services/shoppingmall.service"
@@ -200,7 +201,7 @@ class LocalFavourites extends Component<IProps, IState> {
         <View style={styles.pressableInnerWrapper}>
           <View style={styles.fullHeight}>
             <Text style={styles.cusine}>{formatedCusines[0]}</Text>
-            <Text style={styles.restaurantName} numberOfLines={2}>
+            <Text style={styles.restaurantName} numberOfLines={1}>
               {name}
             </Text>
           </View>
@@ -378,6 +379,7 @@ const styles = StyleSheet.create({
     height: wp("28%"),
     display: "flex",
     alignSelf: "center",
+    marginLeft: wp("1%"),
   },
   loadmore: {
     display: "flex",

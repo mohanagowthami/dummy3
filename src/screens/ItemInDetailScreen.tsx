@@ -4,7 +4,6 @@ import React, { Component } from "react"
 import {
   Text,
   View,
-  ScrollView,
   StyleSheet,
   Image,
   Pressable,
@@ -18,7 +17,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen"
-import { SafeAreaView } from "react-native-safe-area-context"
 // icons
 import {
   BookmarkIcon,
@@ -32,16 +30,23 @@ import {
 import { BackIcon, RightArrow } from "../../assets/svgs/icons/icons-directions"
 // components
 import CustomButton from "../components/buttons/CustomButton"
-import ReadMoreComponent from "../components/elements/ReadMore"
 // colors
 import { colors } from "../lib/colors"
+// content
 import { Context, dishesList } from "../lib/content"
-import { getDistanceFromLatLon, getMonthInDetail } from "../lib/helper"
-import MapService from "../services/map.service"
+// helper
+import {
+  deriveArrayFromString,
+  getDistanceFromLatLon,
+  getMonthInDetail,
+  getRequireImage,
+} from "../lib/helper"
+
 // services
 import RestaurantService from "../services/restaurants.service"
 import ReviewService from "../services/review.service"
 import UserService from "../services/user.service"
+import MapService from "../services/map.service"
 
 interface IProps {
   navigation: any
@@ -64,9 +69,10 @@ const userService = new UserService()
 
 const reviewService = new ReviewService()
 const mapService = new MapService()
-const replaceImage = dishesList[Math.floor(Math.random() * dishesList.length)]
+
 class ItemInDetailScreen extends Component<IProps, Istate> {
   subscribe: any
+  replaceImage: any
 
   constructor(props: IProps) {
     super(props)
@@ -82,6 +88,8 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         washroom_images: [],
         user_liked: false,
         total_likes: false,
+        tag: "",
+        establishment_category: "",
       },
       ratingAndReview: [],
       isLoading: false,
@@ -146,8 +154,12 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       })
   }
   componentDidMount() {
+    const {
+      restaurantDetails: { name },
+    } = this.state
     if (this.context.latitue !== null) {
       this.fetchData()
+
       this.subscribe = this.props.navigation.addListener("focus", () => {
         this.fetchData()
       })
@@ -231,10 +243,11 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     const imagesAlignment =
       reviewImagesLength % 5 === 0 && reviewImagesLength !== 0
     const date = `${month} ${year}`
+    console.log(profile_pic, "profile_pic")
 
     return (
       <View style={styles.reviewcontainer} key={index}>
-        {profile_pic !== "" && profile_pic !== null && index !== 0 ? (
+        {profile_pic ? (
           <Image
             resizeMode="cover"
             style={styles.ProfilePicStyles}
@@ -258,6 +271,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
             )}
           </View>
           {review !== "" &&
+            review &&
             (item.showFullAddress ? (
               <Text style={styles.reviewText}>{review}</Text>
             ) : (
@@ -292,12 +306,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
                         imageUrl: image,
                       })
                     }
-                    style={{
-                      width: "20%",
-                      height: wp("15%"),
-                      overflow: "hidden",
-                      marginRight: imagesAlignment ? 0 : wp("2%"),
-                    }}
+                    style={[
+                      styles.reviewImagesWrapper,
+                      { marginRight: imagesAlignment ? 0 : wp("2%") },
+                    ]}
                   >
                     <Image
                       resizeMode="cover"
@@ -399,6 +411,8 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       user_liked,
       menu_images,
       total_likes,
+      establishment_category,
+      tags,
     } = restaurantDetails
     const imagesAlignment = allImages.length % 3 === 0 && allImages.length !== 0
     const allPhotos =
@@ -408,9 +422,13 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
           : allImages.slice(0, 6)
         : allImages
 
+    let formatedCusines = []
+    if (typeof tags === "string") formatedCusines = deriveArrayFromString(tags)
+    else formatedCusines = tags
+
     return (
       <>
-        <View style={{ paddingHorizontal: wp("3%") }}>
+        <View style={styles.HeaderContainer}>
           <Pressable onPress={this.onPressBackIcon}>
             <BackIcon
               width={wp("2.62%")}
@@ -425,11 +443,16 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               source={{ uri: menu_images[0].image }}
             />
           ) : (
-            <Image
-              style={styles.image}
-              resizeMode="cover"
-              source={replaceImage}
-            />
+            formatedCusines?.length > 0 && (
+              <Image
+                style={styles.image}
+                resizeMode="cover"
+                source={getRequireImage(
+                  formatedCusines[0],
+                  establishment_category
+                )}
+              />
+            )
           )}
           <Pressable onPress={this.onPressLike}>
             <LoveIcon
@@ -618,6 +641,14 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
 
 ItemInDetailScreen.contextType = Context
 const styles = StyleSheet.create({
+  HeaderContainer: { paddingHorizontal: wp("3%") },
+
+  reviewImagesWrapper: {
+    width: "20%",
+    height: wp("15%"),
+    overflow: "hidden",
+  },
+
   dateContainer: {
     display: "flex",
     flexDirection: "row",

@@ -182,8 +182,8 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
 
   getItemLayout(data: any, index: number) {
     return {
-      length: wp("10%"),
-      offset: wp("13%") * index,
+      length: wp("15%"),
+      offset: wp("15%") * index,
       index,
     }
   }
@@ -246,8 +246,9 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
               <ActivityIndicator color={colors.darkBlack} size="large" />
             ) : (
               <>
-                {plannerData.map((ele: any, index: number) => {
-                  const { from_time, to_time, description } = ele
+                {plannerData.reverse().map((ele: any, index: number) => {
+                  const { from_time, to_time, description, user } = ele
+                  console.log(user, "user123 in frappy calender")
 
                   return (
                     <View style={styles.cardContainer} key={index}>

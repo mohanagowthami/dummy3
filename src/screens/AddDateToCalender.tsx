@@ -38,7 +38,7 @@ import {
 // service
 import PlannerService from "../services/planner.service"
 // Formik
-import { Formik, FieldArray, validateYupSchema } from "formik"
+import { Formik } from "formik"
 // yup
 import * as yup from "yup"
 
@@ -66,7 +66,6 @@ interface IState {
   startLocationError: string
   endLocationError: string
   dateArray: any
-
   isLoading: boolean
 }
 const validationSchema = yup.object().shape({
@@ -74,8 +73,6 @@ const validationSchema = yup.object().shape({
   from_time: yup.string().required("*required"),
   to_time: yup.string().required("*required"),
   category: yup.array().compact().min(1, "atleast one category shoould select"),
-  start_location: yup.string().required("*required1"),
-  end_location: yup.string().required("*required1"),
 })
 
 const plannerService = new PlannerService()
@@ -168,8 +165,18 @@ class AddDateToCalender extends Component<IProps, IState> {
           if (parseInt(fromTime[0]) > selectedDate.getHours())
             alert("Please select correct time range")
           else if (parseInt(fromTime[0]) === selectedDate.getHours()) {
-            if (parseInt(fromTime[1]) > selectedDate.getMinutes()) {
+            if (
+              parseInt(fromTime[1]) === selectedDate.getMinutes() ||
+              parseInt(fromTime[1]) > selectedDate.getMinutes()
+            ) {
               alert("Please select correct time range")
+            } else {
+              let minutes = selectedDate.getMinutes()
+              if (minutes.toString().length === 1) minutes = "0" + minutes
+              this.formRef.current.setFieldValue(
+                "to_time",
+                convertToTweleveHoursFormat(selectedDate.getHours(), minutes)
+              )
             }
           } else {
             let minutes = selectedDate.getMinutes()
@@ -244,8 +251,8 @@ class AddDateToCalender extends Component<IProps, IState> {
   }
   getItemLayout(data: any, index: number) {
     return {
-      length: wp("10%"),
-      offset: wp("15%") * index,
+      length: wp("16%"),
+      offset: wp("16%") * index,
       index,
     }
   }
@@ -276,18 +283,23 @@ class AddDateToCalender extends Component<IProps, IState> {
         startLocationError: "*required",
         endLocationError: "*required",
       })
+      return false
     } else if (!this.fromLocationRef.current.getAddressText()) {
       this.setState({
         ...this.state,
         startLocationError: "*required",
         endLocationError: "",
       })
+      return false
     } else if (!this.toLocationRef.current.getAddressText()) {
       this.setState({
         ...this.state,
         startLocationError: "",
         endLocationError: "*required",
       })
+      return false
+    } else {
+      return true
     }
   }
 
@@ -337,8 +349,19 @@ class AddDateToCalender extends Component<IProps, IState> {
   onPressCancel = () => {
     this.formResetValues()
   }
+
+  validate = () => {
+    this.formRef?.current.setFieldError("start_location", " error 123")
+  }
   render() {
-    const { isLoading, date, show, mode } = this.state
+    const {
+      isLoading,
+      date,
+      show,
+      mode,
+      startLocationError,
+      endLocationError,
+    } = this.state
     console.log(this.formRef.current, "formRef")
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
@@ -365,7 +388,7 @@ class AddDateToCalender extends Component<IProps, IState> {
               }}
               enableReinitialize
               onSubmit={(values) => {
-                this.pressPlan(values)
+                if (this.validatingAutoFillValues()) this.pressPlan(values)
               }}
               innerRef={this.formRef}
             >
@@ -379,11 +402,6 @@ class AddDateToCalender extends Component<IProps, IState> {
                 setFieldError,
                 setFieldValue,
               }) => {
-                if (this.fromLocationRef.current)
-                  console.log(
-                    this.fromLocationRef.current.getAddressText(),
-                    "getAddresss"
-                  )
                 return (
                   <View style={styles.container}>
                     <View style={styles.TitleContainer}>
@@ -490,8 +508,8 @@ class AddDateToCalender extends Component<IProps, IState> {
                         textInput: styles.timeText,
                       }}
                     />
-                    {errors.start_location && (
-                      <Text style={styles.error}>{errors.start_location}</Text>
+                    {startLocationError !== "" && (
+                      <Text style={styles.error}>{startLocationError}</Text>
                     )}
                     <GooglePlacesAutocomplete
                       ref={this.toLocationRef}
@@ -516,8 +534,8 @@ class AddDateToCalender extends Component<IProps, IState> {
                         textInput: styles.timeText,
                       }}
                     />
-                    {errors.end_location && (
-                      <Text style={styles.error}>{errors.end_location}</Text>
+                    {endLocationError !== "" && (
+                      <Text style={styles.error}>{endLocationError}</Text>
                     )}
                     <Text style={styles.selectDate}>Select Category</Text>
                     {switchList.map((element: any, index: number) => {

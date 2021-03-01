@@ -10,7 +10,6 @@ import {
   FlatList,
   Pressable,
 } from "react-native"
-import { add } from "react-native-reanimated"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -18,9 +17,10 @@ import {
 } from "react-native-responsive-screen"
 // icons
 import { LocationIcon, NavigationIcon } from "../../assets/svgs/icons"
-import { CurrentLocation } from "../../assets/svgs/icons/icons-profile"
+
 // colors
 import { colors } from "../lib/colors"
+// services
 import RestaurantService from "../services/restaurants.service"
 import UserService from "../services/user.service"
 
@@ -93,7 +93,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
         .finally(() => {
           stateData.isLoading = false
           stateData.flatListLoading = false
-          stateData.searchText = this.state.searchText
+          stateData.searchText = searchText
           this.setState(stateData)
         })
     } else {
@@ -232,12 +232,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.white,
-            }}
-          >
+          <View style={styles.flatListWrapper}>
             <FlatList
               data={searchResponse === "no objects" ? [] : searchResponse}
               renderItem={({ item, index }) =>
@@ -255,6 +250,11 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
   }
 }
 const styles = StyleSheet.create({
+  flatListWrapper: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+
   crossIcon: {
     fontSize: wp("4.5%"),
     fontWeight: "500",

@@ -21,7 +21,6 @@ import {
 } from "react-native-responsive-screen"
 // react-native-snap-carousel
 import Carousel, { Pagination } from "react-native-snap-carousel"
-
 // svgs
 import {
   BellIcon,
@@ -41,16 +40,13 @@ import ShoppingMallService from "../services/shoppingmall.service"
 import TravelService from "../services/travel.service"
 import UserService from "../services/user.service"
 // helper
-import { deriveArrayFromString } from "../lib/helper"
+import { deriveArrayFromString, getRequireImage } from "../lib/helper"
+// content
 import {
-  adventuresList,
   Context,
   dishesList,
-  recapList,
   rectangleImageList,
   shoppingMallList,
-  sightSeeingList,
-  worshipList,
   travellingList,
 } from "../lib/content"
 
@@ -333,10 +329,8 @@ class HomeScreen extends Component<IProps, Istate> {
             <Text style={styles.titleText}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
           </View>
-
           <NavigationIcon width={wp("7.8")} height={hp("3.68%")} />
         </View>
-
         <ImageBackground
           style={styles.sliderImage}
           source={dishesList[Math.floor(Math.random() * dishesList.length)]}
@@ -356,7 +350,7 @@ class HomeScreen extends Component<IProps, Istate> {
         inactiveDotOpacity={1}
         inactiveDotScale={1}
         dotStyle={styles.activeDotStyles}
-        containerStyle={{ marginTop: -hp("2%"), marginBottom: -hp("2.8%") }}
+        containerStyle={styles.paginationContainerStyle}
       />
     )
   }
@@ -380,37 +374,10 @@ class HomeScreen extends Component<IProps, Istate> {
               activeIndex: index,
             })
           }}
-          // autoplay={true}
         />
         {categoryData[this.getActiveIndex()].data.trendsList && this.pagination}
       </>
     )
-  }
-
-  getRequireImage = (tag: string) => {
-    console.log(tag, "tag")
-    const { category } = this.state
-    if (category === "food")
-      return rectangleImageList[
-        Math.floor(Math.random() * rectangleImageList.length)
-      ]
-    else {
-      if (tag.includes("Sight seeing"))
-        return sightSeeingList[
-          Math.floor(Math.random() * sightSeeingList.length)
-        ]
-      else if (tag.includes("Worship"))
-        return worshipList[Math.floor(Math.random() * worshipList.length)]
-      else if (tag.includes("travel"))
-        return adventuresList[Math.floor(Math.random() * adventuresList.length)]
-      else if (category === "travel")
-        return travellingList[Math.floor(Math.random() * travellingList.length)]
-      else {
-        return shoppingMallList[
-          Math.floor(Math.random() * shoppingMallList.length)
-        ]
-      }
-    }
   }
 
   renderLocalFavourities = () => {
@@ -424,12 +391,13 @@ class HomeScreen extends Component<IProps, Istate> {
     return (
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            marginBottom:
-              recapLength == 0 && hallOfFameLength == 0 ? hp("8%") : 0,
-          }}
+          style={[
+            styles.localFavouriteOuterContainer,
+            {
+              marginBottom:
+                recapLength == 0 && hallOfFameLength == 0 ? hp("8%") : 0,
+            },
+          ]}
         >
           {categoryData[this.getActiveIndex()].data.localFavouritesList.map(
             (item, index) => {
@@ -472,8 +440,9 @@ class HomeScreen extends Component<IProps, Istate> {
                     />
                   ) : (
                     <ImageBackground
-                      source={this.getRequireImage(
-                        tags[Math.floor(Math.random() * tags.length)]
+                      source={getRequireImage(
+                        tags[Math.floor(Math.random() * tags.length)],
+                        category
                       )}
                       style={styles.localFavouriteBackgroundImage}
                       resizeMode="cover"
@@ -554,6 +523,7 @@ class HomeScreen extends Component<IProps, Istate> {
       address,
       showFullAddress,
       id,
+
       restaurant,
     } = item
     const numberOfRatings =
@@ -588,7 +558,7 @@ class HomeScreen extends Component<IProps, Istate> {
           ) : (
             <View style={styles.imageWrapper}>
               <Image
-                source={list[Math.floor(Math.random() * list.length)]}
+                source={getRequireImage(name, category)}
                 style={styles.recapImage}
               />
             </View>
@@ -659,7 +629,7 @@ class HomeScreen extends Component<IProps, Istate> {
             <ActivityIndicator color={colors.darkBlack} size="large" />
           </View>
         ) : (
-          <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+          <SafeAreaView style={styles.safeAreaViewStyles}>
             <ScrollView
               style={styles.container}
               ref={(ref) => (this.scrollRef = ref)}
@@ -863,7 +833,17 @@ class HomeScreen extends Component<IProps, Istate> {
                         </View>
                       )}
                     </View>
-                    <View style={styles.hallOfFameContainer}>
+                    <View
+                      style={[
+                        styles.hallOfFameContainer,
+                        {
+                          justifyContent:
+                            HallOfFameImagesList.length % 3 === 0
+                              ? "space-between"
+                              : "flex-start",
+                        },
+                      ]}
+                    >
                       {HallOfFameImagesList.slice(0, 6).map(
                         (image: string, index: number) => {
                           return (
@@ -874,6 +854,12 @@ class HomeScreen extends Component<IProps, Istate> {
                                   imageUrl: image,
                                 })
                               }
+                              style={{
+                                marginRight:
+                                  HallOfFameImagesList.length % 3 === 0
+                                    ? 0
+                                    : wp("5%"),
+                              }}
                             >
                               <Image
                                 style={styles.hallOfFameImage}
@@ -902,6 +888,16 @@ export default HomeScreen
 HomeScreen.contextType = Context
 
 const styles = StyleSheet.create({
+  safeAreaViewStyles: { flex: 1, backgroundColor: colors.white },
+
+  localFavouriteOuterContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  paginationContainerStyle: {
+    marginTop: -hp("2%"),
+    marginBottom: -hp("2.8%"),
+  },
   imageWrapper: {
     width: wp("30%"),
     height: wp("30%"),
@@ -1073,6 +1069,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flex: 1,
+    width: "100%",
   },
   smallButton: {
     borderRadius: wp("5%"),
@@ -1080,7 +1077,9 @@ const styles = StyleSheet.create({
     paddingVertical: wp("2.5%"),
     marginBottom: wp("4%"),
     borderWidth: wp("0.3%"),
-    width: wp("29%"),
+    width: "100%",
+    minWidth: wp("26%"),
+    flex: 0.3,
   },
   buttonTitle: {
     fontFamily: "AirbnbCerealBold",

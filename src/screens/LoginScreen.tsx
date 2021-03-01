@@ -19,26 +19,26 @@ import {
 // modal
 import Modal from "react-native-modal"
 // icons
-import {
-  FacebookSvg,
-  TwitterSvg,
-  GoogleSvg,
-} from "../../assets/svgs/icons/icons-login"
+import { FacebookSvg, GoogleSvg } from "../../assets/svgs/icons/icons-login"
 // components
 import CustomButton from "../components/buttons/CustomButton"
-import CustomTextField from "../components/input-controllers/CustomTextField"
 // colors
 import { colors } from "../lib/colors"
 // services
 import AuthService from "../services/auth.service"
 import UserService from "../services/user.service"
+import SocialLoginService from "../services/social-login.service"
+// svgs
 import { CloseEye, Logo, OpenEye } from "../../assets/svgs/icons"
+// social-login
 import * as Facebook from "expo-facebook"
 import * as Google from "expo-google-app-auth"
 import * as AppAuth from "expo-app-auth"
+// yup
 import * as yup from "yup"
+// formik
 import { Formik } from "formik"
-import SocialLoginService from "../services/social-login.service"
+// content
 import { APPID } from "../lib/content"
 
 // props for login screen
@@ -49,12 +49,10 @@ interface ILoginScreen {
 interface State {
   modalVisible: any
   isLoading: boolean
-  showError: boolean
+
   errorText: string
   showPassword: boolean
   showOnlyEmail: boolean
-  showOnlyPasswords: boolean
-  showConfirmPassword: boolean
 }
 const Welcome = require("../../assets/images/welcome.png")
 const authService = new AuthService()
@@ -88,39 +86,26 @@ export const loginValidationSchema = yup.object().shape({
   }),
 })
 class LoginScreen extends React.Component<ILoginScreen, State> {
-  inputRef: any
   values: any
   token: any
+
   constructor(props: ILoginScreen) {
     super(props)
     this.state = {
       modalVisible: false,
       isLoading: false,
-      showError: false,
+
       errorText: "",
       showPassword: false,
       showOnlyEmail: false,
-      showOnlyPasswords: false,
-      showConfirmPassword: false,
     }
     this.token = null
-    this.inputRef = Array(4).fill(React.createRef())
     this.values = {}
   }
-  onChangeOtp = (index: number) => {
-    this.inputRef[index].focus()
-  }
-
-  onPressVerifyAndContinue = () => {
-    this.setModalVisible()
-    this.props.navigation.navigate("pickYourChoice")
-  }
-
-  // callBack function
-  callBack = (value: string) => {}
 
   // navigate to signUp page
   handleNavigation = () => {
+    this.setState({ ...this.setState, errorText: "" })
     this.props.navigation.navigate("signUp")
   }
 
@@ -148,7 +133,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       ...this.state,
       isLoading: true,
     })
-    const { showOnlyEmail, showOnlyPasswords } = this.state
+    const { showOnlyEmail } = this.state
 
     if (showOnlyEmail) {
       authService
@@ -158,78 +143,37 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           if (response.token) this.token = response.token
           this.setState({
             ...this.state,
-            showOnlyPasswords: true,
             isLoading: false,
             showOnlyEmail: false,
           })
+          alert("Password reset link send to your email")
         })
         .catch((e: any) => {
           console.log(e, " error email")
           this.token = null
           this.setState({
             ...this.state,
-
             isLoading: false,
-            showError: true,
             errorText: "Please enter registered email address",
           })
-        })
-    } else if (showOnlyPasswords) {
-      console.log(this.token, "this.token")
-      authService
-        .resetPassword({
-          token: this.token,
-          new_password: values.password,
-          confirm_password: values.confirmPassword,
-        })
-        .then((response) => {
-          console.log(response, "response in pass")
-
-          this.setState({
-            ...this.state,
-            isLoading: false,
-            showOnlyEmail: false,
-            showOnlyPasswords: false,
-          })
-          alert("your password has beeen updated succesfully")
-          // authService.authenticateUser(response.access, response.refresh)
-        })
-
-        .catch((e: any) => {
-          console.log(e.error, "error in pass")
-          this.setState({
-            ...this.state,
-
-            showOnlyPasswords: false,
-            isLoading: false,
-            showError: true,
-            errorText: e.error,
-            showOnlyEmail: false,
-          })
-          alert("something went wrong, please try later")
         })
     } else {
       authService
         .logIn({ email: values.email, password: values.password })
         .then((response) => {
-          console.log(response, "response")
-          this.setState({
-            ...this.state,
-            isLoading: false,
-            modalVisible: true,
-          })
-
           authService
             .authenticateUser(response.access, response.refresh)
             .then(() => {
-              this.setState(
-                {
-                  ...this.state,
-                  isLoading: false,
-                  modalVisible: false,
-                },
-                () => this.props.navigation.navigate("bottomTab")
-              )
+              this.setState({
+                ...this.state,
+                isLoading: false,
+                modalVisible: true,
+                errorText: "",
+              })
+              setTimeout(() => {
+                this.setState({ ...this.state, modalVisible: false })
+                this.props.navigation.navigate("bottomTab")
+              }, 300)
             })
         })
         .catch((error) => {
@@ -237,32 +181,27 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           this.setState({
             ...this.state,
             isLoading: false,
-            showError: true,
             modalVisible: false,
             errorText: error.detail,
           })
         })
     }
   }
+
   onChange = (name: string, value: string) => {
     this.values[name] = value
   }
 
-  handleEyeIconPress = (confirm?: string) => {
+  handleEyeIconPress = () => {
     console.log("calling")
-    if (confirm)
-      this.setState({
-        ...this.state,
-        showConfirmPassword: !this.state.showConfirmPassword,
-      })
-    else
-      this.setState({ ...this.state, showPassword: !this.state.showPassword })
+
+    this.setState({ ...this.state, showPassword: !this.state.showPassword })
   }
   onPressForgotPassword = () => {
     this.setState({
       ...this.state,
       showOnlyEmail: true,
-      showError: false,
+
       errorText: "",
     })
   }
@@ -285,7 +224,11 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
             token: token,
           })
           .then((response) => {
-            this.setState({ ...this.state, isLoading: false })
+            this.setState({
+              ...this.state,
+              isLoading: false,
+              errorText: "",
+            })
             console.log(response, "response after facebook signin")
             if (response["username"])
               this.props.navigation.navigate("pickYourChoice")
@@ -311,7 +254,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
       clientId:
         "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
-      androidClientId:
+
+      androidStandaloneAppClientId:
         "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
     })
 
@@ -320,7 +264,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       socialLoginService
         .googleSignIn({ token: accessToken })
         .then((response) => {
-          this.setState({ ...this.state, isLoading: false })
+          this.setState({ ...this.state, isLoading: false, errorText: "" })
           if (response["username"])
             this.props.navigation.navigate("pickYourChoice")
           else this.props.navigation.navigate("bottomTab")
@@ -330,7 +274,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           this.setState({
             ...this.state,
             isLoading: false,
-            showError: true,
             errorText: error,
           })
           alert("something went wrong, please try later")
@@ -343,18 +286,12 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     const {
       isLoading,
       errorText,
-      showError,
+
       modalVisible,
       showPassword,
       showOnlyEmail,
-      showOnlyPasswords,
-      showConfirmPassword,
     } = this.state
-    const loginTitle = showOnlyEmail
-      ? "Confirm Email"
-      : showOnlyPasswords
-      ? "Reset Password"
-      : "Login"
+    const loginTitle = showOnlyEmail ? "Confirm Email" : "Login"
 
     return (
       <>
@@ -374,9 +311,8 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
               initialValues={{
                 email: "",
                 password: "",
-                confirmPassword: "",
+
                 showOnlyEmail: showOnlyEmail,
-                showOnlyPasswords: showOnlyPasswords,
               }}
               onSubmit={(values) => {
                 this.onSubmitValues(values)
@@ -389,7 +325,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                       <Modal
                         isVisible={modalVisible}
                         backdropColor={colors.white}
-                        backdropOpacity={0.9}
+                        backdropOpacity={0.8}
                       >
                         <View style={styles.renderModalContainer}>
                           {/* This call, renders the modal*/}
@@ -405,17 +341,17 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                       source={Welcome}
                     />
                     <Text style={styles.loginText}>Login</Text>
-                    {showError && (
+                    {errorText !== "" && (
                       <Text style={styles.errorStyles}>{errorText}</Text>
                     )}
-                    {!showOnlyPasswords && (
-                      <TextInput
-                        onChangeText={handleChange("email")}
-                        placeholder="Enter Email Id"
-                        style={styles.inputBox}
-                        value={values.email}
-                      />
-                    )}
+
+                    <TextInput
+                      onChangeText={handleChange("email")}
+                      placeholder="Enter Email Id"
+                      style={styles.inputBox}
+                      value={values.email}
+                    />
+
                     {touched.email && errors.email ? (
                       <Text style={styles.error}>{errors.email}</Text>
                     ) : null}
@@ -462,51 +398,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                         {touched.password && errors.password ? (
                           <Text style={styles.error}>{errors.password}</Text>
                         ) : null}
-                        {showOnlyPasswords && (
-                          <>
-                            <View style={styles.passwordContainer}>
-                              <TextInput
-                                onChangeText={handleChange("confirmPassword")}
-                                placeholder="Enter Confirm Password"
-                                style={[styles.inputBox, styles.passwordBox]}
-                                secureTextEntry={
-                                  showConfirmPassword ? false : true
-                                }
-                                value={values.confirmPassword}
-                              />
-                              {values.confirmPassword !== "" &&
-                                (showConfirmPassword ? (
-                                  <Pressable
-                                    onPress={() =>
-                                      this.handleEyeIconPress("confirmPassword")
-                                    }
-                                  >
-                                    <OpenEye
-                                      width={wp("5%")}
-                                      height={wp("5%")}
-                                    />
-                                  </Pressable>
-                                ) : (
-                                  <Pressable
-                                    onPress={() =>
-                                      this.handleEyeIconPress("confirmPassword")
-                                    }
-                                  >
-                                    <CloseEye
-                                      width={wp("5%")}
-                                      height={wp("5%")}
-                                    />
-                                  </Pressable>
-                                ))}
-                            </View>
-                            {touched.confirmPassword &&
-                            errors.confirmPassword ? (
-                              <Text style={styles.error}>
-                                {errors.confirmPassword}
-                              </Text>
-                            ) : null}
-                          </>
-                        )}
                       </>
                     )}
                     <View>
@@ -515,7 +406,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
                         onPressButton={handleSubmit}
                         buttonTextStyles={styles.verifyContinueButtonText}
                       />
-                      {!(showOnlyEmail || showOnlyPasswords) && (
+                      {!showOnlyEmail && (
                         <Text
                           style={styles.forgotYourPasswordStyles}
                           onPress={this.onPressForgotPassword}

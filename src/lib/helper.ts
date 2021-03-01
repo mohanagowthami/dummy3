@@ -1,4 +1,14 @@
-import { yupToFormErrors } from "formik"
+// content
+import {
+  adventuresList,
+  rectangleImageList,
+  shoppingMallList,
+  sightSeeingList,
+  travellingList,
+  worshipList,
+} from "./content"
+// constants
+import Constants from "expo-constants"
 
 export const getFormatedDate = (date: any) => {
   if (date && typeof date !== "string") {
@@ -78,6 +88,7 @@ export function convertToTweleveHoursFormat(
   hours: number | string,
   minutes?: number
 ) {
+  console.log(typeof hours, "type of hours")
   if (typeof hours === "number") {
     if (hours > 12) {
       return `${hours - 12}:${minutes} PM`
@@ -86,11 +97,13 @@ export function convertToTweleveHoursFormat(
     }
   } else {
     const hoursArray = hours.split(":")
+
     if (parseInt(hoursArray[0]) > 12) {
-      let hrs: string = (parseInt(hoursArray[0]) - 12).toString()
+      const letModifiedHours = parseInt(hoursArray[0]) - 12
+      let hrs: string = letModifiedHours.toString()
       console.log(hrs, "hrs")
 
-      hrs = hrs.length === 2 ? hoursArray[0] : 0 + hrs
+      hrs = hrs.length === 2 ? hrs : 0 + hrs
       return `${hrs}:${hoursArray[1]} PM`
     } else {
       const hrs = hoursArray[0].length === 2 ? hoursArray[0] : 0 + hoursArray[0]
@@ -164,9 +177,75 @@ export function getDistanceFromLatLon(
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   var d = R * c // Distance in km
   // console.log(d, "distance")
-  return { distance: d.toFixed(2), time: (d / 60).toFixed(2) }
+
+  const durationDetails = {
+    distance: d.toFixed(2),
+    time: (d / (60 * 60)).toFixed(2),
+  }
+  let time: any = durationDetails.time.toString()
+  time = time.split(".")
+  const quotient = parseInt(time[1]) / 60
+  const remainder = parseInt(time[1]) % 60
+  const hours =
+    quotient > 1 ? parseInt(time[0]) + Math.round(quotient) : time[0]
+
+  time = `${hours} hours ${remainder} min`
+
+  return { time: time, distance: `${Math.round(d / 1000)} kms` }
 }
 
 function deg2rad(deg: any) {
   return deg * (Math.PI / 180)
+}
+
+export const getRequireImage = (tag: string, category?: string) => {
+  if (category === "food" || tag.includes("Restaurant"))
+    return rectangleImageList[
+      Math.floor(Math.random() * rectangleImageList.length)
+    ]
+  else {
+    if (tag.includes("Sight seeing") || tag.includes("Beach"))
+      return sightSeeingList[Math.floor(Math.random() * sightSeeingList.length)]
+    else if (tag.includes("Worship") || tag.includes("temple"))
+      return worshipList[Math.floor(Math.random() * worshipList.length)]
+    else if (tag.includes("travel"))
+      return adventuresList[Math.floor(Math.random() * adventuresList.length)]
+    else if (category === "travel")
+      return travellingList[Math.floor(Math.random() * travellingList.length)]
+    else {
+      return shoppingMallList[
+        Math.floor(Math.random() * shoppingMallList.length)
+      ]
+    }
+  }
+}
+
+export async function registerForPushNotificationsAsync() {
+  let token
+  if (Constants.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!")
+      return
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data
+  } else {
+    alert("Must use physical device for Push Notifications")
+  }
+
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    })
+  }
+
+  return token
 }
