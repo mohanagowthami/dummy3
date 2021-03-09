@@ -145,3 +145,27 @@ export const mode = "driving"
 export const Context = React.createContext()
 
 export const APPID = "881191042676304"
+
+export const trendsContent = {
+  // first division - trends list data
+  trendsList: [
+    {
+      title: "restaurant1",
+      description: "dish1",
+      image:
+        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
+    },
+    {
+      title: "restaurant2",
+      description: "dish2",
+      image:
+        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
+    },
+    {
+      title: "restaurant3",
+      description: "dish3",
+      image:
+        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
+    },
+  ],
+}

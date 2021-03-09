@@ -30,6 +30,12 @@ import {
 } from "../../assets/svgs/icons/icons-profile"
 // colors
 import { colors } from "../lib/colors"
+// service
+import UserService from "../services/user.service"
+// commonACtions
+import { CommonActions } from "@react-navigation/native"
+import { isLoading } from "expo-font"
+import Loader from "../components/elements/Loader"
 // props
 interface IProps {
   navigation: any
@@ -40,6 +46,7 @@ interface IState {
     name: string
     isEnabled: boolean
   }>
+  isLoading: boolean
 }
 
 const accountList = [
@@ -98,6 +105,7 @@ const moreList = [
   },
 ]
 
+const userService = new UserService()
 class AccountSettings extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props)
@@ -116,12 +124,31 @@ class AccountSettings extends Component<IProps, IState> {
           isEnabled: false,
         },
       ],
+      isLoading: false,
     }
   }
 
   onPressAction = (title: string) => {
     if (title === "Rate Us") {
       this.props.navigation.navigate("feedBack")
+    }
+    if (title === "Logout") {
+      this.setState({ ...this.state, isLoading: true })
+      userService
+        .removeAccessToken()
+        .then((response) => {
+          if (response) {
+            this.setState({ ...this.state, isLoading: false })
+            this.props.navigation.reset({
+              index: 0,
+              routes: [{ name: "login" }],
+            })
+            // this.props.navigation.navigate("home")
+          } else alert("Logout is unsuccessful, please try again")
+        })
+        .catch((e) => {
+          this.setState({ ...this.state, isLoading: false })
+        })
     }
   }
   toggleSwitch = (index: number) => {
@@ -142,35 +169,27 @@ class AccountSettings extends Component<IProps, IState> {
           } = element
           const { switchArray } = this.state
           return (
-            <View key={index}>
+            <Pressable
+              key={index}
+              hitSlop={styles.hitSlop}
+              onPress={() => this.onPressAction(title)}
+            >
               <View style={styles.profileContainer}>
-                <Pressable
-                  onPress={() => {
-                    if (index == 0) {
-                      this.props.navigation.navigate("profile", {
-                        isEditable: false,
-                      })
-                    }
-                  }}
-                >
-                  <View style={styles.settingContainer}>
-                    <View style={styles.representationSvgContainer}>
-                      <RepresentationSvg
-                        width={wp("6%")}
-                        height={hp("3%")}
-                        color={colors.greyTwo}
-                      />
-                    </View>
-                    <View>
-                      <Text style={styles.titleText}>{title}</Text>
-                      {title !== "Logout" && (
-                        <Text style={styles.descriptionText}>
-                          {description}
-                        </Text>
-                      )}
-                    </View>
+                <View style={styles.settingContainer}>
+                  <View style={styles.representationSvgContainer}>
+                    <RepresentationSvg
+                      width={wp("6%")}
+                      height={hp("3%")}
+                      color={colors.greyTwo}
+                    />
                   </View>
-                </Pressable>
+                  <View>
+                    <Text style={styles.titleText}>{title}</Text>
+                    {title !== "Logout" && (
+                      <Text style={styles.descriptionText}>{description}</Text>
+                    )}
+                  </View>
+                </View>
 
                 {list === notificationsList ? (
                   <ActionIcon
@@ -185,9 +204,7 @@ class AccountSettings extends Component<IProps, IState> {
                     style={styles.switch}
                   />
                 ) : (
-                  <Pressable onPress={() => this.onPressAction(title)}>
-                    <ActionIcon width={wp("4%")} height={hp("2.3%")} />
-                  </Pressable>
+                  <ActionIcon width={wp("4%")} height={hp("2.3%")} />
                 )}
               </View>
               {description !=
@@ -196,7 +213,7 @@ class AccountSettings extends Component<IProps, IState> {
                   moreList[2].description) && (
                 <View style={styles.borderLine} />
               )}
-            </View>
+            </Pressable>
           )
         })}
       </View>
@@ -204,30 +221,38 @@ class AccountSettings extends Component<IProps, IState> {
   }
 
   render() {
+    const { isLoading } = this.state
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        >
-          <View style={styles.container}>
-            <Text style={styles.title}>Account Settings</Text>
-            <Text style={styles.description}>
-              Update your settings like notifications,
-              {"\n"}payments, profile edit etc.
-            </Text>
-            {this.renderSettings(accountList)}
-            <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
-            {this.renderSettings(notificationsList)}
-            <Text style={styles.settingsHeading}>MORE</Text>
-            {this.renderSettings(moreList)}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      <>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            >
+              <View style={styles.container}>
+                <Text style={styles.title}>Account Settings</Text>
+                <Text style={styles.description}>
+                  Update your settings like notifications,
+                  {"\n"}payments, profile edit etc.
+                </Text>
+                {this.renderSettings(accountList)}
+                <Text style={styles.settingsHeading}>NOTIFICATIONS</Text>
+                {this.renderSettings(notificationsList)}
+                <Text style={styles.settingsHeading}>MORE</Text>
+                {this.renderSettings(moreList)}
+              </View>
+            </ScrollView>
+          </SafeAreaView>
+        )}
+      </>
     )
   }
 }
 const styles = StyleSheet.create({
+  hitSlop: { top: wp("6%"), left: wp("6%"), bottom: wp("6%"), right: wp("6%") },
   container: {
     flex: 1,
     padding: hp("2%"),

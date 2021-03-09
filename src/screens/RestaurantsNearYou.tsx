@@ -42,6 +42,7 @@ const userService = new UserService()
 const restaurantService = new RestaurantService()
 class RestaurantsNearYou extends Component<IProps, Istate> {
   initialSearch: boolean
+  subscribe: any
   constructor(props: IProps) {
     super(props)
     this.state = {
@@ -53,6 +54,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
       currentPage: 1,
       flatListLoading: false,
     }
+
     this.initialSearch = true
   }
 
@@ -69,13 +71,19 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
         })
       })
       .catch((e) => {})
+
+    this.subscribe = this.props.navigation.addListener("focus", () => {
+      this.setState({ ...this.state, searchText: "", searchResponse: [] })
+    })
+  }
+
+  componentWillUnmount() {
+    this.subscribe()
   }
 
   getSearchResponse = () => {
-    const { searchText } = this.state
+    const { searchText, searchResponse, currentPage } = this.state
     if (searchText !== "") {
-      const { searchText, searchResponse, currentPage } = this.state
-
       const stateData = { ...this.state }
 
       restaurantService
@@ -93,7 +101,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
         .finally(() => {
           stateData.isLoading = false
           stateData.flatListLoading = false
-          stateData.searchText = searchText
+          stateData.searchText = this.state.searchText
           this.setState(stateData)
         })
     } else {
@@ -150,9 +158,12 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
             value={searchText}
           />
           {searchText !== "" && (
-            <Text style={styles.crossIcon} onPress={this.pressCrossIcon}>
-              X
-            </Text>
+            <Pressable
+              onPress={this.pressCrossIcon}
+              hitSlop={{ top: 30, left: 30, right: 30, bottom: 30 }}
+            >
+              <Text style={styles.crossIcon}>X</Text>
+            </Pressable>
           )}
         </View>
       </View>
@@ -171,7 +182,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
   }
 
   flatListRenderItem = (item: any, index: number) => {
-    const { name, address } = item
+    const { name, address, id } = item
     let place: any = []
     if (address !== "No address") {
       place = address.split(",")
@@ -179,7 +190,15 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
     } else place = "No address"
 
     return (
-      <View style={styles.flatListRenderItemContainer}>
+      <Pressable
+        style={styles.flatListRenderItemContainer}
+        onPress={() => {
+          this.props.navigation.navigate("itemInDetail", {
+            id: id,
+            address: address,
+          })
+        }}
+      >
         <LocationIcon width={wp("5%")} height={wp("5%")} />
         <View style={{ flex: 1, marginLeft: wp("10%") }}>
           <View style={styles.wrapper}>
@@ -195,7 +214,7 @@ class RestaurantsNearYou extends Component<IProps, Istate> {
           </View>
           <View style={styles.underlineStyles} />
         </View>
-      </View>
+      </Pressable>
     )
   }
 

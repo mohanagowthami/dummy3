@@ -28,9 +28,13 @@ import {
 } from "../../assets/svgs/icons/icons-profile"
 // colors
 import { colors } from "../lib/colors"
+// icons
 import { Profile } from "../../assets/svgs/icons"
+// service
 import UserService from "../services/user.service"
+// loader
 import Loader from "../components/elements/Loader"
+// commonActions
 import { CommonActions } from "@react-navigation/native"
 
 interface IProps {
@@ -88,9 +92,7 @@ class ProfileScreen extends Component<IProps, Istate> {
       } else if (result.action === RNShare.dismissedAction) {
         // dismissed
       }
-    } catch (error) {
-      console.log("something went wrong in share")
-    }
+    } catch (error) {}
   }
 
   handleLogout = () => {
@@ -98,15 +100,13 @@ class ProfileScreen extends Component<IProps, Istate> {
     userService
       .removeAccessToken()
       .then((response) => {
-        console.log(response, "response in logout")
         if (response) {
           this.setState({ ...this.state, isLoading: false })
-          this.props.navigation.dispatch(
-            CommonActions.navigate({
-              name: "login",
-            })
-          )
-          // this.props.navigation.navigate("home")
+
+          this.props.navigation.reset({
+            index: 0,
+            routes: [{ name: "login" }],
+          })
         } else alert("Logout is unsuccessful, please try again")
       })
       .catch((e) => {
@@ -209,31 +209,11 @@ class ProfileScreen extends Component<IProps, Istate> {
                 </View>
               </View>
               <View style={styles.optionscontainer}>
-                <View style={styles.optioncontainer}>
-                  <Pressable
-                    onPress={() =>
-                      this.props.navigation.navigate("notifications")
-                    }
-                  >
-                    <Notifications width={wp("5.86%")} height={hp("2.89%")} />
-                  </Pressable>
-                  <Pressable
-                    onPress={() =>
-                      this.props.navigation.navigate("notifications")
-                    }
-                  >
-                    <Text style={styles.optionstext}>Notifications</Text>
-                  </Pressable>
-                  {/* <View style={styles.notificationcount}> */}
-                  {/* <Pressable
-                      onPress={() =>
-                        this.props.navigation.navigate("notifications")
-                      }
-                    >
-                      <Text style={styles.notificationcountContainer}>3</Text>
-                    </Pressable> */}
-                  {/* </View> */}
-                </View>
+                <Pressable style={styles.optioncontainer}>
+                  <Notifications width={wp("5.86%")} height={hp("2.89%")} />
+
+                  <Text style={styles.optionstext}>Notifications</Text>
+                </Pressable>
                 <Pressable
                   style={styles.optioncontainer}
                   onPress={this.onShare}
@@ -243,10 +223,7 @@ class ProfileScreen extends Component<IProps, Istate> {
                     Share with your friends
                   </Text>
                 </Pressable>
-                {/* <View style={styles.optioncontainer}>
-                  <Social width={wp("5.86%")} height={hp("2.89%")} />
-                  <Text style={styles.optionstext}>Social</Text>
-                </View> */}
+
                 <Pressable
                   onPress={() =>
                     this.props.navigation.navigate("accountSettings")
@@ -257,12 +234,13 @@ class ProfileScreen extends Component<IProps, Istate> {
                     <Text style={styles.optionstext}>Settings</Text>
                   </View>
                 </Pressable>
-                <View style={styles.optioncontainer}>
+                <Pressable
+                  style={styles.optioncontainer}
+                  onPress={this.handleLogout}
+                >
                   <Logout width={wp("5.86%")} height={hp("2.89%")} />
-                  <Text style={styles.optionstext} onPress={this.handleLogout}>
-                    Logout
-                  </Text>
-                </View>
+                  <Text style={styles.optionstext}>Logout</Text>
+                </Pressable>
               </View>
             </View>
           </ScrollView>

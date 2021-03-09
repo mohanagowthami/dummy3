@@ -83,7 +83,7 @@ class SignUpForm extends Component<ISignUpFormProps, IState> {
       })
       .catch((error) => {
         onPressSignUp(false, error)
-        console.log(error, "error in sign up form")
+
         this.formRef.current.resetForm()
       })
   }

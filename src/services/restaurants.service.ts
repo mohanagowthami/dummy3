@@ -16,11 +16,9 @@ class RestaurantService extends APIService {
   getCurrentUserLocationBasedData(page?: number): Promise<any> {
     return this.get(FAVORITE_RESTAURANTS(page))
       .then((response: any) => {
-        console.log(response, "response in favourties")
         return response.data
       })
       .catch((error: any) => {
-        console.log(error, "in render local ")
         throw error.response.data
       })
   }
@@ -34,8 +32,8 @@ class RestaurantService extends APIService {
       })
   }
 
-  getHallOfFame(): Promise<any> {
-    return this.get(HALL_OF_FAME_CATEGORY("food"))
+  getHallOfFame(page?: number): Promise<any> {
+    return this.get(HALL_OF_FAME_CATEGORY("food", page))
       .then((response: any) => {
         return response.data
       })
@@ -44,10 +42,11 @@ class RestaurantService extends APIService {
       })
   }
 
-  getRecap(): Promise<any> {
-    return this.get(RECAP_CATEGORY("food"))
+  getRecap(page?: number): Promise<any> {
+    const url = RECAP_CATEGORY("food", page)
+
+    return this.get(url)
       .then((response: any) => {
-        // console.log(response, "response in recap")
         return response.data
       })
       .catch((error: any) => {

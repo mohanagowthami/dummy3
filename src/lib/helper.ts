@@ -9,6 +9,9 @@ import {
 } from "./content"
 // constants
 import Constants from "expo-constants"
+// expo -notifications
+import * as Notifications from "expo-notifications"
+import { Platform } from "react-native"
 
 export const getFormatedDate = (date: any) => {
   if (date && typeof date !== "string") {
@@ -69,18 +72,42 @@ export function decode(t?: any, e?: any) {
   }))
 }
 
-export function getCurrentMonthArray(today = 1, day?: number) {
-  const date = new Date()
-  let calculatedArray = new Array(
-    new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+export function getMonthArray(selectedDate?: string) {
+  let calculatedArray: any
+  let userSelectedDate: any
+  let isCurrentDate: boolean
+  if (selectedDate) {
+    userSelectedDate = selectedDate
+  } else {
+    userSelectedDate = new Date()
+    isCurrentDate = true
+  }
+  calculatedArray = new Array(
+    new Date(
+      userSelectedDate.getFullYear(),
+      userSelectedDate.getMonth() + 1,
+      0
+    ).getDate()
   ).fill(0)
+  return calculatedArray.map((ele: any, index: number) => {
+    const nextDay = new Date(userSelectedDate)
+    nextDay.setDate(index + 1)
 
-  return calculatedArray.map((ele, index) => {
-    const computatedDay = day ? day : today ? date.getDate() : null
-
-    if (index + 1 < date.getDate()) return -1
-    else if (computatedDay !== null && index + 1 === computatedDay) return 1
-    else return 0
+    if (index + 1 === userSelectedDate.getDate()) {
+      return {
+        status: 1,
+        date: nextDay,
+      }
+    } else if (index + 1 < userSelectedDate.getDate() && isCurrentDate)
+      return {
+        status: -1,
+        date: nextDay,
+      }
+    else
+      return {
+        status: 0,
+        date: nextDay,
+      }
   })
 }
 
@@ -88,7 +115,6 @@ export function convertToTweleveHoursFormat(
   hours: number | string,
   minutes?: number
 ) {
-  console.log(typeof hours, "type of hours")
   if (typeof hours === "number") {
     if (hours > 12) {
       return `${hours - 12}:${minutes} PM`
@@ -101,7 +127,6 @@ export function convertToTweleveHoursFormat(
     if (parseInt(hoursArray[0]) > 12) {
       const letModifiedHours = parseInt(hoursArray[0]) - 12
       let hrs: string = letModifiedHours.toString()
-      console.log(hrs, "hrs")
 
       hrs = hrs.length === 2 ? hrs : 0 + hrs
       return `${hrs}:${hoursArray[1]} PM`
@@ -148,7 +173,7 @@ export const dateComparision = (date: any) => {
     const currentDay = currentDate.getDate()
     const currentMonth = currentDate.getMonth()
     const currentYear = currentDate.getFullYear()
-    console.log(day, year, month, currentDay, currentMonth, currentYear)
+
     if (day === currentDay && month === currentMonth && year === currentYear)
       return true
     else return false
@@ -163,11 +188,10 @@ export function getDistanceFromLatLon(
   lat2: number,
   lon2: number
 ) {
-  console.log(lat1, lon1, lat2, lon2, "latitudes")
   var R = 6371 // Radius of the earth in km
   var dLat = deg2rad(lat2 - lat1) // deg2rad below
   var dLon = deg2rad(lon2 - lon1)
-  // console.log(dLat, dLon, "dlat,dlong")
+
   var a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) *
@@ -175,21 +199,21 @@ export function getDistanceFromLatLon(
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2)
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  var d = R * c // Distance in km
-  // console.log(d, "distance")
+  var d = R * c
 
   const durationDetails = {
     distance: d.toFixed(2),
-    time: (d / (60 * 60)).toFixed(2),
+    time: (d.toFixed(2) / 60).toFixed(2),
   }
   let time: any = durationDetails.time.toString()
   time = time.split(".")
   const quotient = parseInt(time[1]) / 60
   const remainder = parseInt(time[1]) % 60
-  const hours =
-    quotient > 1 ? parseInt(time[0]) + Math.round(quotient) : time[0]
+  let hours = quotient > 1 ? parseInt(time[0]) + Math.round(quotient) : time[0]
 
-  time = `${hours} hours ${remainder} min`
+  hours = hours.toString()
+
+  time = `${hours.slice(0, 2)} hours ${remainder} min`
 
   return { time: time, distance: `${Math.round(d / 1000)} kms` }
 }

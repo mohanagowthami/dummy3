@@ -62,6 +62,8 @@ interface Istate {
   time: any
   distance: any
   showAllPhotos: boolean
+  currentPage: number
+  totalPages: number
 }
 
 const restaurantService = new RestaurantService()
@@ -73,6 +75,7 @@ const mapService = new MapService()
 class ItemInDetailScreen extends Component<IProps, Istate> {
   subscribe: any
   replaceImage: any
+  representativeImage: any
 
   constructor(props: IProps) {
     super(props)
@@ -98,7 +101,10 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       time: 0,
       distance: 0,
       showAllPhotos: false,
+      currentPage: 1,
+      totalPages: 1,
     }
+    this.representativeImage = ""
   }
   onPressGetDirections = (address: string) => {
     this.props.navigation.navigate("navigation", { address: address })
@@ -112,7 +118,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
 
   fetchData = () => {
     const { id, address } = this.props.route.params
-    console.log(id, address, "id")
 
     this.setState({ ...this.state, isLoading: true })
 
@@ -126,11 +131,14 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       }),
     ])
       .then((values) => {
-        console.log(values[0])
         let mutatedObject = { ...this.state }
         mutatedObject.restaurantDetails = values[0]
 
-        mutatedObject.ratingAndReview = this.getFormatedReviews(values[1])
+        mutatedObject.ratingAndReview = this.getFormatedReviews(
+          values[1].results
+        )
+        mutatedObject.totalPages = values[1].info.pages
+
         mutatedObject.isLoading = false
         try {
           mutatedObject.distance = values[2].routes[0].legs[0].distance.text
@@ -149,7 +157,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         this.setState(mutatedObject)
       })
       .catch((error) => {
-        console.log(error, "item in detail")
         this.setState({ ...this.state, isLoading: false })
       })
   }
@@ -169,16 +176,12 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   changeLikeStatusInServer = () => {
     const { restaurantDetails } = this.state
     if (restaurantDetails.user_liked) {
-      console.log("in servicing")
       userService
         .likeListing({
           listing: restaurantDetails.id,
         })
-        .then((response: any) => {
-          console.log(response, "response in like")
-        })
+        .then((response: any) => {})
         .catch((error: any) => {
-          console.log(error, "error in like")
           const stateData = { ...this.state }
           stateData.restaurantDetails.user_liked = !stateData.restaurantDetails
             .user_liked
@@ -202,6 +205,27 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
         })
     }
   }
+  fetchRatingAndReview = () => {
+    const {
+      currentPage,
+      restaurantDetails: { id },
+    } = this.state
+    reviewService
+      .getReviews(id, currentPage)
+      .then((response) => {
+        this.setState({
+          ...this.state,
+          ratingAndReview: [...this.state.ratingAndReview, ...response.results],
+        })
+      })
+      .catch((error) => {})
+  }
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevState.currentPage !== this.state.currentPage) {
+      this.fetchRatingAndReview()
+    }
+  }
 
   componentWillUnmount() {
     this.subscribe()
@@ -214,7 +238,9 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   }
 
   changeloadMoreStatus = () => {
-    this.setState({ ...this.state, isLoadMorePressed: true })
+    const stateData = { ...this.state }
+    stateData.currentPage = stateData.currentPage + 1
+    this.setState(stateData)
   }
 
   handleFullDescription = (index: number) => {
@@ -243,7 +269,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     const imagesAlignment =
       reviewImagesLength % 5 === 0 && reviewImagesLength !== 0
     const date = `${month} ${year}`
-    console.log(profile_pic, "profile_pic")
 
     return (
       <View style={styles.reviewcontainer} key={index}>
@@ -342,11 +367,17 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
   }
 
   renderFooter = () => {
-    const { ratingAndReview, isLoadMorePressed, restaurantDetails } = this.state
+    const {
+      ratingAndReview,
+      isLoadMorePressed,
+      restaurantDetails,
+      currentPage,
+      totalPages,
+    } = this.state
 
     return (
       <>
-        {!isLoadMorePressed && ratingAndReview.length > 5 && (
+        {currentPage < totalPages && (
           <Pressable
             style={styles.loadmorecontainer}
             onPress={this.changeloadMoreStatus}
@@ -377,6 +408,25 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
     )
   }
 
+  getImage = (tags: any, name: string, establishment_category: string) => {
+    if (this.representativeImage === "") {
+      let formatedCusines = []
+      if (typeof tags === "string" && tags !== "")
+        formatedCusines = deriveArrayFromString(tags)
+      else if (tags) formatedCusines = tags
+
+      const taggedName = formatedCusines.length > 0 ? formatedCusines[0] : name
+
+      this.representativeImage = getRequireImage(
+        taggedName,
+        establishment_category
+      )
+      return this.representativeImage
+    } else {
+      return this.representativeImage
+    }
+  }
+
   renderHeader = () => {
     const {
       restaurantDetails,
@@ -402,7 +452,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
       ]
     } catch (error) {}
 
-    console.log("allImages", allImages)
     const {
       name,
       address,
@@ -422,19 +471,15 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
           : allImages.slice(0, 6)
         : allImages
 
-    let formatedCusines = []
-    if (typeof tags === "string") formatedCusines = deriveArrayFromString(tags)
-    else formatedCusines = tags
-
     return (
       <>
         <View style={styles.HeaderContainer}>
-          <Pressable onPress={this.onPressBackIcon}>
-            <BackIcon
-              width={wp("2.62%")}
-              height={hp("2.26%")}
-              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-            />
+          <Pressable
+            onPress={this.onPressBackIcon}
+            hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            style={{ marginLeft: wp("5%") }}
+          >
+            <BackIcon width={wp("2.62%")} height={hp("2.26%")} />
           </Pressable>
           {menu_images.length > 0 ? (
             <Image
@@ -443,16 +488,11 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
               source={{ uri: menu_images[0].image }}
             />
           ) : (
-            formatedCusines?.length > 0 && (
-              <Image
-                style={styles.image}
-                resizeMode="cover"
-                source={getRequireImage(
-                  formatedCusines[0],
-                  establishment_category
-                )}
-              />
-            )
+            <Image
+              style={styles.image}
+              resizeMode="cover"
+              source={this.getImage(tags, name, establishment_category)}
+            />
           )}
           <Pressable onPress={this.onPressLike}>
             <LoveIcon
@@ -606,13 +646,6 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
 
     const length = ratingAndReview.length
 
-    const flatListData =
-      ratingAndReview.length > 5
-        ? isLoadMorePressed
-          ? ratingAndReview
-          : ratingAndReview.slice(0, 4)
-        : ratingAndReview
-
     return (
       <>
         {isLoading ? (
@@ -623,7 +656,7 @@ class ItemInDetailScreen extends Component<IProps, Istate> {
           <View style={styles.flatListContainer}>
             <FlatList
               ListHeaderComponent={this.renderHeader}
-              data={flatListData}
+              data={ratingAndReview}
               renderItem={({ item, index }) =>
                 this.flatListRenderItem(item, index)
               }
@@ -644,7 +677,7 @@ const styles = StyleSheet.create({
   HeaderContainer: { paddingHorizontal: wp("3%") },
 
   reviewImagesWrapper: {
-    width: "20%",
+    width: "18%",
     height: wp("15%"),
     overflow: "hidden",
   },

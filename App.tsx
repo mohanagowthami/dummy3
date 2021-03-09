@@ -59,9 +59,7 @@ export default function App() {
     )
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        console.log(response, "response in notification listener")
-      }
+      (response) => {}
     )
     return () => {
       Notifications.removeNotificationSubscription(notificationListener)
@@ -84,7 +82,6 @@ export default function App() {
               userService.getUser(),
             ])
               .then((values) => {
-                console.log(values, "values in app.tsx")
                 setLatitude(values[0].coords.latitude)
                 setLongitude(values[0].coords.longitude)
                 if (values[1] && values[1].id) {
@@ -95,9 +92,15 @@ export default function App() {
                   setLoadingStatus(false)
                 }
               })
-              .catch((error) => {
-                setLoadingStatus(false)
-                setLoadingStatus(false)
+              .catch(async (error) => {
+                const location = await Location.getCurrentPositionAsync({})
+                if (location) {
+                  setLatitude(location.coords.latitude)
+                  setLongitude(location.coords.longitude)
+
+                  setLoadingStatus(false)
+                  setLoadingStatus(false)
+                }
               })
           }
         }
@@ -115,8 +118,6 @@ export default function App() {
     ArchivoBold: require("./assets/fonts/ArchivoBold.ttf"),
   })
 
-  // conditioning to check loaded fonts
-  console.log(isLoading, !loaded, isSignedIn, "owthami loading status")
   return (
     <Context.Provider value={{ latitude: latitude, longitude: longitude }}>
       <NavigationContainer>

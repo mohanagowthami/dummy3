@@ -18,8 +18,7 @@ import {
 } from "react-native-responsive-screen"
 // modal
 import Modal from "react-native-modal"
-// icons
-import { FacebookSvg, GoogleSvg } from "../../assets/svgs/icons/icons-login"
+
 // components
 import CustomButton from "../components/buttons/CustomButton"
 // colors
@@ -30,16 +29,12 @@ import UserService from "../services/user.service"
 import SocialLoginService from "../services/social-login.service"
 // svgs
 import { CloseEye, Logo, OpenEye } from "../../assets/svgs/icons"
-// social-login
-import * as Facebook from "expo-facebook"
-import * as Google from "expo-google-app-auth"
-import * as AppAuth from "expo-app-auth"
+
 // yup
 import * as yup from "yup"
 // formik
 import { Formik } from "formik"
-// content
-import { APPID } from "../lib/content"
+import SocialLogins from "../components/elements/SocialLogins"
 
 // props for login screen
 interface ILoginScreen {
@@ -139,7 +134,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       authService
         .forgotPassword({ email: values.email })
         .then((response) => {
-          console.log(response, "email")
           if (response.token) this.token = response.token
           this.setState({
             ...this.state,
@@ -149,7 +143,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           alert("Password reset link send to your email")
         })
         .catch((e: any) => {
-          console.log(e, " error email")
           this.token = null
           this.setState({
             ...this.state,
@@ -164,6 +157,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
           authService
             .authenticateUser(response.access, response.refresh)
             .then(() => {
+              // this.props.navigation.reset()
               this.setState({
                 ...this.state,
                 isLoading: false,
@@ -173,11 +167,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
               setTimeout(() => {
                 this.setState({ ...this.state, modalVisible: false })
                 this.props.navigation.navigate("bottomTab")
-              }, 300)
+              }, 2000)
             })
         })
         .catch((error) => {
-          console.log(error, "in login")
           this.setState({
             ...this.state,
             isLoading: false,
@@ -193,8 +186,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
   }
 
   handleEyeIconPress = () => {
-    console.log("calling")
-
     this.setState({ ...this.state, showPassword: !this.state.showPassword })
   }
   onPressForgotPassword = () => {
@@ -206,80 +197,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
     })
   }
 
-  logIn = async () => {
-    try {
-      await Facebook.initializeAsync({
-        appId: APPID,
-      })
-      const { type, token }: any = await Facebook.logInWithReadPermissionsAsync(
-        {
-          permissions: ["public_profile", "email"],
-        }
-      )
-
-      if (type === "success") {
-        this.setState({ ...this.state, isLoading: true })
-        socialLoginService
-          .facebookSignIn({
-            token: token,
-          })
-          .then((response) => {
-            this.setState({
-              ...this.state,
-              isLoading: false,
-              errorText: "",
-            })
-            console.log(response, "response after facebook signin")
-            if (response["username"])
-              this.props.navigation.navigate("pickYourChoice")
-            else this.props.navigation.navigate("bottomTab")
-          })
-          .catch((error) => {
-            console.log(error)
-            this.setState({ ...this.state, isLoading: false })
-            alert("something went wrong, please try later")
-          })
-      }
-    } catch (error: any) {
-      console.log(error)
-      alert("something went wrong, please try later")
-    }
-  }
-
-  googleLogin = async () => {
-    //  androidStandaloneAppClientId: `161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com`,
-    const { type, accessToken, user }: any = await Google.logInAsync({
-      scopes: ["profile", "email"],
-      redirectUrl: `${AppAuth.OAuthRedirect}:/oauth2redirect/google`,
-
-      clientId:
-        "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
-
-      androidStandaloneAppClientId:
-        "161958723866-lfpurm811vojam8562471re3l3bbnd0t.apps.googleusercontent.com",
-    })
-
-    if (type === "success") {
-      this.setState({ ...this.state, isLoading: true })
-      socialLoginService
-        .googleSignIn({ token: accessToken })
-        .then((response) => {
-          this.setState({ ...this.state, isLoading: false, errorText: "" })
-          if (response["username"])
-            this.props.navigation.navigate("pickYourChoice")
-          else this.props.navigation.navigate("bottomTab")
-        })
-        .catch((error) => {
-          console.log(error, "error")
-          this.setState({
-            ...this.state,
-            isLoading: false,
-            errorText: error,
-          })
-          alert("something went wrong, please try later")
-        })
-    }
-  }
   render() {
     // navigation as prop
     const { navigation } = this.props
@@ -292,6 +209,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       showOnlyEmail,
     } = this.state
     const loginTitle = showOnlyEmail ? "Confirm Email" : "Login"
+
+    handleSocialLogin = () => {
+      this.setState({ ...this.state, isLoading: !this.state.isLoading })
+    }
 
     return (
       <>
@@ -418,21 +339,10 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
 
                     <View style={styles.loginBottom}>
                       <Text style={styles.loginWith}>Or Login with...</Text>
-                      <View style={styles.socialIconsContainer}>
-                        <Pressable onPress={this.logIn}>
-                          <FacebookSvg
-                            width={wp("14.66%")}
-                            height={hp("7.23%")}
-                          />
-                        </Pressable>
-
-                        <Pressable onPress={this.googleLogin}>
-                          <GoogleSvg
-                            width={wp("14.66%")}
-                            height={hp("7.23%")}
-                          />
-                        </Pressable>
-                      </View>
+                      <SocialLogins
+                        navigation={this.props.navigation}
+                        onClick={this.handleSocialLogin}
+                      />
                       <Text style={styles.signupContainer}>
                         <Text style={styles.newToFrappy}>New to Frappy? </Text>
                         <Text

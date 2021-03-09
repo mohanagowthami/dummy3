@@ -233,9 +233,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
     }
     if (prevState.currentPage !== currentPage) this.getDataFromSearchAPI()
   }
-  navigateToDeatailScreen = (id: string) => {
-    this.props.navigation.navigate("itemInDetail", { id: id })
-  }
+
   handleNavigation = (address: string) => {
     this.props.navigation.navigate("navigation", { address })
   }
@@ -254,10 +252,14 @@ class FoodSearchResults extends Component<IProps, Istate> {
       longitude,
       establishment_category,
     } = prop.item
+
     let formatedCusines = []
-    if (typeof tags === "string") formatedCusines = deriveArrayFromString(tags)
-    else formatedCusines = tags
-    let taggedName = formatedCusines[0] ? formatedCusines[0] : name
+    if (typeof tags === "string" && tags !== "")
+      formatedCusines = deriveArrayFromString(tags)
+    else if (tags !== null) formatedCusines = tags
+
+    const taggedName = formatedCusines.length > 0 ? formatedCusines[0] : name
+
     const images =
       menu_images.length > 0
         ? menu_images
@@ -350,7 +352,7 @@ class FoodSearchResults extends Component<IProps, Istate> {
 
   renderCategoryButtons = () => {
     const { searchText, category } = this.state
-    console.log(searchText, "searchText in category")
+
     return (
       <React.Fragment>
         <View style={styles.searchButton}>

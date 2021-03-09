@@ -138,6 +138,7 @@ class Navigation extends Component<IProps, Istate> {
                       onPress={() =>
                         this.props.navigation.navigate("notifications")
                       }
+                      hitSlop={{ top: 30, left: 30, right: 30, bottom: 30 }}
                     >
                       <Notifications width={wp("5.86%")} height={hp("2.89%")} />
                     </Pressable>

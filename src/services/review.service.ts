@@ -4,8 +4,8 @@ import { GET_REVIEWS, UPDATE_REVIEW } from "./../lib/endpoints"
 import APIService from "./api.service"
 
 class ReviewService extends APIService {
-  getReviews(id: string): Promise<any> {
-    return this.get(GET_REVIEWS(id))
+  getReviews(id: string, page?: number): Promise<any> {
+    return this.get(GET_REVIEWS(id, page))
       .then((response: any) => {
         return response.data
       })

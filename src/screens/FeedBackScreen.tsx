@@ -58,7 +58,6 @@ class FeedBackScreen extends Component<IProps, IState> {
   }
   onPressSubmit = (values: any) => {
     this.setState({ ...this.state, showModal: true })
-    console.log(values, "values in feed back screen")
 
     feedbackService
       .submitFeedback(values)

@@ -48,7 +48,9 @@ import {
   rectangleImageList,
   shoppingMallList,
   travellingList,
+  trendsContent,
 } from "../lib/content"
+import MarketingService from "../services/marketing.service"
 
 interface IProps {
   navigation: any
@@ -81,35 +83,14 @@ const colorsList = [
   "#FFE5B2",
 ]
 // data
-const content = {
-  // first division - trends list data
-  trendsList: [
-    {
-      title: "restaurant1",
-      description: "dish1",
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    },
-    {
-      title: "restaurant2",
-      description: "dish2",
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    },
-    {
-      title: "restaurant3",
-      description: "dish3",
-      image:
-        "https://icon2.cleanpng.com/20180202/pre/kisspng-hamburger-street-food-seafood-fast-food-delicious-food-5a75083c57a5f5.317349121517619260359.jpg",
-    },
-  ],
-}
+
 // Main class component
 
 const restaurantService = new RestaurantService()
 const travelService = new TravelService()
 const shoppingService = new ShoppingMallService()
 const userService = new UserService()
+const marketingService = new MarketingService()
 
 class HomeScreen extends Component<IProps, Istate> {
   carousel: any
@@ -178,13 +159,13 @@ class HomeScreen extends Component<IProps, Istate> {
 
       Promise.all([service.getRecap(), service.getHallOfFame()])
         .then((response: any) => {
-          console.log(response, "response in fetch focus")
-          stateData.categoryData[index].data.recapList = response[0]
-          stateData.categoryData[index].data.hallOfFame = response[1]
+          stateData.categoryData[index].data.recapList = response[0].results
+          stateData.categoryData[index].data.hallOfFame = response[1].results
+
           this.setState(stateData)
         })
         .catch((error: any) => {
-          console.log(error, " in home screen")
+          alert("something went wrong")
         })
     }
   }
@@ -201,39 +182,79 @@ class HomeScreen extends Component<IProps, Istate> {
   }
 
   async componentDidMount() {
-    this.setState({
-      ...this.state,
-      isLoading: true,
-    })
-
     if (this.context.latitude !== null) {
+      this.setState({ ...this.state, isLoading: true })
       userService
-        .updateUserCurrentLocation({ ...this.context })
-        .then((response) => {
+        .updateUserCurrentLocation({
+          ...this.context,
+        })
+        .then(() => {
           restaurantService
-            .getRestaurantDataFromServer()
-            .then((values) => {
-              console.log(values, "values")
-              let stateData = { ...this.state }
-              stateData.categoryData[0].data.localFavouritesList =
-                values[0].results
-              stateData.categoryData[0].data.hallOfFame = values[1]
-              stateData.categoryData[0].data.recapList = this.getFormatedRecapList(
-                values[2]
-              )
-              stateData.categoryData[0].isDatafetched = true
-              stateData.categoryData[0].data.trendsList = content.trendsList
+            .getCurrentUserLocationBasedData()
+            .then((response) => {
+              const stateData = { ...this.state }
+              if (response["results"])
+                stateData.categoryData[0].data.localFavouritesList =
+                  response.results
+
               stateData.isLoading = false
-              stateData.username = values[3].username
+              this.setState(stateData)
+            })
+            .catch(() => {
+              alert("something went wrong in local")
+            })
+          restaurantService
+            .getRecap()
+            .then((response) => {
+              const stateData = { ...this.state }
+              stateData.categoryData[0].data.recapList = response.results
+              stateData.isLoading = false
+              this.setState(stateData)
+            })
+            .catch(() => {
+              alert("something went wrong in recap")
+            })
+          restaurantService
+            .getHallOfFame()
+            .then((response) => {
+              const stateData = { ...this.state }
+              stateData.categoryData[0].data.hallOfFame = response.results
+              stateData.isLoading = false
+              this.setState(stateData)
+            })
+            .catch(() => {
+              alert("something went wrong in hall of fame")
+            })
+
+          marketingService
+            .getTrendingList()
+            .then((response) => {
+              const stateData = { ...this.state }
+              if (response.length !== 0)
+                stateData.categoryData[0].data.trendsList = response
+              else
+                stateData.categoryData[0].data.trendsList =
+                  trendsContent.trendsList
+              stateData.isLoading = false
               this.setState(stateData)
             })
             .catch((error) => {
-              console.log(error, " error in inner")
+              alert("something went wrong")
+            })
+
+          userService
+            .getUser()
+            .then((response) => {
+              const stateData = { ...this.state }
+              stateData.username = response.username
+              stateData.isLoading = false
+              this.setState(stateData)
+            })
+            .catch(() => {
+              alert("something went wrong")
             })
         })
-        .catch((error) => {
-          console.log(error, "in outer")
-        })
+        .catch(() => alert("something went wrong"))
     }
 
     this.subscribe = this.props.navigation.addListener("focus", () => {
@@ -267,7 +288,7 @@ class HomeScreen extends Component<IProps, Istate> {
       index = 2
       stateData.category = "shopping"
     }
-    if (!stateData.categoryData[index].isDatafetched) {
+    if (!stateData.categoryData[index].isDatafetched && service) {
       this.setState({
         ...this.state,
         isLoading: true,
@@ -275,20 +296,23 @@ class HomeScreen extends Component<IProps, Istate> {
       service
         .getDataFromServer()
         .then((values: any) => {
-          console.log(values[1], "values og hall of fame")
           let stateData = { ...this.state }
-          stateData.categoryData[index].data.localFavouritesList =
-            values[0].results
-          stateData.categoryData[index].data.hallOfFame = values[1]
+          if (values[0]["results"])
+            stateData.categoryData[index].data.localFavouritesList =
+              values[0].results
+          stateData.categoryData[index].data.hallOfFame = values[1].results
           stateData.categoryData[
             index
-          ].data.recapList = this.getFormatedRecapList(values[2])
+          ].data.recapList = this.getFormatedRecapList(values[2].results)
           stateData.categoryData[index].isDatafetched = true
-          stateData.categoryData[index].data.trendsList = content.trendsList
+          stateData.categoryData[index].data.trendsList =
+            trendsContent.trendsList
           stateData.isLoading = false
           this.setState(stateData)
         })
-        .catch((error: any) => {})
+        .catch((error: any) => {
+          alert("something went wrong")
+        })
     }
   }
 
@@ -517,39 +541,35 @@ class HomeScreen extends Component<IProps, Istate> {
   flatListRecapItem = (item: any, index: number) => {
     const { categoryData, category } = this.state
     const {
-      name,
-      user_rating,
-      review_images,
-      address,
       showFullAddress,
-      id,
 
-      restaurant,
+      listing: { name, address, id, images },
+      rating,
+      numberOfRatings,
     } = item
-    const numberOfRatings =
-      categoryData[this.getActiveIndex()].data.recapList.length
+
     const list =
       category === "food"
         ? rectangleImageList
         : category === "travel"
         ? travellingList
         : shoppingMallList
-    console.log("list", list, "list")
+
     return (
       <Pressable
         onPress={() =>
           this.props.navigation.navigate("itemInDetail", {
-            id: restaurant,
+            id: id,
             address: address,
           })
         }
       >
         <View style={styles.recapItemContaineer}>
-          {review_images.length > 0 ? (
+          {images.length > 0 ? (
             <View style={styles.imageWrapper}>
               <Image
                 source={{
-                  uri: review_images[0].image,
+                  uri: images[0].image,
                 }}
                 style={styles.recapImage}
                 resizeMode="cover"
@@ -583,7 +603,7 @@ class HomeScreen extends Component<IProps, Istate> {
               <View style={styles.ratingInnerWrapper}>
                 <Rating width={wp("4.2%")} height={hp("4.2%")} />
                 <Text style={styles.noOfRatings}>
-                  {user_rating}({numberOfRatings} ratings)
+                  {Math.round(rating)}({numberOfRatings} ratings)
                 </Text>
               </View>
 
@@ -619,7 +639,7 @@ class HomeScreen extends Component<IProps, Istate> {
   render() {
     // Main return function
     const { isLoading, username, category, categoryData } = this.state
-    console.log(categoryData[this.getActiveIndex()].data.hallOfFame, "fame")
+
     const HallOfFameImagesList = this.getHallOfFameImages()
 
     return (
@@ -771,9 +791,7 @@ class HomeScreen extends Component<IProps, Istate> {
                       <Pressable
                         onPress={() =>
                           this.props.navigation.navigate("recap", {
-                            recapList:
-                              categoryData[this.getActiveIndex()].data
-                                .recapList,
+                            category: category,
                           })
                         }
                       >
@@ -815,9 +833,7 @@ class HomeScreen extends Component<IProps, Istate> {
                           <Pressable
                             onPress={() =>
                               this.props.navigation.navigate("hallOfFame", {
-                                hallOfFameList:
-                                  categoryData[this.getActiveIndex()].data
-                                    .hallOfFame,
+                                category: category,
                               })
                             }
                           >
@@ -838,7 +854,7 @@ class HomeScreen extends Component<IProps, Istate> {
                         styles.hallOfFameContainer,
                         {
                           justifyContent:
-                            HallOfFameImagesList.length % 3 === 0
+                            HallOfFameImagesList.slice(0, 6).length % 3 === 0
                               ? "space-between"
                               : "flex-start",
                         },
@@ -854,12 +870,17 @@ class HomeScreen extends Component<IProps, Istate> {
                                   imageUrl: image,
                                 })
                               }
-                              style={{
-                                marginRight:
-                                  HallOfFameImagesList.length % 3 === 0
-                                    ? 0
-                                    : wp("5%"),
-                              }}
+                              style={[
+                                styles.hallOfFameImageWrapper,
+                                {
+                                  marginRight:
+                                    HallOfFameImagesList.slice(0, 6).length %
+                                      3 ===
+                                    0
+                                      ? 0
+                                      : wp("5%"),
+                                },
+                              ]}
                             >
                               <Image
                                 style={styles.hallOfFameImage}
@@ -1039,6 +1060,8 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     marginBottom: wp("15%"),
+    width: "100%",
+    flex: 1,
   },
   userName: {
     fontFamily: "ArchivoRegular",
@@ -1143,9 +1166,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.orange,
     borderRadius: wp("4%"),
   },
+  hallOfFameImageWrapper: {
+    width: "28%",
+    height: wp("26%"),
+    marginBottom: wp("5%"),
+  },
+
   hallOfFameImage: {
-    width: wp("28%"),
-    height: wp("28%"),
+    width: "100%",
+    height: "100%",
     marginTop: wp("5%"),
     borderRadius: wp("5%"),
   },

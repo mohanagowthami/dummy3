@@ -149,12 +149,9 @@ class Profile extends Component<IProps, Istate> {
     userService
       .updateUser(data)
       .then((response) => {
-        console.log(response, "response in update user details")
         this.props.navigation.goBack()
       })
-      .catch((error) => {
-        console.log(error, "error in user details")
-      })
+      .catch((error) => {})
       .finally(() => {
         this.setState({ ...this.state, isLoading: false })
       })
@@ -201,7 +198,6 @@ class Profile extends Component<IProps, Istate> {
   }
 
   onChangePicker = (event: any, selectedDate: any) => {
-    console.log(selectedDate, "selectedDate")
     const stateData = { ...this.state }
     stateData.userDetails.dob = selectedDate
     stateData.showModal = false
@@ -271,7 +267,7 @@ class Profile extends Component<IProps, Istate> {
       userDetails: { username, phone, dob, email, gender },
       showModal,
     } = this.state
-    console.log(dob, "date of birth")
+
     const { isEditable } = this.props.route.params
     return (
       <View style={styles.optionscontainer}>

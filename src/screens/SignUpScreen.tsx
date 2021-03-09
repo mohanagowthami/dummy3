@@ -33,6 +33,7 @@ import { colors } from "../lib/colors"
 import UserService from "../services/user.service"
 import { Logo } from "../../assets/svgs/icons"
 import Loader from "../components/elements/Loader"
+import SocialLogins from "../components/elements/SocialLogins"
 //interface for signup screen
 interface ISignUpScreen {
   navigation: any
@@ -116,6 +117,10 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
       </View>
     )
   }
+
+  handleSocialClick = () => {
+    this.setState({ ...this.state, isLoading: !this.state.isLoading })
+  }
   // Modal enabling function => True or False
   setModalVisible = () => {
     this.setState((prevState, props) => ({
@@ -125,7 +130,7 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
 
   onPressSignUp = (loading: boolean, error?: any) => {
     this.setState({ ...this.state, isLoading: loading })
-    console.log(loading, error, "loading in call back")
+
     if (error) {
       if (error["email"] && error["username"])
         alert(`${error.username[0]}\n${error.email[0]}`)
@@ -174,11 +179,10 @@ class SignUpScreen extends React.Component<ISignUpScreen, State> {
                   />
                   <View style={[styles.loginBottom]}>
                     <Text style={styles.loginWith}>Or Login with...</Text>
-                    <View style={styles.socialIconsContainer}>
-                      <FacebookSvg width={wp("14.66%")} height={hp("6.19")} />
-                      <TwitterSvg width={wp("14.66%")} height={hp("6.19")} />
-                      <GoogleSvg width={wp("14.66%")} height={hp("6.19")} />
-                    </View>
+                    <SocialLogins
+                      navigation={this.props.navigation}
+                      onClick={this.handleSocialClick}
+                    />
                     <Text>
                       <Text style={styles.haveAnAccount}>
                         Already have an account?{" "}

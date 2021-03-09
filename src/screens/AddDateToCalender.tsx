@@ -31,14 +31,14 @@ import { colors } from "../lib/colors"
 // helper
 import {
   getFormatedDate,
-  getCurrentMonthArray,
   convertToTweleveHoursFormat,
   convertToTwentyFourHoursFormat,
+  getMonthArray,
 } from "../lib/helper"
 // service
 import PlannerService from "../services/planner.service"
 // Formik
-import { Formik } from "formik"
+import { Formik, validateYupSchema, yupToFormErrors } from "formik"
 // yup
 import * as yup from "yup"
 
@@ -73,6 +73,28 @@ const validationSchema = yup.object().shape({
   from_time: yup.string().required("*required"),
   to_time: yup.string().required("*required"),
   category: yup.array().compact().min(1, "atleast one category shoould select"),
+  start_location: yup
+    .string()
+    .required("*required")
+    .test(
+      "start_location",
+      "user have to fill the start location",
+      function () {
+        const { fromRef } = this.options.context
+        if (fromRef.current.getAddressText().length === 0)
+          return this.createError({ message: "*required" })
+        else return true
+      }
+    ),
+  end_location: yup
+    .string()
+    .required("*required")
+    .test("end_location", "user have to fill the end location", function () {
+      const { toRef } = this.options.context
+      if (toRef.current.getAddressText().length === 0)
+        return this.createError({ message: "*required" })
+      else return true
+    }),
 })
 
 const plannerService = new PlannerService()
@@ -93,7 +115,7 @@ class AddDateToCalender extends Component<IProps, IState> {
       show: false,
       startLocationError: "",
       endLocationError: "",
-      dateArray: getCurrentMonthArray(0),
+      dateArray: getMonthArray(),
     }
     this.ref = React.createRef()
     this.flatListRef = React.createRef()
@@ -112,51 +134,29 @@ class AddDateToCalender extends Component<IProps, IState> {
 
   onChangePicker = (event: any, selectedDate: any) => {
     const { mode } = this.state
-    console.log(mode, "mode")
+
     if (selectedDate) {
       let stateData = { ...this.state }
       stateData.show = false
       if (mode === "date") {
         stateData.date = selectedDate
-        if (
-          selectedDate.getMonth() === this.date.getMonth() &&
-          selectedDate.getFullYear() === this.date.getFullYear()
-        ) {
-          stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
-          let index
-          if (selectedDate.getDate() + 2 <= stateData.dateArray.length - 1)
-            index = selectedDate.getDate() + 2
-          else index = stateData.dateArray.length - 1
+        stateData.dateArray = getMonthArray(selectedDate)
+        this.flatListRef.scrollToIndex({
+          animated: true,
+          index: selectedDate.getDate() - 1,
+        })
 
-          this.flatListRef.scrollToIndex({
-            animated: true,
-            index: index,
-          })
-        } else {
-          stateData.dateArray = new Array(
-            new Date(
-              this.date.getFullYear(),
-              this.date.getMonth() + 1,
-              0
-            ).getDate()
-          ).fill(0)
-        }
+        this.setState(stateData)
       } else {
         if (this.ref.current === "from") {
-          console.log("from", 123)
           let minutes = selectedDate.getMinutes()
           if (minutes.toString().length === 1) minutes = "0" + minutes
 
-          console.log(this.formRef, "in getting field")
           this.formRef.current.setFieldValue(
             "from_time",
             convertToTweleveHoursFormat(selectedDate.getHours(), minutes)
           )
         } else {
-          console.log(
-            this.formRef.current.values.start_time,
-            "start_time1234566"
-          )
           const fromTimeSting = convertToTwentyFourHoursFormat(
             this.formRef.current.values.from_time
           )
@@ -188,8 +188,6 @@ class AddDateToCalender extends Component<IProps, IState> {
           }
         }
 
-        console.log(this.formRef, "in getting field  after")
-
         this.setState(stateData)
       }
     }
@@ -200,15 +198,19 @@ class AddDateToCalender extends Component<IProps, IState> {
     this.formRef.current.setFieldValue(`category[${index}]`, !list[index])
   }
 
-  handlePressableDate = (ele: number, ind: number): any => {
-    console.log(ele, "element123")
-    if (ele !== -1) {
+  handlePressableDate = (ele: any, ind: number): any => {
+    if (ele.status !== -1) {
       const { dateArray } = this.state
-      const mutatedArray = dateArray.map((ele: boolean, index: number) => {
+      const mutatedArray = dateArray.map((ele: any, index: number) => {
         if (index === ind) {
-          return 1
-        } else if (index < this.date.getDate() - 1) return -1
-        else return 0
+          ele.status = 1
+          return ele
+        } else {
+          if (ele.staus !== -1) {
+            ele.status = 0
+            return ele
+          } else return ele
+        }
       })
       this.setState({
         ...this.state,
@@ -219,13 +221,11 @@ class AddDateToCalender extends Component<IProps, IState> {
   }
 
   flatListRenderItem = (item: any, index: number) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    let day = new Date(this.date.getFullYear(), this.date.getMonth(), index + 1)
-    const dayName = days[day.getDay()]
+    const { status, date } = item
     return (
       <View style={styles.flatListRenderItemContainer}>
         <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
-          {dayName}
+          {date.toString().slice(0, 3)}
         </Text>
 
         <Text
@@ -233,18 +233,18 @@ class AddDateToCalender extends Component<IProps, IState> {
             styles.dateTextStyle,
             styles.dateArrayItem,
             {
-              backgroundColor: item === 1 ? colors.orange : colors.white,
+              backgroundColor: status === 1 ? colors.orange : colors.white,
               color:
-                item === 1
+                status === 1
                   ? colors.white
-                  : item === -1
+                  : status === -1
                   ? colors.lightGreyThree
                   : colors.darkBlack,
             },
           ]}
           onPress={() => this.handlePressableDate(item, index)}
         >
-          {index + 1}
+          {date.getDate()}
         </Text>
       </View>
     )
@@ -269,38 +269,9 @@ class AddDateToCalender extends Component<IProps, IState> {
         initialScrollIndex={date.getDate() - 1}
         getItemLayout={this.getItemLayout.bind(this)}
         ref={(ref) => (this.flatListRef = ref)}
+        showsHorizontalScrollIndicator={false}
       />
     )
-  }
-
-  validatingAutoFillValues() {
-    if (
-      !this.fromLocationRef.current.getAddressText() &&
-      !this.toLocationRef.current.getAddressText()
-    ) {
-      this.setState({
-        ...this.state,
-        startLocationError: "*required",
-        endLocationError: "*required",
-      })
-      return false
-    } else if (!this.fromLocationRef.current.getAddressText()) {
-      this.setState({
-        ...this.state,
-        startLocationError: "*required",
-        endLocationError: "",
-      })
-      return false
-    } else if (!this.toLocationRef.current.getAddressText()) {
-      this.setState({
-        ...this.state,
-        startLocationError: "",
-        endLocationError: "*required",
-      })
-      return false
-    } else {
-      return true
-    }
   }
 
   formResetValues = () => {
@@ -328,17 +299,15 @@ class AddDateToCalender extends Component<IProps, IState> {
       category: category,
       description: values.description,
     }
-    console.log(data, "before submitting")
+
     this.setState({ ...this.state, isLoading: true })
 
     plannerService
       .updateUserPlannerData(data)
       .then((response) => {
-        console.log(response, "response in add date to calender")
         this.props.navigation.navigate("frappyCalender")
       })
       .catch((error) => {
-        console.log(error, "error in add date to calender")
         this.setState({ ...this.state, isLoading: false })
       })
   }
@@ -354,15 +323,8 @@ class AddDateToCalender extends Component<IProps, IState> {
     this.formRef?.current.setFieldError("start_location", " error 123")
   }
   render() {
-    const {
-      isLoading,
-      date,
-      show,
-      mode,
-      startLocationError,
-      endLocationError,
-    } = this.state
-    console.log(this.formRef.current, "formRef")
+    const { isLoading, date, show, mode } = this.state
+
     return (
       <SafeAreaView style={styles.safeAreaContainer}>
         <ScrollView
@@ -376,7 +338,18 @@ class AddDateToCalender extends Component<IProps, IState> {
             </View>
           ) : (
             <Formik
-              validationSchema={validationSchema}
+              validate={(value) => {
+                try {
+                  validateYupSchema(value, validationSchema, true, {
+                    fromRef: this.fromLocationRef,
+                    toRef: this.toLocationRef,
+                  })
+                } catch (err) {
+                  return yupToFormErrors(err) //for rendering validation errors
+                }
+
+                return {}
+              }}
               initialValues={{
                 from_time: "",
                 to_time: "",
@@ -388,7 +361,7 @@ class AddDateToCalender extends Component<IProps, IState> {
               }}
               enableReinitialize
               onSubmit={(values) => {
-                if (this.validatingAutoFillValues()) this.pressPlan(values)
+                this.pressPlan(values)
               }}
               innerRef={this.formRef}
             >
@@ -406,12 +379,8 @@ class AddDateToCalender extends Component<IProps, IState> {
                   <View style={styles.container}>
                     <View style={styles.TitleContainer}>
                       <Text style={styles.titleText}>Frappy planner</Text>
-                      <Pressable
-                        onPress={() =>
-                          this.props.navigation.navigate("notifications")
-                        }
-                      >
-                        <BellIcon width={wp("5.9%")} height={wp("5.9%")} />
+                      <Pressable onPress={() => this.props.navigation.goBack()}>
+                        <Text style={styles.cancelText}>Cancel</Text>
                       </Pressable>
                     </View>
 
@@ -439,43 +408,45 @@ class AddDateToCalender extends Component<IProps, IState> {
                     </Text>
                     <View style={styles.setTimeContainer}>
                       <View>
-                        <View style={styles.timeBox}>
-                          <Pressable
-                            style={styles.timeBoxItem}
-                            onPress={() => {
-                              this.ref.current = "from"
-                              this.showPicker("time")
-                            }}
-                          >
-                            <TextInput
-                              placeholder="From"
-                              style={[styles.timeText, { paddingBottom: 0 }]}
-                              value={values.from_time}
-                            />
-                            <Clock width={wp("6.13%")} height={hp("3.02%")} />
-                          </Pressable>
-                        </View>
+                        <Pressable
+                          style={styles.timeBox}
+                          onPress={() => {
+                            this.ref.current = "from"
+                            this.showPicker("time")
+                          }}
+                        >
+                          {/* <Pressable style={styles.timeBoxItem}> */}
+                          <TextInput
+                            placeholder="From"
+                            style={[styles.timeText, { paddingBottom: 0 }]}
+                            value={values.from_time}
+                            editable={false}
+                          />
+                          <Clock width={wp("6.13%")} height={hp("3.02%")} />
+                          {/* </Pressable> */}
+                        </Pressable>
                         {touched.from_time && errors.from_time && (
                           <Text style={styles.error}>{errors.from_time}</Text>
                         )}
                       </View>
                       <View>
-                        <View style={styles.timeBox}>
-                          <Pressable
-                            style={styles.timeBoxItem}
-                            onPress={() => {
-                              this.ref.current = "to"
-                              this.showPicker("time")
-                            }}
-                          >
-                            <TextInput
-                              style={[styles.timeText, { paddingBottom: 0 }]}
-                              placeholder="To"
-                              value={values.to_time}
-                            ></TextInput>
-                            <Clock width={wp("6.13%")} height={hp("3.02%")} />
-                          </Pressable>
-                        </View>
+                        <Pressable
+                          style={styles.timeBox}
+                          onPress={() => {
+                            this.ref.current = "to"
+                            this.showPicker("time")
+                          }}
+                        >
+                          {/* <Pressable style={styles.timeBoxItem}> */}
+                          <TextInput
+                            style={[styles.timeText, { paddingBottom: 0 }]}
+                            placeholder="To"
+                            value={values.to_time}
+                            editable={false}
+                          ></TextInput>
+                          <Clock width={wp("6.13%")} height={hp("3.02%")} />
+                          {/* </Pressable> */}
+                        </Pressable>
                         {touched.to_time && errors.to_time && (
                           <Text style={styles.error}>{errors.to_time}</Text>
                         )}
@@ -487,7 +458,6 @@ class AddDateToCalender extends Component<IProps, IState> {
                       ref={this.fromLocationRef}
                       placeholder="From Address"
                       onPress={(data, details = null) => {
-                        console.log(data, details)
                         setFieldValue("start_location", data.description)
                       }}
                       query={{
@@ -508,9 +478,10 @@ class AddDateToCalender extends Component<IProps, IState> {
                         textInput: styles.timeText,
                       }}
                     />
-                    {startLocationError !== "" && (
-                      <Text style={styles.error}>{startLocationError}</Text>
+                    {touched.start_location && errors.start_location && (
+                      <Text style={styles.error}>{errors.start_location}</Text>
                     )}
+
                     <GooglePlacesAutocomplete
                       ref={this.toLocationRef}
                       placeholder="To Address"
@@ -534,8 +505,8 @@ class AddDateToCalender extends Component<IProps, IState> {
                         textInput: styles.timeText,
                       }}
                     />
-                    {endLocationError !== "" && (
-                      <Text style={styles.error}>{endLocationError}</Text>
+                    {touched.start_location && errors.start_location && (
+                      <Text style={styles.error}>{errors.start_location}</Text>
                     )}
                     <Text style={styles.selectDate}>Select Category</Text>
                     {switchList.map((element: any, index: number) => {
@@ -575,7 +546,7 @@ class AddDateToCalender extends Component<IProps, IState> {
                       <CustomButton
                         onPressButton={this.onPressCancel}
                         buttonStyles={styles.buttonStyles}
-                        title="Cancel"
+                        title="Discard"
                         buttonTextStyles={styles.buttonTextStyles}
                       ></CustomButton>
                       <CustomButton
@@ -806,5 +777,10 @@ const styles = StyleSheet.create({
     display: "flex",
     alignContent: "center",
     backgroundColor: colors.white,
+  },
+  cancelText: {
+    fontFamily: "ArchivoRegular",
+    fontSize: wp("4.5%"),
+    color: colors.orange,
   },
 })

@@ -27,8 +27,8 @@ import { colors } from "../lib/colors"
 // date
 import {
   getFormatedDate,
-  getCurrentMonthArray,
   convertToTweleveHoursFormat,
+  getMonthArray,
 } from "../lib/helper"
 // service
 import PlannerService from "../services/planner.service"
@@ -57,7 +57,7 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
     this.state = {
       selectedDate: new Date(),
       isModalOpen: false,
-      dateArray: getCurrentMonthArray(),
+      dateArray: getMonthArray(),
       plannerData: [],
       isLoading: false,
     }
@@ -69,33 +69,16 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
       const stateData = { ...this.state }
       stateData.selectedDate = selectedDate
       stateData.isModalOpen = false
-      if (
-        selectedDate.getMonth() === this.date.getMonth() &&
-        selectedDate.getFullYear() === this.date.getFullYear()
-      ) {
-        stateData.dateArray = getCurrentMonthArray(selectedDate.getDate())
-        let index
-        if (selectedDate.getDate() + 2 <= stateData.dateArray.length - 1)
-          index = selectedDate.getDate() + 2
-        else index = stateData.dateArray.length - 1
 
-        this.flatListRef.scrollToIndex({
-          animated: true,
-          index: index,
-        })
-      } else {
-        stateData.dateArray = new Array(
-          new Date(
-            this.date.getFullYear(),
-            this.date.getMonth() + 1,
-            0
-          ).getDate()
-        ).fill(0)
-      }
+      stateData.dateArray = getMonthArray(selectedDate)
+      this.flatListRef.scrollToIndex({
+        animated: true,
+        index: selectedDate.getDate() - 1,
+      })
+
       this.setState(stateData)
     }
   }
-
   fetchData = () => {
     this.setState({ ...this.state, isLoading: true })
     const { selectedDate } = this.state
@@ -136,31 +119,28 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
 
   handlePressableDate = (ind: number): any => {
     const { dateArray } = this.state
-    const mutatedArray = dateArray.map((ele: boolean, index: number) => {
+    const mutatedArray = dateArray.map((ele: any, index: number) => {
       if (index === ind) {
-        return 1
+        ele.status = 1
+        return ele
+      } else {
+        ele.status = 0
+        return ele
       }
-      return 0
     })
     this.setState({
       ...this.state,
       dateArray: mutatedArray,
-      selectedDate: new Date(
-        this.date.getFullYear(),
-        this.date.getMonth(),
-        ind + 1
-      ),
+      selectedDate: dateArray[ind].date,
     })
   }
 
   flatListRenderItem = (item: any, index: number) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    let day = new Date(this.date.getFullYear(), this.date.getMonth(), index + 1)
-    const dayName = days[day.getDay()]
+    const { date, status } = item
     return (
       <View style={styles.renderItemWrapper}>
         <Text style={[styles.dateTextStyle, { color: colors.greyTwo }]}>
-          {dayName}
+          {date.toString().slice(0, 3)}
         </Text>
 
         <Text
@@ -168,13 +148,13 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
             styles.dateTextStyle,
             styles.dateText,
             {
-              backgroundColor: item == 1 ? colors.orange : colors.white,
-              color: item === 1 ? colors.white : colors.darkBlack,
+              backgroundColor: status == 1 ? colors.orange : colors.white,
+              color: status === 1 ? colors.white : colors.darkBlack,
             },
           ]}
           onPress={() => this.handlePressableDate(index)}
         >
-          {index + 1}
+          {date.getDate()}
         </Text>
       </View>
     )
@@ -240,15 +220,17 @@ class FrappyPlannerCalendar extends Component<IProps, Istate> {
           </Text>
           {this.renderDays()}
           <View style={styles.bottomTab}>
-            <Text style={styles.yourVisits}>Your Visits</Text>
-
             {isLoading ? (
               <ActivityIndicator color={colors.darkBlack} size="large" />
             ) : (
               <>
+                {plannerData.length > 0 ? (
+                  <Text style={styles.yourVisits}>Your plans</Text>
+                ) : (
+                  <Text style={styles.yourVisits}>No plans today</Text>
+                )}
                 {plannerData.reverse().map((ele: any, index: number) => {
                   const { from_time, to_time, description, user } = ele
-                  console.log(user, "user123 in frappy calender")
 
                   return (
                     <View style={styles.cardContainer} key={index}>

@@ -177,12 +177,10 @@ class PickYourChoice extends Component<IProps, IState> {
           shopping_category: selectedShoppingList,
         })
         .then((response) => {
-          console.log(response, " in pick your choice")
           this.setModalVisible()
           this.props.navigation.navigate("bottomTab")
         })
         .catch((error) => {
-          console.log(error, "error in pick your choice")
           this.setModalVisible()
         })
     }

@@ -1,7 +1,7 @@
 // react
 import React, { Component } from "react"
 // react-native
-import { Text, StyleSheet } from "react-native"
+import { Text, StyleSheet, Image } from "react-native"
 // react-native-responsive-screen
 import {
   widthPercentageToDP as wp,
@@ -11,12 +11,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 // colors
 import { colors } from "../lib/colors"
+//
 
+import comingSoon from "../../assets/coming-soon.png"
 class LuckyCardsScreen extends Component<{}, {}> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.text}>Coming Soon !...</Text>
+        <Image style={styles.image} source={comingSoon} resizeMode="cover" />
       </SafeAreaView>
     )
   }
@@ -35,6 +37,10 @@ const styles = StyleSheet.create({
     fontFamily: "ArchivoRegular",
     fontSize: wp("6%"),
     color: colors.orange,
+  },
+  image: {
+    width: wp("100%"),
+    height: hp("60%"),
   },
 })
 export default LuckyCardsScreen

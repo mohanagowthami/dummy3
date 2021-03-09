@@ -67,7 +67,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     data["listing"] = this.props.route.params.id
     data["review"] = this.data.review
     data["user_rating"] = this.data.user_rating
-    console.log(data, "data123 in rating review")
+
     if (
       this.data.review ||
       this.data.user_rating ||
@@ -183,7 +183,7 @@ class ReviewsAndRating extends Component<IProps, IState> {
     const { selectedImages } = this.state
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
@@ -283,11 +283,15 @@ class ReviewsAndRating extends Component<IProps, IState> {
                 return (
                   <View
                     key={index}
-                    style={{ marginRight: imagesAlignment ? 0 : wp("5%") }}
+                    style={{
+                      marginRight: imagesAlignment ? 0 : wp("3%"),
+                      width: "30%",
+                    }}
                   >
                     <Image
                       source={{ uri: image.uri }}
                       style={styles.selectedImageStyles}
+                      resizeMode="cover"
                     />
 
                     <Pressable
@@ -337,6 +341,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: wp("7%"),
+    width: "100%",
   },
   crossX: {
     color: colors.white,
@@ -344,7 +349,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   selectedImageStyles: {
-    width: wp("30%"),
+    width: "100%",
     height: wp("30%"),
     position: "relative",
     marginBottom: wp("2.5%"),
