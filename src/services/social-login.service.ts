@@ -18,6 +18,7 @@ class SocialLoginService extends APIService {
   async facebookSignIn(data: any): Promise<any> {
     try {
       const response = await this.post(FACEBOOK_SIGNIN, data)
+
       await this.setAccessToken(response.data.access)
 
       return response.data

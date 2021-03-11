@@ -47,13 +47,15 @@ class SocialLogins extends Component<IProps, {}> {
             this.props.onClick()
 
             if (response["username"])
-              this.props.navigation.navigate("pickYourChoice")
-            else this.props.navigation.navigate("bottomTab")
+              this.props.navigation.replace("pickYourChoice")
+            else this.props.navigation.replace("bottomTab")
           })
           .catch((error) => {
             this.props.onClick()
             alert("something went wrong, please try later")
           })
+      } else {
+        this.props.onClick()
       }
     } catch (error: any) {
       alert("something went wrong, please try later")
@@ -82,13 +84,15 @@ class SocialLogins extends Component<IProps, {}> {
           .then((response) => {
             this.props.onClick()
             if (response["username"])
-              this.props.navigation.navigate("pickYourChoice")
-            else this.props.navigation.navigate("bottomTab")
+              this.props.navigation.replace("pickYourChoice")
+            else this.props.navigation.replace("bottomTab")
           })
           .catch(() => {
             this.props.onClick()
             alert("something went wrong, please try later")
           })
+      } else {
+        this.props.onClick()
       }
     } catch (error) {
       alert("something went wrong, please try later")

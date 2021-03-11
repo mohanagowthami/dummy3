@@ -166,7 +166,7 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
               })
               setTimeout(() => {
                 this.setState({ ...this.state, modalVisible: false })
-                this.props.navigation.navigate("bottomTab")
+                this.props.navigation.replace("bottomTab")
               }, 2000)
             })
         })
@@ -196,6 +196,9 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       errorText: "",
     })
   }
+  handleSocialLogin = () => {
+    this.setState({ ...this.state, isLoading: !this.state.isLoading })
+  }
 
   render() {
     // navigation as prop
@@ -209,10 +212,6 @@ class LoginScreen extends React.Component<ILoginScreen, State> {
       showOnlyEmail,
     } = this.state
     const loginTitle = showOnlyEmail ? "Confirm Email" : "Login"
-
-    handleSocialLogin = () => {
-      this.setState({ ...this.state, isLoading: !this.state.isLoading })
-    }
 
     return (
       <>

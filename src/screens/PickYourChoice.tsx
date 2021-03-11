@@ -178,7 +178,7 @@ class PickYourChoice extends Component<IProps, IState> {
         })
         .then((response) => {
           this.setModalVisible()
-          this.props.navigation.navigate("bottomTab")
+          this.props.navigation.replace("bottomTab")
         })
         .catch((error) => {
           this.setModalVisible()

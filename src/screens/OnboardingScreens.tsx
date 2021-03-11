@@ -118,13 +118,13 @@ class OnboardingScreens extends React.Component<Props, State> {
                   temp.activeIndex = temp.activeIndex + 1
                   temp.activeIndex < carouselItems.length
                     ? this.carousel.snapToNext()
-                    : navigation.navigate("login")
+                    : navigation.replace("login")
                   this.setState(temp)
                 }}
               />
             </View>
             {/* Skip */}
-            <Pressable onPress={() => navigation.navigate("login")}>
+            <Pressable onPress={() => navigation.replace("login")}>
               <Text style={styles.skipText}>Skip</Text>
             </Pressable>
           </View>

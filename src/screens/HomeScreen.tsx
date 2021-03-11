@@ -250,7 +250,7 @@ class HomeScreen extends Component<IProps, Istate> {
               stateData.isLoading = false
               this.setState(stateData)
             })
-            .catch(() => {
+            .catch((error) => {
               alert("something went wrong")
             })
         })
