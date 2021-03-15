@@ -18,7 +18,7 @@ import { colors } from "../../lib/colors"
 // icons
 import { CloseEye, OpenEye } from "../../../assets/svgs/icons"
 // expo -notifications
-import * as Notifications from "expo-notifications"
+// import * as Notifications from "expo-notifications"
 import { registerForPushNotificationsAsync } from "../../lib/helper"
 
 interface ISignUpFormProps {
@@ -59,11 +59,11 @@ class SignUpForm extends Component<ISignUpFormProps, IState> {
   }
 
   componentDidMount() {
-    registerForPushNotificationsAsync()
-      .then((token) => {
-        this.setState({ ...this.state, token: token })
-      })
-      .catch(() => {})
+    // registerForPushNotificationsAsync()
+    //   .then((token) => {
+    //     this.setState({ ...this.state, token: token })
+    //   })
+    //   .catch(() => {})
   }
 
   onSubmitValues = (values: any) => {
@@ -76,7 +76,7 @@ class SignUpForm extends Component<ISignUpFormProps, IState> {
       .then((response) => {
         Promise.all([
           authService.authenticateUser(response.access, response.refresh),
-          notificationService.pushToken({ token: token }),
+          // notificationService.pushToken({ token: token }),
         ]).then(() => {
           this.props.navigation.navigate("pickYourChoice")
         })

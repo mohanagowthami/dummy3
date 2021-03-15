@@ -22,16 +22,16 @@ import { Context } from "./src/lib/content"
 // location
 import * as Location from "expo-location"
 
-// expo -notifications
-import * as Notifications from "expo-notifications"
+// // expo -notifications
+// import * as Notifications from "expo-notifications"
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-})
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// })
 
 // creating stack navigator
 const Stack = createStackNavigator()
@@ -51,21 +51,21 @@ export default function App() {
   const notificationListener: any = useRef<any>()
   const responseListener: any = useRef<any>()
 
-  useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        setNotification(notification)
-      }
-    )
+  // useEffect(() => {
+  //   notificationListener.current = Notifications.addNotificationReceivedListener(
+  //     (notification) => {
+  //       setNotification(notification)
+  //     }
+  //   )
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {}
-    )
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener)
-      Notifications.removeNotificationSubscription(responseListener)
-    }
-  }, [])
+  //   responseListener.current = Notifications.addNotificationResponseReceivedListener(
+  //     (response) => {}
+  //   )
+  //   return () => {
+  //     Notifications.removeNotificationSubscription(notificationListener)
+  //     Notifications.removeNotificationSubscription(responseListener)
+  //   }
+  // }, [])
   useEffect(() => {
     isMounted = true
 
