@@ -48,7 +48,7 @@ class HomeScreens extends Component {
         />
         <Stack.Screen
           name="feedBack"
-          component={FeedBackScreen}
+          component={   FeedBackScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
